@@ -1,4 +1,511 @@
-body {
+﻿body {
     font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
     color: hsl(31.85, 50%, 30%);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#board {
+    position: relative;
+    background: hsl(31.85, 50%, 30%);
+    width: 100vw;
+    height: 60vw;
+}
+
+    #board > .overlay {
+        position: absolute;
+        background: hsl(31.85, 50%, 30%);
+    }
+
+        #board > .overlay#overlay-bottom {
+            top: 58vw;
+            left: 0;
+            width: 100vw;
+            height: 2vw;
+        }
+
+        #board > .overlay#overlay-right {
+            top: 0;
+            right: 0;
+            width: 2vw;
+            height: 60vw;
+        }
+
+    #board > .background {
+        position: absolute;
+        background: hsl(31.85, 50%, 70%);
+    }
+
+    #board > .shadow {
+        position: absolute;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+    }
+
+    #board > .main-area {
+        width: 42vw;
+        height: 56vw;
+        top: 2vw;
+    }
+
+        #board > .main-area.left {
+            left: 2vw;
+        }
+
+        #board > .main-area.right {
+            right: 10vw;
+        }
+
+    #board > .home {
+        width: 6vw;
+        height: 27vw;
+        right: 2vw;
+    }
+
+        #board > .home.white {
+            top: 2vw;
+        }
+
+        #board > .home.black {
+            bottom: 2vw;
+        }
+
+    #board > .tongue {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: none;
+        border-left: 3.5vw solid transparent !important;
+        border-right: 3.5vw solid transparent !important;
+    }
+
+        #board > .tongue.top {
+            top: 2vw;
+            border-top: 25vw solid;
+        }
+
+        #board > .tongue.bottom {
+            bottom: 2vw;
+            border-bottom: 25vw solid;
+        }
+
+        #board > .tongue.dark {
+            border-color: hsl(27.1, 33.3%, 54.9%);
+        }
+
+        #board > .tongue.light {
+            border-color: hsl(36.6, 66.7%, 82.5%);
+        }
+
+        #board > .tongue.selectable {
+            border-color: hsla(110,70%,70%,.7);
+        }
+
+    #board > .tongue-0, #board > .tongue-23 {
+        left: 83vw;
+    }
+
+    #board > .tongue-1, #board > .tongue-22 {
+        left: 76vw;
+    }
+
+    #board > .tongue-2, #board > .tongue-21 {
+        left: 69vw;
+    }
+
+    #board > .tongue-3, #board > .tongue-20 {
+        left: 62vw;
+    }
+
+    #board > .tongue-4, #board > .tongue-19 {
+        left: 55vw;
+    }
+
+    #board > .tongue-5, #board > .tongue-18 {
+        left: 48vw;
+    }
+
+    #board > .tongue-6, #board > .tongue-17 {
+        left: 37vw;
+    }
+
+    #board > .tongue-7, #board > .tongue-16 {
+        left: 30vw;
+    }
+
+    #board > .tongue-8, #board > .tongue-15 {
+        left: 23vw;
+    }
+
+    #board > .tongue-9, #board > .tongue-14 {
+        left: 16vw;
+    }
+
+    #board > .tongue-10, #board > .tongue-13 {
+        left: 9vw;
+    }
+
+    #board > .tongue-11, #board > .tongue-12 {
+        left: 2vw;
+    }
+
+    #board > .piece {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        position: absolute;
+        width: 5vw;
+        height: 5vw;
+        border-radius: 100%;
+        border: .3vw solid transparent;
+        border-top: .2vw solid transparent;
+        border-left: .2vw solid transparent;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+    }
+
+        #board > .piece.white {
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
+            border-color: hsl(31.85, 50%, 100%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 100%);
+        }
+
+            #board > .piece.white.selected {
+                background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
+                border-color: hsl(0, 100%, 90%) hsl(0, 100%, 85%) hsl(0, 100%, 85%) hsl(0, 100%, 90%);
+            }
+
+        #board > .piece.black {
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
+            border-color: hsl(31.85, 50%, 20%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 20%);
+        }
+
+            #board > .piece.black.selected {
+                background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
+                border-color: hsl(0, 100%, 30%) hsl(0, 100%, 20%) hsl(0, 100%, 20%) hsl(0, 100%, 30%);
+            }
+
+        #board > .piece.selectable:before {
+            position: absolute;
+            left: -.2vw;
+            top: -.2vw;
+            right: -.3vw;
+            bottom: -.3vw;
+            background: hsl(110, 50%, 50%);
+            border-radius: 100%;
+            content: ' ';
+            opacity: .3;
+            -moz-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            -o-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            -webkit-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+        }
+
+        #board > .piece.selectable.selected:before {
+            display: none;
+        }
+
+        #board > .piece.hypo-target {
+            opacity: .5;
+            -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            -webkit-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            pointer-events: none;
+        }
+
+    #board.player-white.to-move > .piece.white, #board.player-black.to-move > .piece.black {
+        cursor: pointer;
+    }
+
+    #board > .dice-back {
+        border-radius: 1vw;
+        position: absolute;
+        width: 6vw;
+        height: 6vw;
+        top: 27vw;
+        display: none;
+    }
+
+        #board > .dice-back#dice-back-white {
+            left: 62.5vw;
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
+        }
+
+        #board > .dice-back#dice-back-black {
+            left: 69.5vw;
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
+        }
+
+    #board.dice-start > .dice-back {
+        display: block;
+    }
+
+    #board > .dice {
+        position: absolute;
+        left: 63vw;
+        top: 27.5vw;
+        width: 5vw;
+        height: 5vw;
+        background-image: linear-gradient(135deg, #fff, #ddd);
+        border-radius: .5vw;
+        overflow: hidden;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        display: none;
+    }
+
+        #board > .dice > .face {
+            position: absolute;
+            background-image: linear-gradient(135deg, #ddd, #fff);
+            left: .5vw;
+            top: .5vw;
+            width: 4vw;
+            height: 4vw;
+            border-radius: 30%;
+        }
+
+        #board > .dice > .side {
+            position: absolute;
+            border-radius: 50%;
+            width: 5vw;
+            height: 1vw;
+        }
+
+            #board > .dice > .side.n {
+                top: -.5vw;
+                left: .25vw;
+                background-image: linear-gradient(0deg, #fff, #ccc);
+            }
+
+            #board > .dice > .side.w {
+                top: .25vw;
+                left: -.5vw;
+                width: 1vw;
+                height: 5vw;
+                background-image: linear-gradient(-90deg, #fff, #ccc);
+            }
+
+            #board > .dice > .side.s {
+                bottom: -.5vw;
+                left: .25vw;
+                background-image: linear-gradient(0deg, #888, #eee);
+            }
+
+            #board > .dice > .side.e {
+                top: .25vw;
+                right: -.5vw;
+                width: 1vw;
+                height: 5vw;
+                background-image: linear-gradient(-90deg, #888, #eee);
+            }
+
+        #board > .dice > .pip {
+            position: absolute;
+            background: black;
+            border-radius: 50%;
+            width: .7vw;
+            height: .7vw;
+            box-shadow: 1px 1px 0 white;
+        }
+
+            #board > .dice > .pip.a, #board > .dice > .pip.b, #board > .dice > .pip.c {
+                left: 1vw;
+            }
+
+            #board > .dice > .pip.g {
+                left: 2.2vw;
+            }
+
+            #board > .dice > .pip.b, #board > .dice > .pip.e, #board > .dice > .pip.g {
+                top: 2.2vw;
+            }
+
+            #board > .dice > .pip.d, #board > .dice > .pip.e, #board > .dice > .pip.f {
+                right: 1vw;
+            }
+
+            #board > .dice > .pip.a, #board > .dice > .pip.d {
+                top: 1vw;
+            }
+
+            #board > .dice > .pip.c, #board > .dice > .pip.f {
+                bottom: 1vw;
+            }
+
+        #board > .dice.val-1 .pip.a, #board > .dice.val-1 .pip.b, #board > .dice.val-1 .pip.c, #board > .dice.val-1 .pip.d, #board > .dice.val-1 .pip.e, #board > .dice.val-1 .pip.f, #board > .dice.val-2 .pip.b, #board > .dice.val-2 .pip.c,
+        #board > .dice.val-2 .pip.d, #board > .dice.val-2 .pip.e, #board > .dice.val-2 .pip.g, #board > .dice.val-3 .pip.a, #board > .dice.val-3 .pip.b, #board > .dice.val-3 .pip.e, #board > .dice.val-3 .pip.f, #board > .dice.val-4 .pip.b,
+        #board > .dice.val-4 .pip.e, #board > .dice.val-4 .pip.g, #board > .dice.val-5 .pip.b, #board > .dice.val-5 .pip.e, #board > .dice.val-6 .pip.g {
+            display: none;
+        }
+
+        #board > .dice > .cross {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            height: 1em;
+            font-size: 800%;
+            font-weight: bold;
+            color: hsl(0, 80%, 50%);
+            line-height: 1;
+            cursor: default;
+            display: none;
+        }
+
+            #board > .dice > .cross:after {
+                position: relative;
+                left: -50%;
+                top: -50%;
+                opacity: .8;
+                content: '✗';
+            }
+
+        #board > .dice.crossed > .cross {
+            display: block;
+        }
+
+    #board.dice-2 > #dice-0, #board.dice-2 > #dice-1, #board.dice-4 > #dice-0, #board.dice-4 > #dice-1, #board.dice-4 > #dice-2, #board.dice-4 > #dice-3 {
+        display: block;
+    }
+
+    #board.dice-2 > #dice-1, #board.dice-4 > #dice-2 {
+        left: 70vw;
+    }
+
+    #board.dice-4 > #dice-0 {
+        left: 56vw;
+    }
+
+    #board.dice-4 > #dice-3 {
+        left: 77vw;
+    }
+
+    #board > #cube {
+        position: absolute;
+        background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
+        border: .3vw solid white;
+        border-radius: .5vw;
+        border-bottom-color: #ccc;
+        border-right-color: #ccc;
+        width: 4.2vw;
+        height: 4.2vw;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        left: 43.6vw;
+        top: 27.6vw;
+    }
+
+        #board > #cube > .inner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            font-family: "Calibri";
+            font-size: 4vw;
+            height: 1em;
+            line-height: 1em;
+        }
+
+            #board > #cube > .inner > #cube-text {
+                position: relative;
+                left: -50%;
+                top: -50%;
+                color: #222;
+                text-shadow: 1px 1px white;
+            }
+
+    #board.no-cube > #cube {
+        display: none;
+    }
+
+    #board.cube-white > #cube {
+        top: 53vw;
+    }
+
+    #board.cube-black > #cube {
+        top: 2.2vw;
+    }
+
+    #board > .arrow {
+        position: absolute;
+        pointer-events: none;
+        height: 2.5vw;
+        background: #dd5;
+    }
+
+        #board > .arrow:before {
+            position: absolute;
+            right: -6.25vw;
+            top: -1.25vw;
+            width: 0;
+            height: 0;
+            border: 2.5vw solid transparent;
+            border-left: 4.0625vw solid #dd5;
+            content: ' ';
+        }
+
+    #board > .waiting, #board > .joinable {
+        display: none;
+        position: absolute;
+        margin: 0 15vw;
+        top: 20vw;
+        left: 0;
+        right: 0;
+        border: .7vw solid hsl(31.85, 50%, 20%);
+        background: hsl(31.85, 50%, 70%);
+        padding: 1em 2em;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, 0.3);
+    }
+
+        #board > .waiting > p, #board > .joinable > p, #board > .joinable > form {
+            text-align: center;
+            font-size: 1.8vw;
+            margin: .5em 0;
+        }
+
+            #board > .waiting > p.link, #board > .joinable > form {
+                background: hsl(31.85, 50%, 90%);
+                padding: .5em 0;
+                font-weight: bold;
+            }
+
+            #board > .waiting > p.link {
+                font-family: monospace;
+            }
+
+            #board > .joinable > form > button {
+                background-color: hsl(32, 52%, 34.3%);
+                background-image: linear-gradient(hsl(32, 52%, 44%), hsl(32, 52.3%, 22%));
+                border: .15vw solid;
+                border-color: hsl(32, 52%, 30%) hsl(32, 52%, 20%) hsl(32, 52%, 20%) hsl(32, 52%, 30%);
+                border-radius: .6vw;
+                box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 48%) inset;
+                color: hsl(32, 90%, 92.5%);
+                font: inherit;
+                padding: .2em 1em;
+                text-align: center;
+                text-shadow: -1px -1px 0 hsl(32, 52%, 24.3%);
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+
+    #board.waiting > .waiting, #board.joinable > .joinable {
+        display: block;
+    }
+
+@keyframes hypo-blink {
+    from {
+        opacity: .9;
+    }
+
+    to {
+        opacity: .7;
+    }
+}
+
+@keyframes selectable-blink {
+    from {
+        opacity: .3;
+    }
+
+    to {
+        opacity: .1;
+    }
 }

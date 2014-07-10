@@ -71,53 +71,36 @@ namespace LiBackgammon {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to $(function ()
+        ///{
+        ///    // Game states
+        ///    var State = {
+        ///        WhiteWaiting: 0,
+        ///        BlackWaiting: 1,
+        ///        WhiteToRoll: 2,
+        ///        BlackToRoll: 3,
+        ///        WhiteToConfirmDouble: 4,
+        ///        BlackToConfirmDouble: 5,
+        ///        WhiteToMove: 6,
+        ///        BlackToMove: 7,
+        ///        WhiteWon: 8,
+        ///        BlackWon: 9
+        ///    };
+        ///
+        ///    // Special tongues
+        ///    var Tongue = {
+        ///        WhitePrison: 24,
+        ///        BlackPrison: 25,
+        ///        WhiteHome: 26,
+        ///        BlackHome: 27,
+        ///        NumTongues: 28
+        ///    };
+        ///
+        ///     [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string MainJs {
             get {
                 return ResourceManager.GetString("MainJs", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] PlayCss {
-            get {
-                object obj = ResourceManager.GetObject("PlayCss", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to $(function ()
-        ///{
-        ///    // Game states
-        ///    var GameStart = 0;
-        ///    var WhiteToRoll = 1;
-        ///    var BlackToRoll = 2;
-        ///    var WhiteToConfirmDouble = 3;
-        ///    var BlackToConfirmDouble = 4;
-        ///    var WhiteToMove = 5;
-        ///    var BlackToMove = 6;
-        ///    var GameOver = 7;
-        ///
-        ///    // Special tongues
-        ///    var WhitePrison = 24;
-        ///    var BlackPrison = 25;
-        ///    var WhiteHome = 26;
-        ///    var BlackHome = 27;
-        ///    var NumTongues = 28;
-        ///
-        ///    var board = $(&apos;#board&apos;);
-        ///
-        ///    function makeArrow(source, dest)
-        ///    {
-        ///        function m [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string PlayJs {
-            get {
-                return ResourceManager.GetString("PlayJs", resourceCulture);
             }
         }
     }

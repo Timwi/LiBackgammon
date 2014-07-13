@@ -54,6 +54,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Hooks.cs" />
+    <Compile Include="Join.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="MainPage.cs" />
     <Compile Include="Migrations\201406172009140_InitialCreate.cs" />

@@ -1,14 +1,18 @@
-﻿using System;
-using RT.Servers;
-using RT.Util;
+﻿using RT.Util.Json;
+using RT.Util.Serialization;
 
 namespace LiBackgammon
 {
     public static class Helpers
     {
-        public static string Path(this HttpRequest req, string path, Func<IHttpUrl, IHttpUrl> further = null)
+        public static Move[] ToMoves(this string json)
         {
-            return req.Url.WithPathParent().WithPathOnly(path).Apply(url => (further == null ? url : further(url)).ToHref());
+            return ClassifyJson.Deserialize<Move[]>(JsonValue.Parse(json));
+        }
+
+        public static Position ToPosition(this string json)
+        {
+            return ClassifyJson.Deserialize<Position>(JsonValue.Parse(json));
         }
     }
 }

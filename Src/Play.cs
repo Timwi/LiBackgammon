@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Transactions;
 using RT.Servers;
 using RT.TagSoup;
-using RT.Util;
 using RT.Util.ExtensionMethods;
-using RT.Util.Json;
 
 namespace LiBackgammon
 {
@@ -18,7 +11,7 @@ namespace LiBackgammon
         private HttpResponse play(HttpRequest req)
         {
             if (req.Url.Path.Length < 9)
-                return HttpResponse.Redirect(req.Path("/"));
+                return HttpResponse.Redirect(req.Url.WithParent(""));
 
             using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             using (var db = new Db())
@@ -27,15 +20,21 @@ namespace LiBackgammon
                 var publicId = stuff.Substring(0, 8);
                 var game = db.Games.FirstOrDefault(g => g.PublicID == publicId);
                 if (game == null)
-                    return HttpResponse.Redirect(req.Path("/"));
+                    return HttpResponse.Redirect(req.Url.WithParent(""));
 
                 var playerToken = stuff.Substring(8);
                 if (playerToken != "" && playerToken != game.WhiteToken && playerToken != game.BlackToken)
-                    return HttpResponse.Redirect(req.Path("/play/" + game.PublicID));
+                    return HttpResponse.Redirect(req.Url.WithParent("play/" + game.PublicID));
                 var player = playerToken == game.WhiteToken ? Player.White : playerToken == game.BlackToken ? Player.Black : Player.Spectator;
 
                 return page(req,
-                    new DIV { id = "board" }.Data("initial", game.InitialPosition).Data("moves", game.Moves).Data("state", (int) game.State).Data("player", player).Data("token", playerToken)._(
+                    new DIV { id = "board" }
+                        .Data("moves", game.Moves)
+                        .Data("initial", game.InitialPosition)
+                        .Data("state", (int) game.State)
+                        .Data("player", player)
+                        .Data("token", playerToken)
+                    ._(
                         new[] { "left", "right" }.Select(pos => new DIV { class_ = "background main-area " + pos }),
                         new[] { "white", "black" }.Select(col => new DIV { class_ = "background home " + col }),
                         Enumerable.Range(0, 24).Select(i => new DIV { class_ = "tongue tongue-" + i + (i < 12 ? " bottom" : " top") + (i % 2 == 0 ? " light" : " dark") }.Data("tongue", i)),
@@ -55,14 +54,11 @@ namespace LiBackgammon
                         new DIV { class_ = "waiting" }._(
                             new P("Send the following link to your friend to allow them to join the game:"),
                             new P { class_ = "link" }._(req.Url.WithPathOnly("/" + publicId).ToFull()),
-                            new P("The game will begin when the other player joins the game.")
-                        ),
+                            new P("The game will begin when the other player joins the game.")),
                         new DIV { class_ = "joinable" }._(
                             new P("The player is waiting for an opponent to play with."),
-                            new FORM { action = req.Url.WithPathOnly("/join/" + publicId).ToFull(), method = method.post }._(
-                                new BUTTON { type = btype.submit }._("Join game")
-                            )
-                        )));
+                            new FORM { action = req.Url.WithParent("join/" + publicId).ToHref(), method = method.post }._(
+                                new BUTTON { type = btype.submit }._("Join game")))));
             }
         }
     }

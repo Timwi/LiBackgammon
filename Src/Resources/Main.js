@@ -81,7 +81,7 @@ $(function ()
         var whiteIndex = 0, blackIndex = 0;
         for (var tng = 0; tng < Tongue.NumTongues; tng++)
             for (var i = (tng < 12 ? position.NumPiecesPerTongue[tng] - 1 : 0) ; (tng < 12) ? (i >= 0) : (i < position.NumPiecesPerTongue[tng]) ; (tng < 12 ? i-- : i++))
-                $('#' + (position.IsWhitePerTongue[tng] ? ('white-' + whiteIndex++) : ('black-' + blackIndex++))).css({ left: leftFromTongue(tng) + "vw", top: topFromTongue(tng, i) + "vw" }).data('tongue', tng).show();
+                $('#' + (position.IsWhitePerTongue[tng] ? ('white-' + whiteIndex++) : ('black-' + blackIndex++))).insertBefore('#overlay-bottom').css({ left: leftFromTongue(tng) + "vw", top: topFromTongue(tng, i) + "vw" }).data('tongue', tng).show();
 
         if (position.GameValue === null)
             board.addClass('no-cube');
@@ -141,7 +141,7 @@ $(function ()
         };
     }
 
-    function processMove(/* Position */ pos, /* bool */ whitePlayer, /* int or int[] */ sourceTongues, /* int or int[] */ targetTongues, /* enum('animate', 'indicate')? */ mode)
+    function /* Position */ processMove(/* Position */ pos, /* bool */ whitePlayer, /* int or int[] */ sourceTongues, /* int or int[] */ targetTongues, /* enum('animate', 'indicate')? */ mode)
     {
         if (typeof sourceTongues === 'number')
             return processMove(pos, whitePlayer, [sourceTongues], [targetTongues], mode);
@@ -340,6 +340,7 @@ $(function ()
     var playerIsWhite = player === 'White';
     var playerIsSpectator = !playerIsWhite && player !== 'Black';
     board.addClass(playerIsSpectator ? 'spectating' : playerIsWhite ? 'player-white' : 'player-black');
+
     function isPlayerToMove()
     {
         if (playerIsSpectator)
@@ -347,8 +348,6 @@ $(function ()
         if (state === State.WhiteToMove && playerIsWhite)
             return true;
         if (state === State.BlackToMove && !playerIsWhite)
-            return true;
-        if (state === State.GameStart && ((moves[0].Dice1 < moves[0].Dice2) ^ playerIsWhite))
             return true;
         return false;
     }
@@ -445,7 +444,7 @@ $(function ()
         var clones = targetTongues
             .clone()
             .addClass('selectable')
-            .insertBefore('.overlay');
+            .insertBefore('#overlay-bottom');
         for (var l = 0; l < clones.length; l++)
             $(clones[l]).data('move', targetMoves[$(clones[l]).data('tongue')]);
     }

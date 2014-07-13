@@ -26,6 +26,7 @@ namespace LiBackgammon
                 new UrlMapping(path: "/", specificPath: true, handler: mainPage),
                 new UrlMapping(path: "/new", handler: newGame),
                 new UrlMapping(path: "/play", handler: play),
+                new UrlMapping(path: "/join", handler: join),
                 new UrlMapping(path: "/css", specificPath: true, handler: req => Program.IsDebug ? HttpResponse.File(Path.Combine(Program.SourceDir, @"Resources\Main.css"), "text/css") : HttpResponse.Css(Resources.MainCss)),
                 new UrlMapping(path: "/js", specificPath: true, handler: req => Program.IsDebug ? HttpResponse.File(Path.Combine(Program.SourceDir, @"Resources\Main.js"), "text/javascript") : HttpResponse.JavaScript(js)),
                 new UrlMapping(path: "/socket", handler: socket)

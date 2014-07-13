@@ -20,7 +20,7 @@ namespace LiBackgammon
             else if (req.Url.Path == "/white")
                 black = false;
             else
-                return HttpResponse.Redirect(req.Path("/"));
+                return HttpResponse.Redirect(req.Url.WithParent(""));
 
             using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             using (var db = new Db())
@@ -56,7 +56,7 @@ namespace LiBackgammon
                 db.SaveChanges();
                 tr.Complete();
 
-                return HttpResponse.Redirect(req.Path("/play/" + publicId + token));
+                return HttpResponse.Redirect(req.Url.WithParent("play/" + publicId + token));
             }
         }
     }

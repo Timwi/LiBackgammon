@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RT.Util;
+﻿using RT.Util;
+using RT.Util.Serialization;
 
 namespace LiBackgammon
 {
@@ -13,6 +9,8 @@ namespace LiBackgammon
         public bool[] IsWhitePerTongue;
         public int? GameValue;  // null = game is played without the doubling cube.
         public bool? WhiteOwnsCube; // null = nobody has doubled yet
+
+        public new string ToJson() { return ClassifyJson.Serialize(this).ToString(); }
 
         public static readonly Position StandardInitialPosition = new Position
         {

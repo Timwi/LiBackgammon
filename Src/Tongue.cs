@@ -15,5 +15,8 @@ namespace LiBackgammon
         public const int BlackHome = 27;
 
         public const int NumTongues = 28;
+
+        public static int Prison(bool white) { return white ? WhitePrison : BlackPrison; }
+        public static int Home(bool white) { return white ? WhiteHome : BlackHome; }
     }
 }

@@ -15,7 +15,7 @@ namespace LiBackgammon
             return page(req,
                 new UL(
                     new LI(
-                        "Start a new game as: ", new A { href = req.Path("/new/white") }._("white"), " | ", new A { href = req.Path("/new/black") }._("black"))));
+                        "Start a new game as: ", new A { href = req.Url.WithParent("new/white").ToHref() }._("white"), " | ", new A { href = req.Url.WithParent("new/black").ToHref() }._("black"))));
         }
     }
 }

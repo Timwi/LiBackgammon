@@ -24,11 +24,11 @@ namespace LiBackgammon
                 var publicId = stuff.Substring(0, 8);
                 var game = db.Games.FirstOrDefault(g => g.PublicID == publicId);
                 if (game == null)
-                    return HttpResponse.Redirect(req.Path("/"));
+                    return HttpResponse.Redirect(req.Url.WithParent(""));
 
                 var playerToken = stuff.Substring(8);
                 if (playerToken != "" && playerToken != game.WhiteToken && playerToken != game.BlackToken)
-                    return HttpResponse.Redirect(req.Path("/play/" + game.PublicID));
+                    return HttpResponse.Redirect(req.Url.WithParent("play/" + game.PublicID));
                 var player = playerToken == game.WhiteToken ? Player.White : playerToken == game.BlackToken ? Player.Black : Player.Spectator;
 
                 return HttpResponse.WebSocket(() => new BgWebSocket(this, publicId, player));

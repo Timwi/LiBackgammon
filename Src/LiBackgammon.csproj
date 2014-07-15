@@ -67,6 +67,8 @@
     <Compile Include="Play.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Position.cs" />
+    <Compile Include="PossibleMove.cs" />
+    <Compile Include="PossiblePosition.cs" />
     <Compile Include="Privates.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PropellerModule.cs" />

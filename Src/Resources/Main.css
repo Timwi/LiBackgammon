@@ -8,6 +8,42 @@ body {
     padding: 0;
 }
 
+button {
+    background-color: hsl(32, 52%, 34.3%);
+    background-image: linear-gradient(hsl(32, 52%, 44%), hsl(32, 52%, 22%));
+    border: .15vw solid;
+    border-color: hsl(32, 52%, 30%) hsl(32, 52%, 20%) hsl(32, 52%, 20%) hsl(32, 52%, 30%);
+    border-radius: .6vw;
+    box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 48%) inset;
+    color: hsl(32, 90%, 92.5%);
+    font: inherit;
+    padding: .2em 1em;
+    text-align: center;
+    text-shadow: -1px -1px 0 hsl(32, 52%, 24.3%);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+    button:hover, button:active, button:focus {
+        background-color: hsl(32, 52%, 44.3%);
+        background-image: linear-gradient(hsl(32, 52%, 54%), hsl(32, 52%, 32%));
+        border: .15vw solid;
+        border-color: hsl(32, 52%, 40%) hsl(32, 52%, 30%) hsl(32, 52%, 30%) hsl(32, 52%, 40%);
+        border-radius: .6vw;
+        box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 58%) inset;
+        color: white;
+        font: inherit;
+        padding: .2em 1em;
+        text-align: center;
+        text-shadow: -1px -1px 0 hsl(32, 52%, 34.3%);
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    button:active {
+        background-image: linear-gradient(hsl(32, 52%, 32%), hsl(32, 52%, 54%));
+    }
+
 #board {
     position: relative;
     background: hsl(31.85, 50%, 30%);
@@ -247,57 +283,66 @@ body {
         top: 27.5vw;
         width: 5vw;
         height: 5vw;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
         background-image: linear-gradient(135deg, #fff, #ddd);
         border-radius: .5vw;
-        overflow: hidden;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
         display: none;
     }
 
-        #board > .dice > .face {
+        #board > .dice > .razor {
             position: absolute;
-            background-image: linear-gradient(135deg, #ddd, #fff);
-            left: .5vw;
-            top: .5vw;
-            width: 4vw;
-            height: 4vw;
-            border-radius: 30%;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            border-radius: inherit;
         }
 
-        #board > .dice > .side {
-            position: absolute;
-            border-radius: 50%;
-            width: 5vw;
-            height: 1vw;
-        }
-
-            #board > .dice > .side.n {
-                top: -.5vw;
-                left: .25vw;
-                background-image: linear-gradient(0deg, #fff, #ccc);
+            #board > .dice > .razor > .face {
+                position: absolute;
+                background-image: linear-gradient(135deg, #ddd, #fff);
+                left: .5vw;
+                top: .5vw;
+                width: 4vw;
+                height: 4vw;
+                border-radius: 30%;
             }
 
-            #board > .dice > .side.w {
-                top: .25vw;
-                left: -.5vw;
-                width: 1vw;
-                height: 5vw;
-                background-image: linear-gradient(-90deg, #fff, #ccc);
+            #board > .dice > .razor > .side {
+                position: absolute;
+                border-radius: 50%;
+                width: 5vw;
+                height: 1vw;
             }
 
-            #board > .dice > .side.s {
-                bottom: -.5vw;
-                left: .25vw;
-                background-image: linear-gradient(0deg, #888, #eee);
-            }
+                #board > .dice > .razor > .side.n {
+                    top: -.5vw;
+                    left: .25vw;
+                    background-image: linear-gradient(0deg, #fff, #ccc);
+                }
 
-            #board > .dice > .side.e {
-                top: .25vw;
-                right: -.5vw;
-                width: 1vw;
-                height: 5vw;
-                background-image: linear-gradient(-90deg, #888, #eee);
-            }
+                #board > .dice > .razor > .side.w {
+                    top: .25vw;
+                    left: -.5vw;
+                    width: 1vw;
+                    height: 5vw;
+                    background-image: linear-gradient(-90deg, #fff, #ccc);
+                }
+
+                #board > .dice > .razor > .side.s {
+                    bottom: -.5vw;
+                    left: .25vw;
+                    background-image: linear-gradient(0deg, #888, #eee);
+                }
+
+                #board > .dice > .razor > .side.e {
+                    top: .25vw;
+                    right: -.5vw;
+                    width: 1vw;
+                    height: 5vw;
+                    background-image: linear-gradient(-90deg, #888, #eee);
+                }
 
         #board > .dice > .pip {
             position: absolute;
@@ -343,12 +388,16 @@ body {
             left: 50%;
             top: 50%;
             height: 1em;
-            font-size: 800%;
+            font-size: 8vw;
             font-weight: bold;
             color: hsl(0, 80%, 50%);
             line-height: 1;
             cursor: default;
-            display: none;
+            opacity: 0;
+            -moz-transition: opacity ease-in-out 1s;
+            -o-transition: opacity ease-in-out 1s;
+            -webkit-transition: opacity ease-in-out 1s;
+            transition: opacity ease-in-out 1s;
         }
 
             #board > .dice > .cross:after {
@@ -360,7 +409,7 @@ body {
             }
 
         #board > .dice.crossed > .cross {
-            display: block;
+            opacity: 1;
         }
 
     #board.dice-2 > #dice-0, #board.dice-2 > #dice-1, #board.dice-4 > #dice-0, #board.dice-4 > #dice-1, #board.dice-4 > #dice-2, #board.dice-4 > #dice-3 {
@@ -470,24 +519,43 @@ body {
                 font-family: monospace;
             }
 
-            #board > .joinable > form > button {
-                background-color: hsl(32, 52%, 34.3%);
-                background-image: linear-gradient(hsl(32, 52%, 44%), hsl(32, 52.3%, 22%));
-                border: .15vw solid;
-                border-color: hsl(32, 52%, 30%) hsl(32, 52%, 20%) hsl(32, 52%, 20%) hsl(32, 52%, 30%);
-                border-radius: .6vw;
-                box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 48%) inset;
-                color: hsl(32, 90%, 92.5%);
-                font: inherit;
-                padding: .2em 1em;
-                text-align: center;
-                text-shadow: -1px -1px 0 hsl(32, 52%, 24.3%);
-                text-transform: uppercase;
-                white-space: nowrap;
-            }
-
     #board.waiting > .waiting, #board.joinable > .joinable {
         display: block;
+    }
+
+    #board > button {
+        height: 4vw;
+        position: absolute;
+        top: 28vw;
+        width: 11vw;
+        pointer-events: none;
+        opacity: 0;
+        -moz-transition: opacity ease-in-out 1s;
+        -o-transition: opacity ease-in-out 1s;
+        -webkit-transition: opacity ease-in-out 1s;
+        transition: opacity ease-in-out 1s;
+    }
+
+        #board > button#undo {
+            font-size: 2vw;
+            left: 11vw;
+        }
+
+        #board > button#commit {
+            font-size: 1.8vw;
+            left: 24vw;
+        }
+
+    #board.undoable > button#undo {
+        display: block;
+        pointer-events: all;
+        opacity: 1;
+    }
+
+    #board.committable > button#commit {
+        display: block;
+        pointer-events: all;
+        opacity: 1;
     }
 
 @keyframes hypo-blink {

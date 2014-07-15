@@ -3,10 +3,8 @@ using RT.Util.Serialization;
 
 namespace LiBackgammon
 {
-    public sealed class Position
+    public sealed class Position : PossiblePosition
     {
-        public int[] NumPiecesPerTongue;
-        public bool[] IsWhitePerTongue;
         public int? GameValue;  // null = game is played without the doubling cube.
         public bool? WhiteOwnsCube; // null = nobody has doubled yet
 
@@ -19,5 +17,17 @@ namespace LiBackgammon
             GameValue = 1,
             WhiteOwnsCube = null
         };
+
+        public Position ProcessMove(bool whitePlayer, Move move)
+        {
+            var poss = Clone().ProcessMove(whitePlayer, move.SourceTongues, move.TargetTongues);
+            return new Position
+            {
+                GameValue = move.Doubled ? GameValue.Value * 2 : GameValue,
+                WhiteOwnsCube = move.Doubled ? whitePlayer : WhiteOwnsCube,
+                NumPiecesPerTongue = poss.NumPiecesPerTongue,
+                IsWhitePerTongue = poss.IsWhitePerTongue
+            };
+        }
     }
 }

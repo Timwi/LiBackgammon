@@ -40,6 +40,8 @@ namespace LiBackgammon
                         Enumerable.Range(0, 24).Select(i => new DIV { class_ = "tongue tongue-" + i + (i < 12 ? " bottom" : " top") + (i % 2 == 0 ? " light" : " dark") }.Data("tongue", i)),
                         new[] { "left", "right" }.Select(pos => new DIV { class_ = "shadow main-area " + pos }),
                         new[] { "white", "black" }.Select(col => new DIV { class_ = "shadow home " + col }),
+                        new BUTTON { id = "undo" }._("Undo"),
+                        new BUTTON { id = "commit" }._("Commit"),
                         Enumerable.Range(0, 15).Select(pieceNum => new[] { "white", "black" }.Select(color => new DIV { class_ = "piece " + color, id = color + "-" + pieceNum })),
                         new DIV { class_ = "overlay", id = "overlay-bottom" },
                         new DIV { class_ = "overlay", id = "overlay-right" },
@@ -47,8 +49,9 @@ namespace LiBackgammon
                         new DIV { class_ = "dice-back", id = "dice-back-white" },
                         new DIV { class_ = "dice-back", id = "dice-back-black" },
                         Enumerable.Range(0, 4).Select(diceNum => new DIV { class_ = "dice", id = "dice-" + diceNum }._(
-                            new DIV { class_ = "face" },
-                            "nesw".Select(ch => new DIV { class_ = "side " + ch }),
+                            new DIV { class_ = "razor" }._(
+                                new DIV { class_ = "face" },
+                                "nesw".Select(ch => new DIV { class_ = "side " + ch })),
                             "abcdefg".Select(ch => new DIV { class_ = "pip " + ch }),
                             new DIV { class_ = "cross" })),
                         new DIV { class_ = "waiting" }._(

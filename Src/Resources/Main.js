@@ -363,8 +363,7 @@ $(function ()
         lastMove.Dice1 === lastMove.Dice2
             ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
             : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
-    var moveSoFar = { SourceTongues: [], TargetTongues: [] };
-    var diceUsed = [];
+    var moveSoFar = { SourceTongues: [], TargetTongues: [], DiceSequence: [] };
     var selectedPiece = null;
 
     resetUi();
@@ -372,17 +371,17 @@ $(function ()
     function getClickableSourceTongues()
     {
         var result = [];
-        if (allValidMoves.length === 0 || allValidMoves[0].SourceTongues.length === diceUsed.length)
+        if (allValidMoves.length === 0 || allValidMoves[0].SourceTongues.length === moveSoFar.DiceSequence.length)
             return result;
         for (var i = 0; i < allValidMoves.length; i++)
         {
             var applicable = true;
-            for (var j = 0; j < diceUsed.length; j++)
-                if (allValidMoves[i].DiceSequence[j] !== diceUsed[j])
+            for (var j = 0; j < moveSoFar.DiceSequence.length; j++)
+                if (allValidMoves[i].DiceSequence[j] !== moveSoFar.DiceSequence[j])
                     applicable = false;
             if (!applicable)
                 continue;
-            for (var k = diceUsed.length; k < allValidMoves[i].SourceTongues.length; k++)
+            for (var k = moveSoFar.DiceSequence.length; k < allValidMoves[i].SourceTongues.length; k++)
             {
                 var tongue = allValidMoves[i].SourceTongues[k];
                 if (position.NumPiecesPerTongue[tongue] > 0 && position.IsWhitePerTongue[tongue] === playerIsWhite && result.indexOf(tongue) === -1)
@@ -418,22 +417,22 @@ $(function ()
         for (var i = 0; i < allValidMoves.length; i++)
         {
             var applicable = true;
-            for (var j = 0; j < diceUsed.length; j++)
-                if (allValidMoves[i].DiceSequence[j] !== diceUsed[j])
+            for (var j = 0; j < moveSoFar.DiceSequence.length; j++)
+                if (allValidMoves[i].DiceSequence[j] !== moveSoFar.DiceSequence[j])
                     applicable = false;
             if (applicable)
             {
                 var acc = [tongue];
-                for (var k = diceUsed.length; k < allValidMoves[i].SourceTongues.length; k++)
+                for (var k = moveSoFar.DiceSequence.length; k < allValidMoves[i].SourceTongues.length; k++)
                     if (acc.indexOf(allValidMoves[i].SourceTongues[k]) !== -1)
                     {
                         var targetTongue = allValidMoves[i].TargetTongues[k];
                         targetTongues = targetTongues.add('.tongue-' + targetTongue);
                         acc.push(targetTongue);
                         var m = {
-                            SourceTongues: allValidMoves[i].SourceTongues.slice(diceUsed.length, k + 1),
-                            TargetTongues: allValidMoves[i].TargetTongues.slice(diceUsed.length, k + 1),
-                            DiceSequence: allValidMoves[i].DiceSequence.slice(diceUsed.length, k + 1),
+                            SourceTongues: allValidMoves[i].SourceTongues.slice(moveSoFar.DiceSequence.length, k + 1),
+                            TargetTongues: allValidMoves[i].TargetTongues.slice(moveSoFar.DiceSequence.length, k + 1),
+                            DiceSequence: allValidMoves[i].DiceSequence.slice(moveSoFar.DiceSequence.length, k + 1),
                             Priority: allValidMoves[i].EndPosition.NumPiecesPerTongue[getPrison(!playerIsWhite)]
                         };
                         if (!(targetTongue in targetMoves) || m.Priority > targetMoves[targetTongue].Priority || (m.Priority === targetMoves[targetTongue].Priority && m.SourceTongues.length < targetMoves[targetTongue].SourceTongues.length))
@@ -478,31 +477,58 @@ $(function ()
             return false;
         });
 
-        $('#board').on('mouseenter', '.tongue.selectable', function ()
+        board.on('mouseenter', '.tongue.selectable', function ()
         {
             var move = $(this).data('move');
             processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, 'indicate');
         });
 
-        $('#board').on('mouseleave', '.tongue.selectable', function ()
+        board.on('mouseleave', '.tongue.selectable', function ()
         {
             $('.piece.hypo-target, .arrow').hide();
         });
 
-        $('#board').on('click', '.tongue.selectable', function ()
+        board.on('click', '.tongue.selectable', function ()
         {
             $('.piece.hypo-target, .arrow').hide();
             var move = $(this).data('move');
             deselectPiece(true);
             position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, 'animate');
             for (var i = 0; i < move.DiceSequence.length; i++)
-                diceUsed.push(move.DiceSequence[i]);
+            {
+                moveSoFar.DiceSequence.push(move.DiceSequence[i]);
+                moveSoFar.SourceTongues.push(move.SourceTongues[i]);
+                moveSoFar.TargetTongues.push(move.TargetTongues[i]);
+                $('.dice:not(.crossed).val-' + move.DiceSequence[i]).first().addClass('crossed');
+            }
+            board.addClass('undoable');
+            if (moveSoFar.DiceSequence.length === allValidMoves[0].DiceSequence.length)
+                board.addClass('committable');
         });
 
         $(document).keypress(function (e)
         {
             if (e.keyCode === 27 && selectedPiece !== null)
                 deselectPiece();
+        });
+
+        $('#undo').click(function ()
+        {
+            if (playerIsSpectator)
+                return false;
+            var lastIndex = moveSoFar.DiceSequence.length - 1;
+            if (lastIndex >= 0)
+            {
+                position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], 'animate');
+                $('.dice.crossed.val-' + moveSoFar.DiceSequence[lastIndex]).last().removeClass('crossed');
+                moveSoFar.DiceSequence.pop();
+                moveSoFar.SourceTongues.pop();
+                moveSoFar.TargetTongues.pop();
+            }
+            board.removeClass('committable');
+            if (moveSoFar.DiceSequence.length === 0)
+                board.removeClass('undoable');
+            return false;
         });
     }
 });

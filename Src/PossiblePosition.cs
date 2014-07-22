@@ -28,7 +28,7 @@ namespace LiBackgammon
             return ProcessMove(whitePlayer, new[] { sourceTongue }, new[] { targetTongue });
         }
 
-        public PossiblePosition ProcessMove(bool whitePlayer, int[] sourceTongues, int[] targetTongues)
+        public PossiblePosition ProcessMove(bool whitePlayer, int[] sourceTongues, int[] targetTongues, int[] dice = null)
         {
             var newPos = Clone();
 
@@ -43,24 +43,34 @@ namespace LiBackgammon
             {
                 var sourceTongue = sourceTongues[k];
                 var targetTongue = targetTongues[k];
+                if (dice != null)
+                {
+                    var validDiceIndex = -1;
+                    var furthestFromHome =
+                        NumPiecesPerTongue[Tongues.Prison(whitePlayer)] > 0
+                            ? 25
+                            : Enumerable.Range(0, 24).Select(t => IsWhitePerTongue[t] == whitePlayer && NumPiecesPerTongue[t] > 0 ? (whitePlayer ? 24 - t : t + 1) : -1).Max();
+                    for (int i = 0; i < dice.Length; i++)
+                        if (dice[i] > 0 && getTargetTongue(sourceTongue, furthestFromHome, dice[i], whitePlayer) == targetTongue)
+                            validDiceIndex = i;
+                    if (validDiceIndex == -1)
+                        return null;
+                    dice[validDiceIndex] = 0;
+                }
 
                 if (newPos.NumPiecesPerTongue[sourceTongue] == 0 || newPos.IsWhitePerTongue[sourceTongue] != whitePlayer)
                     // There are no pieces on the source tongue belonging to the correct player
                     return null;
 
-                var swap = false;
                 if (newPos.IsWhitePerTongue[targetTongue] == !whitePlayer)
                 {
+                    // The target tongue is blocked by the opponent
                     if (newPos.NumPiecesPerTongue[targetTongue] > 1)
-                        // The target tongue is blocked by the opponent
                         return null;
 
+                    // Move is permissible, but an opponent piece is taken
                     if (newPos.NumPiecesPerTongue[targetTongue] == 1)
-                    {
-                        // Move is permissible, but an opponent piece is taken
                         processSubmove(!whitePlayer, targetTongue, Tongues.Prison(!whitePlayer));
-                        swap = true;
-                    }
                 }
                 processSubmove(whitePlayer, sourceTongue, targetTongue);
             }
@@ -99,7 +109,10 @@ namespace LiBackgammon
             var furthestFromHome = 0;
 
             if (NumPiecesPerTongue[prison] > 0)
+            {
+                furthestFromHome = 25;
                 accessibleTongues.Add(prison);
+            }
             else
             {
                 for (var tng = 0; tng < Tongues.NumTongues; tng++)
@@ -137,7 +150,7 @@ namespace LiBackgammon
             if (sourceTongue == Tongues.Prison(whitePlayer))
                 return whitePlayer ? dice - 1 : 24 - dice;
             var fromHome = whitePlayer ? 24 - sourceTongue : sourceTongue + 1;
-            if ((fromHome == dice && furthestFromHome != null && furthestFromHome <= 6) || (fromHome <= dice && fromHome == furthestFromHome))
+            if ((fromHome == dice && furthestFromHome <= 6) || (fromHome <= dice && fromHome == furthestFromHome))
                 return Tongues.Home(whitePlayer);
             var target = whitePlayer ? sourceTongue + dice : sourceTongue - dice;
             return (target >= 0 && target < 24) ? target : (int?) null;

@@ -20,11 +20,11 @@ namespace LiBackgammon
 
         public Position ProcessMove(bool whitePlayer, Move move)
         {
-            var poss = Clone().ProcessMove(whitePlayer, move.SourceTongues, move.TargetTongues);
+            var poss = move.SourceTongues == null ? this : Clone().ProcessMove(whitePlayer, move.SourceTongues, move.TargetTongues);
             return new Position
             {
                 GameValue = move.Doubled ? GameValue.Value * 2 : GameValue,
-                WhiteOwnsCube = move.Doubled ? whitePlayer : WhiteOwnsCube,
+                WhiteOwnsCube = move.Doubled ? !whitePlayer : WhiteOwnsCube,
                 NumPiecesPerTongue = poss.NumPiecesPerTongue,
                 IsWhitePerTongue = poss.IsWhitePerTongue
             };

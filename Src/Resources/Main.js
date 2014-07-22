@@ -1,5 +1,9 @@
 $(function ()
 {
+    var board = $('#board');
+    if (!board.length)
+        return;
+
     // Game states
     var State = {
         WhiteWaiting: 0,
@@ -10,8 +14,12 @@ $(function ()
         BlackToConfirmDouble: 5,
         WhiteToMove: 6,
         BlackToMove: 7,
-        WhiteWon: 8,
-        BlackWon: 9
+        WhiteFinished: 8,
+        BlackFinished: 9,
+        WhiteDoubledBlackRejected: 10,
+        BlackDoubledWhiteRejected: 11,
+        WhiteResigned: 12,
+        BlackResigned: 13
     };
 
     // Special tongues
@@ -22,6 +30,15 @@ $(function ()
         BlackHome: 27,
         NumTongues: 28
     };
+
+    var moves = board.data('moves');
+    var lastMove = moves[moves.length - 1];
+    var state = board.data('state');
+    var player = board.data('player');
+    var playerIsWhite = player === 'White';
+    var playerIsSpectator = !playerIsWhite && player !== 'Black';
+    board.addClass(playerIsSpectator ? 'spectating' : playerIsWhite ? 'player-white' : 'player-black');
+    var allValidMoves;
 
     function makeArrow(source, dest)
     {
@@ -51,7 +68,7 @@ $(function ()
     function leftFromTongue(tongue)
     {
         if (tongue === Tongue.WhiteHome || tongue === Tongue.BlackHome)
-            return 92;
+            return 92.5;
         if (tongue === Tongue.WhitePrison || tongue === Tongue.BlackPrison)
             return 43.5;
         if (tongue < 12)
@@ -62,9 +79,9 @@ $(function ()
     function topFromTongue(tongue, pieceIndex)
     {
         if (tongue === Tongue.WhiteHome)
-            return 2 + pieceIndex;
+            return 2 + 1 + 1.425 * pieceIndex;
         if (tongue === Tongue.BlackHome)
-            return (60 - 2 - 5) - pieceIndex;
+            return (60 - 2 - 1 - 5) - 1.425 * pieceIndex;
         if (tongue === Tongue.WhitePrison)
             return 36 + 4 * pieceIndex;
         if (tongue === Tongue.BlackPrison)
@@ -74,9 +91,10 @@ $(function ()
         return 2 + 5 * pieceIndex;
     }
 
-    function resetUi()
+    function resetUi(/* bool */ recalculateValidMoves)
     {
-        board.removeClass('no-cube cube-white cube-black dice-2 dice-4 dice-start to-move');
+        board.removeClass('waiting joinable no-cube cube-white cube-black dice-2 dice-4 dice-start white-starts black-starts to-move roll-or-double waiting-to-roll-or-double confirm-double waiting-to-confirm-double');
+        lastMove = moves[moves.length - 1];
 
         var whiteIndex = 0, blackIndex = 0;
         for (var tng = 0; tng < Tongue.NumTongues; tng++)
@@ -98,32 +116,54 @@ $(function ()
 
             case State.WhiteToRoll:
             case State.BlackToRoll:
+                if (isPlayerToRollOrDouble())
+                    board.addClass('roll-or-double');
+                else
+                    board.addClass('waiting-to-roll-or-double');
+                break;
+
             case State.WhiteToConfirmDouble:
             case State.BlackToConfirmDouble:
+                if (isPlayerToConfirmDouble())
+                    board.addClass('confirm-double');
+                else
+                    board.addClass('waiting-to-confirm-double');
                 break;
 
             case State.WhiteToMove:
             case State.BlackToMove:
-                if (lastMove.Dice1 === lastMove.Dice2)
-                {
-                    board.addClass('dice-4');
-                    for (var j = 0; j < 4; j++)
-                        $('#dice-' + j).addClass('val-' + lastMove.Dice1);
-                }
-                else
-                {
-                    board.addClass('dice-2');
-                    $('#dice-0').addClass('val-' + lastMove.Dice1);
-                    $('#dice-1').addClass('val-' + lastMove.Dice2);
-                }
+                board.addClass(lastMove.Dice1 === lastMove.Dice2 ? 'dice-4' : 'dice-2');
+                $('.dice').removeClass('val-1 val-2 val-3 val-4 val-5 val-6');
+                $('#dice-0').addClass('val-' + lastMove.Dice1);
+                $('#dice-1,#dice-2,#dice-3').addClass('val-' + lastMove.Dice2);
                 if (moves.length === 1)
-                    board.addClass('dice-start');
+                    board.addClass('dice-start ' + (lastMove.Dice1 > lastMove.Dice2 ? 'white-starts' : 'black-starts'));
                 if (isPlayerToMove())
+                {
+                    if (recalculateValidMoves)
+                        allValidMoves = getAllMoves(position, playerIsWhite,
+                            lastMove.Dice1 === lastMove.Dice2
+                                ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
+                                : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
+                    deselectPiece();
                     board.addClass('to-move');
+                }
                 break;
 
-            case State.WhiteWon:
-            case State.BlackWon:
+            case State.WhiteDoubledBlackRejected:
+            case State.BlackDoubledWhiteRejected:
+            case State.WhiteFinished:
+            case State.BlackFinished:
+            case State.WhiteResigned:
+            case State.BlackResigned:
+                board.addClass(
+                    state === State.WhiteDoubledBlackRejected ? 'doubled white-wins' :
+                    state === State.BlackDoubledWhiteRejected ? 'doubled black-wins' :
+                    state === State.WhiteFinished ? 'white-wins' :
+                    state === State.BlackFinished ? 'black-wins' :
+                    state === State.WhiteResigned ? 'resigned black-wins' : 'resigned white-wins');
+                $('#win>.points>.number').text(position.GameValue);
+                $('#win>.points>.word').text(position.GameValue === 1 ? "point" : "points");
                 break;
         }
     }
@@ -141,10 +181,30 @@ $(function ()
         };
     }
 
-    function /* Position */ processMove(/* Position */ pos, /* bool */ whitePlayer, /* int or int[] */ sourceTongues, /* int or int[] */ targetTongues, /* enum('animate', 'indicate')? */ mode)
+    function /* Position */ processMove(/* Position */ pos, /* bool */ whitePlayer, /* int or int[] */ sourceTongues, /* int or int[] */ targetTongues,
+        /* 
+            {
+                mode: 'animate', 'indicate' or none
+                callback: function to call after animation is done (mode 'animate' only)
+                undoOpponentPieceTaken: bool
+            }
+        */ options)
     {
+        var mode = (options && options.mode) || null;
+        var callback = (options && options.callback) || null;
+        var undoOpponentPieceTaken = (options && options.undoOpponentPieceTaken) || false;
+
         if (typeof sourceTongues === 'number')
-            return processMove(pos, whitePlayer, [sourceTongues], [targetTongues], mode);
+        {
+            var s = [sourceTongues];
+            var t = [targetTongues];
+            if (undoOpponentPieceTaken)
+            {
+                s.push(getPrison(!whitePlayer));
+                t.push(sourceTongues);
+            }
+            return processMove(pos, whitePlayer, s, t, options);
+        }
 
         var newPos = copyPosition(pos);
         var animationQueue = [];
@@ -164,7 +224,7 @@ $(function ()
         {
             newPos.NumPiecesPerTongue[sourceTongue]--;
             newPos.NumPiecesPerTongue[targetTongue]++;
-            newPos.IsWhitePerTongue[targetTongue] = isWhite;
+            newPos.IsWhitePerTongue[targetTongue] = newPos.IsWhitePerTongue[sourceTongue];
 
             switch (mode)
             {
@@ -196,7 +256,7 @@ $(function ()
             var sourceTongue = sourceTongues[k];
             var targetTongue = targetTongues[k];
 
-            if (newPos.NumPiecesPerTongue[sourceTongue] === 0 || newPos.IsWhitePerTongue[sourceTongue] !== whitePlayer)
+            if ((newPos.NumPiecesPerTongue[sourceTongue] === 0 || newPos.IsWhitePerTongue[sourceTongue] !== whitePlayer) && !undoOpponentPieceTaken)
                 // There are no pieces on the source tongue belonging to the correct player
                 return null;
 
@@ -227,8 +287,10 @@ $(function ()
         {
             if (animationQueue.length === 0)
             {
-                resetUi();
+                resetUi(false);
                 deselectPiece();
+                if (callback !== null)
+                    callback();
                 return;
             }
             var item = animationQueue.shift();
@@ -259,14 +321,17 @@ $(function ()
         return str;
     }
 
-    function /* void */ addValidMoves(/* Dict */ movesByLength, /* Position */ position, /* bool */ whitePlayer, /* int[] */ diceSequence, /* int[] */ prevDiceSequence, /* int[] */ sourceTongues, /* int[] */ targetTongues)
+    function /* void */ addValidMoves(/* Dict */ movesByLength, /* Position */ position, /* bool */ whitePlayer, /* int[] */ diceSequence, /* int[] */ prevDiceSequence, /* int[] */ sourceTongues, /* int[] */ targetTongues, /* bool[] */ opponentPieceTaken)
     {
-        if (sourceTongues.length > 0)
+        if (sourceTongues.length > 0 && sourceTongues.length >= movesByLength.curMax)
         {
-            var move = { SourceTongues: sourceTongues, TargetTongues: targetTongues, DiceSequence: prevDiceSequence, EndPosition: position };
-            if (!(sourceTongues.length in movesByLength))
-                movesByLength[sourceTongues.length] = [];
-            movesByLength[sourceTongues.length].push(move);
+            var move = { SourceTongues: sourceTongues, TargetTongues: targetTongues, OpponentPieceTaken: opponentPieceTaken, DiceSequence: prevDiceSequence, EndPosition: position };
+            if (sourceTongues.length > movesByLength.curMax)
+            {
+                movesByLength.curMax = sourceTongues.length;
+                movesByLength.moves = [];
+            }
+            movesByLength.moves.push(move);
         }
 
         if (diceSequence.length === 0)
@@ -298,6 +363,7 @@ $(function ()
             var target = getTargetTongue(accessibleTongues[accIx], furthestFromHome, diceSequence[0], whitePlayer);
             if (target === null || (position.NumPiecesPerTongue[target] > 1 && position.IsWhitePerTongue[target] !== whitePlayer))
                 continue;
+            var pieceTaken = position.NumPiecesPerTongue[target] === 1 && position.IsWhitePerTongue[target] !== whitePlayer;
             var pMove = processMove(position, whitePlayer, accessibleTongues[accIx], target);
             if (pMove === null)
                 continue;
@@ -307,22 +373,18 @@ $(function ()
             s.push(accessibleTongues[accIx]);
             var t = targetTongues.slice(0);
             t.push(target);
-            addValidMoves(movesByLength, pMove, whitePlayer, diceSequence.slice(1), p, s, t);
+            var o = opponentPieceTaken.slice(0);
+            o.push(pieceTaken);
+            addValidMoves(movesByLength, pMove, whitePlayer, diceSequence.slice(1), p, s, t, o);
         }
     }
 
     function /* Dict */ getAllMoves(/* Position */ position, /* bool */ whitePlayer, /* int[][] */ diceSequences)
     {
-        var validMoves = [];
+        var validMoves = { curMax: 0, moves: [] };
         for (var seqIx = 0; seqIx < diceSequences.length; seqIx++)
-            addValidMoves(validMoves, position, whitePlayer, diceSequences[seqIx], [], [], []);
-
-        // Only the moves with the greatest length are valid
-        var greatestLength = null;
-        for (var i = 0; i < validMoves.length; i++)
-            if (i in validMoves)
-                greatestLength = greatestLength === null ? i : Math.max(i, greatestLength);
-        return validMoves[greatestLength];
+            addValidMoves(validMoves, position, whitePlayer, diceSequences[seqIx], [], [], [], []);
+        return validMoves.moves;
     }
 
     function topPieceOfTongue(tongue)
@@ -332,41 +394,152 @@ $(function ()
         return $(tonguePieces[tongue < 12 ? 0 : tonguePieces.length - 1]);
     }
 
-    var board = $('#board');
-    var moves = board.data('moves');
-    var lastMove = moves[moves.length - 1];
-    var state = board.data('state');
-    var player = board.data('player');
-    var playerIsWhite = player === 'White';
-    var playerIsSpectator = !playerIsWhite && player !== 'Black';
-    board.addClass(playerIsSpectator ? 'spectating' : playerIsWhite ? 'player-white' : 'player-black');
+    function isWhiteToMove()
+    {
+        return state === State.WhiteToMove || state === State.WhiteToRoll;
+    }
 
     function isPlayerToMove()
     {
-        if (playerIsSpectator)
-            return false;
-        if (state === State.WhiteToMove && playerIsWhite)
-            return true;
-        if (state === State.BlackToMove && !playerIsWhite)
-            return true;
-        return false;
+        return !playerIsSpectator && (
+            (state === State.WhiteToMove && playerIsWhite) ||
+            (state === State.BlackToMove && !playerIsWhite));
+    }
+
+    function isPlayerToRollOrDouble()
+    {
+        return !playerIsSpectator && (
+            (state === State.WhiteToRoll && playerIsWhite) ||
+            (state === State.BlackToRoll && !playerIsWhite));
+    }
+
+    function isPlayerToConfirmDouble()
+    {
+        return !playerIsSpectator && (
+            (state === State.WhiteToConfirmDouble && playerIsWhite) ||
+            (state === State.BlackToConfirmDouble && !playerIsWhite));
     }
 
     var position = board.data('initial');
-    var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
-    for (var i = 0; i < moves.length; i++)
-        if ('SourceTongues' in moves[i])
-            for (var j = 0; j < moves[i].SourceTongues.length; j++)
-                position = processMove(position, whiteStarts ^ (i % 2 === 0), moves[i].SourceTongues[j], moves[i].TargetTongues[j], false);
+    if (moves.length > 0)
+    {
+        var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
+        for (var i = 0; i < moves.length; i++)
+        {
+            var whitePlayer = whiteStarts ? (i % 2 === 0) : (i % 2 !== 0);
+            if (moves[i].Doubled && position.GameValue !== null)
+            {
+                position.GameValue *= 2;
+                position.WhiteOwnsCube = !whitePlayer;
+            }
+            if ('SourceTongues' in moves[i])
+                for (var j = 0; j < moves[i].SourceTongues.length; j++)
+                    position = processMove(position, whitePlayer, moves[i].SourceTongues[j], moves[i].TargetTongues[j]);
+        }
+    }
 
-    var allValidMoves = getAllMoves(position, playerIsWhite,
-        lastMove.Dice1 === lastMove.Dice2
-            ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
-            : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
-    var moveSoFar = { SourceTongues: [], TargetTongues: [], DiceSequence: [] };
+    var moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
     var selectedPiece = null;
 
-    resetUi();
+    resetUi(true);
+
+    var socket;
+    var sendQueue = [];
+    var socketQueue = [];
+    var socketQueueProcessing = false;
+
+    var processSocketQueue = function ()
+    {
+        if (!socketQueue.length)
+        {
+            socketQueueProcessing = false;
+            return;
+        }
+
+        socketQueueProcessing = true;
+        var json = socketQueue.shift();
+
+        if ('move' in json)
+        {
+            moves[moves.length - 1].SourceTongues = json.move.SourceTongues;
+            moves[moves.length - 1].TargetTongues = json.move.TargetTongues;
+            position = processMove(position, isWhiteToMove(), json.move.SourceTongues, json.move.TargetTongues, { mode: 'animate', callback: processSocketQueue });
+        }
+        if ('dice' in json)
+        {
+            $('.dice').removeClass('crossed');
+            moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
+            moves.push({ Dice1: json.dice[0], Dice2: json.dice[1] });
+            // TODO: Dice roll animation
+            processSocketQueue();
+        }
+        if ('cube' in json)
+        {
+            $('#cube-text').text(json.cube[0]);
+            board.removeClass('cube-white cube-black').addClass(json.cube[1] ? 'cube-white' : 'cube-black');
+            position.GameValue = json.cube[0];
+            position.WhiteOwnsCube = json.cube[1];
+            window.setTimeout(processSocketQueue, 1000);
+        }
+        if ('state' in json)
+        {
+            state = json.state;
+            resetUi(true);
+            processSocketQueue();
+        }
+    };
+
+    var newSocket = function ()
+    {
+        socket = new WebSocket((window.location.protocol === 'http:' ? 'ws://' : 'wss://') + window.location.host + '/socket/' + board.data('gameid') + board.data('token'));
+        socket.onopen = function ()
+        {
+            board.removeClass('connecting');
+            for (var i = 0; i < sendQueue.length; i++)
+                socket.send(JSON.stringify(sendQueue[i]));
+            sendQueue = [];
+        };
+        socket.onclose = function ()
+        {
+            reconnect(true);
+        };
+        socket.onmessage = function (msg)
+        {
+            var json = JSON.parse(msg.data);
+            if (json instanceof Array)
+                for (var i = 0; i < json.length; i++)
+                    socketQueue.push(json[i]);
+            else
+                socketQueue.push(json);
+            if (!socketQueueProcessing)
+                processSocketQueue();
+        };
+    };
+    var reconnectInterval = 0;
+    var reconnect = function (useDelay)
+    {
+        board.addClass('connecting');
+        try { socket.close(); } catch (e) { }
+        if (useDelay)
+        {
+            reconnectInterval = (reconnectInterval === 0) ? 1000 : reconnectInterval * 2;
+            window.setTimeout(newSocket, reconnectInterval);
+        }
+        else
+        {
+            reconnectInterval = 0;
+            newSocket();
+        }
+    };
+    reconnect();
+
+    var socketSend = function (msg)
+    {
+        if (socket && socket.readyState === socket.OPEN)
+            socket.send(JSON.stringify(msg));
+        else
+            sendQueue.push(msg);
+    };
 
     function getClickableSourceTongues()
     {
@@ -377,7 +550,9 @@ $(function ()
         {
             var applicable = true;
             for (var j = 0; j < moveSoFar.DiceSequence.length; j++)
-                if (allValidMoves[i].DiceSequence[j] !== moveSoFar.DiceSequence[j])
+                if (allValidMoves[i].DiceSequence[j] !== moveSoFar.DiceSequence[j] ||
+                    allValidMoves[i].SourceTongues[j] !== moveSoFar.SourceTongues[j] ||
+                    allValidMoves[i].TargetTongues[j] !== moveSoFar.TargetTongues[j])
                     applicable = false;
             if (!applicable)
                 continue;
@@ -393,7 +568,7 @@ $(function ()
 
     function deselectPiece(skipHighlight)
     {
-        $('.piece.hypo-target, .arrow, .tongue.selectable').remove();
+        $('.piece.hypo-target, .arrow, .tongue.selectable, .home.selectable').remove();
         $('.piece').removeClass('selectable selected');
         selectedPiece = null;
 
@@ -408,11 +583,10 @@ $(function ()
 
     function selectPiece(tongue)
     {
-        deselectPiece();
+        deselectPiece(true);
         selectedPiece = topPieceOfTongue(tongue).addClass('selected');
 
         // Find valid target tongues
-        var targetTongues = $();
         var targetMoves = {};
         for (var i = 0; i < allValidMoves.length; i++)
         {
@@ -427,11 +601,11 @@ $(function ()
                     if (acc.indexOf(allValidMoves[i].SourceTongues[k]) !== -1)
                     {
                         var targetTongue = allValidMoves[i].TargetTongues[k];
-                        targetTongues = targetTongues.add('.tongue-' + targetTongue);
                         acc.push(targetTongue);
                         var m = {
                             SourceTongues: allValidMoves[i].SourceTongues.slice(moveSoFar.DiceSequence.length, k + 1),
                             TargetTongues: allValidMoves[i].TargetTongues.slice(moveSoFar.DiceSequence.length, k + 1),
+                            OpponentPieceTaken: allValidMoves[i].OpponentPieceTaken.slice(moveSoFar.DiceSequence.length, k + 1),
                             DiceSequence: allValidMoves[i].DiceSequence.slice(moveSoFar.DiceSequence.length, k + 1),
                             Priority: allValidMoves[i].EndPosition.NumPiecesPerTongue[getPrison(!playerIsWhite)]
                         };
@@ -440,12 +614,15 @@ $(function ()
                     }
             }
         }
-        var clones = targetTongues
-            .clone()
-            .addClass('selectable')
-            .insertBefore('#overlay-bottom');
-        for (var l = 0; l < clones.length; l++)
-            $(clones[l]).data('move', targetMoves[$(clones[l]).data('tongue')]);
+
+        Object.keys(targetMoves).map(function (i)
+        {
+            var rawTongueElem = $('.tongue-' + i);
+            return (rawTongueElem.length
+                ? rawTongueElem.clone().addClass('selectable')
+                : $('<div>').addClass('selectable ' + (+i === Tongue.WhiteHome ? 'white home' : 'black home'))
+            ).data('move', targetMoves[i]).insertBefore('#overlay-bottom');
+        });
     }
 
     if (!playerIsSpectator)
@@ -477,28 +654,29 @@ $(function ()
             return false;
         });
 
-        board.on('mouseenter', '.tongue.selectable', function ()
+        board.on('mouseenter', '.tongue.selectable, .home.selectable', function ()
         {
             var move = $(this).data('move');
-            processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, 'indicate');
+            processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'indicate' });
         });
 
-        board.on('mouseleave', '.tongue.selectable', function ()
+        board.on('mouseleave', '.tongue.selectable, .home.selectable', function ()
         {
             $('.piece.hypo-target, .arrow').hide();
         });
 
-        board.on('click', '.tongue.selectable', function ()
+        board.on('click', '.tongue.selectable, .home.selectable', function ()
         {
             $('.piece.hypo-target, .arrow').hide();
             var move = $(this).data('move');
             deselectPiece(true);
-            position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, 'animate');
+            position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate' });
             for (var i = 0; i < move.DiceSequence.length; i++)
             {
                 moveSoFar.DiceSequence.push(move.DiceSequence[i]);
                 moveSoFar.SourceTongues.push(move.SourceTongues[i]);
                 moveSoFar.TargetTongues.push(move.TargetTongues[i]);
+                moveSoFar.OpponentPieceTaken.push(move.OpponentPieceTaken[i]);
                 $('.dice:not(.crossed).val-' + move.DiceSequence[i]).first().addClass('crossed');
             }
             board.addClass('undoable');
@@ -519,16 +697,36 @@ $(function ()
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)
             {
-                position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], 'animate');
+                position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], { mode: 'animate', undoOpponentPieceTaken: moveSoFar.OpponentPieceTaken[lastIndex] });
                 $('.dice.crossed.val-' + moveSoFar.DiceSequence[lastIndex]).last().removeClass('crossed');
                 moveSoFar.DiceSequence.pop();
                 moveSoFar.SourceTongues.pop();
                 moveSoFar.TargetTongues.pop();
+                moveSoFar.OpponentPieceTaken.pop();
             }
             board.removeClass('committable');
             if (moveSoFar.DiceSequence.length === 0)
                 board.removeClass('undoable');
             return false;
         });
+
+        function getGeneralisedButtonClick(msgToSend)
+        {
+            return function ()
+            {
+                if (!playerIsSpectator)
+                {
+                    socketSend(typeof msgToSend === 'function' ? msgToSend() : msgToSend);
+                    board.removeClass('undoable committable roll-or-double confirm-double');
+                }
+                return false;
+            };
+        }
+
+        $('#commit').click(getGeneralisedButtonClick(function () { return { move: { SourceTongues: moveSoFar.SourceTongues, TargetTongues: moveSoFar.TargetTongues } }; }));
+        $('#roll').click(getGeneralisedButtonClick({ roll: 1 }));
+        $('#double').click(getGeneralisedButtonClick({ double: 1 }));
+        $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
+        $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
     }
 });

@@ -32,20 +32,11 @@ namespace LiBackgammon
                 }
                 while (db.Games.Any(g => g.PublicID == publicId));
 
-                int initialDice1;
-                int initialDice2;
-                do
-                {
-                    initialDice1 = Rnd.Next(1, 7);
-                    initialDice2 = Rnd.Next(1, 7);
-                }
-                while (initialDice1 == initialDice2);
-
                 var game = new Game
                 {
                     PublicID = publicId,
                     InitialPosition = ClassifyJson.Serialize(Position.StandardInitialPosition).ToString(),
-                    Moves = ClassifyJson.Serialize(new[] { new Move { Dice1 = initialDice1, Dice2 = initialDice2 } }).ToString()
+                    Moves = "[]"
                 };
                 var token = Rnd.GenerateString(4);
                 if (black)

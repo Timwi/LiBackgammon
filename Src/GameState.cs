@@ -16,7 +16,11 @@ namespace LiBackgammon
         BlackToConfirmDouble = 5,
         WhiteToMove = 6,
         BlackToMove = 7,
-        WhiteWon = 8,
-        BlackWon = 9
+        WhiteFinished = 8,
+        BlackFinished = 9,
+        WhiteDoubledBlackRejected = 10,
+        BlackDoubledWhiteRejected = 11,
+        WhiteResigned = 12,
+        BlackResigned = 13
     }
 }

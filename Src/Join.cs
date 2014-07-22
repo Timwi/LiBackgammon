@@ -39,11 +39,30 @@ namespace LiBackgammon
                 else
                     game.BlackToken = newToken;
 
-                var moves = game.Moves.ToMoves();
-                game.State = moves[0].Dice1 > moves[0].Dice2 ? GameState.WhiteToMove : GameState.BlackToMove;
+                int initialDice1;
+                int initialDice2;
+                do
+                {
+                    initialDice1 = Rnd.Next(1, 7);
+                    initialDice2 = Rnd.Next(1, 7);
+                }
+                while (initialDice1 == initialDice2);
+
+                game.Moves = ClassifyJson.Serialize(new[] { new Move { Dice1 = initialDice1, Dice2 = initialDice2 } }).ToString();
+                game.State = initialDice1 > initialDice2 ? GameState.WhiteToMove : GameState.BlackToMove;
 
                 db.SaveChanges();
                 tr.Complete();
+
+                // Notify all the existing WebSockets
+                List<BgWebSocket> sockets;
+                lock (ActiveSockets)
+                    if (ActiveSockets.TryGetValue(publicId, out sockets))
+                    {
+                        var send = new JsonDict { { "dice", new JsonList { initialDice1, initialDice2 } }, { "state", (int) game.State } }.ToString().ToUtf8();
+                        foreach (var socket in sockets)
+                            socket.SendMessage(1, send);
+                    }
 
                 return HttpResponse.Redirect(req.Url.WithParent("play/" + publicId + newToken));
             }

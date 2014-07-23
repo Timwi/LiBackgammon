@@ -491,7 +491,7 @@ $(function ()
 
     var newSocket = function ()
     {
-        socket = new WebSocket((window.location.protocol === 'http:' ? 'ws://' : 'wss://') + window.location.host + '/socket/' + board.data('gameid') + board.data('token'));
+        socket = new WebSocket(board.data('socket-url'));
         socket.onopen = function ()
         {
             board.removeClass('connecting');
@@ -684,7 +684,7 @@ $(function ()
                 board.addClass('committable');
         });
 
-        $(document).keypress(function (e)
+        $(document).keydown(function (e)
         {
             if (e.keyCode === 27 && selectedPiece !== null)
                 deselectPiece();

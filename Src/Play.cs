@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 using System.Transactions;
 using RT.Servers;
 using RT.TagSoup;
@@ -71,8 +72,7 @@ namespace LiBackgammon
                         .Data("initial", game.InitialPosition)
                         .Data("state", (int) game.State)
                         .Data("player", player)
-                        .Data("gameid", publicId)
-                        .Data("token", playerToken)
+                        .Data("socket-url", Regex.Replace(req.Url.WithParent("socket/" + publicId + playerToken).ToFull(), @"^http", "ws"))
                     ._(
                         new[] { "left", "right" }.Select(loc => new DIV { class_ = "background main-area " + loc }),
                         new[] { "white", "black" }.Select(col => new DIV { class_ = "background home " + col }),
@@ -85,18 +85,18 @@ namespace LiBackgammon
                         new BUTTON { id = "double" }._("Double"),
                         new BUTTON { id = "accept" }._("Accept"),
                         new BUTTON { id = "reject" }._("Reject"),
-                        Enumerable.Range(0, 15).Select(pieceNum => new[] { "white", "black" }.Select(color => new DIV { class_ = "piece " + color, id = color + "-" + pieceNum })),
-                        new DIV { class_ = "overlay", id = "overlay-bottom" },
-                        new DIV { class_ = "overlay", id = "overlay-right" },
-                        new DIV { id = "cube" }._(new DIV { class_ = "inner" }._(new DIV { id = "cube-text" })),
-                        new DIV { class_ = "dice-back", id = "dice-back-white" },
-                        new DIV { class_ = "dice-back", id = "dice-back-black" },
                         Enumerable.Range(0, 4).Select(diceNum => new DIV { class_ = "dice" + (lastMove == null ? null : " val-" + (diceNum == 0 ? lastMove.Dice1 : lastMove.Dice2)), id = "dice-" + diceNum }._(
                             new DIV { class_ = "razor" }._(
                                 new DIV { class_ = "face" },
                                 "nesw".Select(ch => new DIV { class_ = "side " + ch })),
                             "abcdefg".Select(ch => new DIV { class_ = "pip " + ch }),
                             new DIV { class_ = "cross" })),
+                        new DIV { id = "cube" }._(new DIV { class_ = "inner" }._(new DIV { id = "cube-text" })),
+                        Enumerable.Range(0, 15).Select(pieceNum => new[] { "white", "black" }.Select(color => new DIV { class_ = "piece " + color, id = color + "-" + pieceNum })),
+                        new DIV { class_ = "overlay", id = "overlay-bottom" },
+                        new DIV { class_ = "overlay", id = "overlay-right" },
+                        new DIV { class_ = "dice-back", id = "dice-back-white" },
+                        new DIV { class_ = "dice-back", id = "dice-back-black" },
                         new DIV { id = "win", class_ = "dialog" }._(
                             new DIV { class_ = "white piece" },
                             new DIV { class_ = "black piece" },

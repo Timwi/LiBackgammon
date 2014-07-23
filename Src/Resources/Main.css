@@ -515,11 +515,11 @@ button {
     }
 
     #board.cube-white > #cube {
-        top: 53vw;
+        top: 50.9vw;
     }
 
     #board.cube-black > #cube {
-        top: 2.2vw;
+        top: 4.3vw;
     }
 
     #board > .arrow {

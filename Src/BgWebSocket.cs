@@ -34,7 +34,6 @@ namespace LiBackgammon
                 _server.ActiveSockets.RemoveSafe(_gameId, this);
         }
 
-        private static int[] EmptyIntArray = new int[0];
         private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject" };
 
         public override void OnTextMessageReceived(string msg)
@@ -167,8 +166,9 @@ namespace LiBackgammon
                         }
 
                         // Player either cannot move at all, or has only one possible move and thus no choice.
-                        lastMove.SourceTongues = (validMoves.Count == 0) ? EmptyIntArray : validMoves[0].SourceTongues;
-                        lastMove.TargetTongues = (validMoves.Count == 0) ? EmptyIntArray : validMoves[0].TargetTongues;
+                        // Do not use the same int[] instance for the empty array because Classify then creates JSON that the JavaScript doesn’t cope with.
+                        lastMove.SourceTongues = (validMoves.Count == 0) ? new int[0] : validMoves[0].SourceTongues;
+                        lastMove.TargetTongues = (validMoves.Count == 0) ? new int[0] : validMoves[0].TargetTongues;
                         sendBoth.Add(new JsonDict { { "move", new JsonDict { { "SourceTongues", lastMove.SourceTongues }, { "TargetTongues", lastMove.TargetTongues } } } });
                     }
                 }

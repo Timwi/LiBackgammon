@@ -13,7 +13,7 @@
         position: absolute;
         background: hsl(31.85, 50%, 30%);
         width: 100vw;
-        box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+        box-shadow: .6vw .6vw .5vw rgba(0,0,0,.5);
     }
 
     body > #board {
@@ -887,7 +887,7 @@ button {
     font: inherit;
     padding: .2em 1em;
     text-align: center;
-    text-shadow: -1px -1px 0 hsl(32, 52%, 24.3%);
+    text-shadow: -.1vw -.1vw 0 hsl(32, 52%, 24.3%);
     text-transform: uppercase;
     white-space: nowrap;
 }
@@ -903,7 +903,7 @@ button {
         font: inherit;
         padding: .2em 1em;
         text-align: center;
-        text-shadow: -1px -1px 0 hsl(32, 52%, 34.3%);
+        text-shadow: -.1vw -.1vw 0 hsl(32, 52%, 34.3%);
         text-transform: uppercase;
         white-space: nowrap;
     }

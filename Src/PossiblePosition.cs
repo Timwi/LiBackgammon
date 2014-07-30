@@ -155,5 +155,33 @@ namespace LiBackgammon
             var target = whitePlayer ? sourceTongue + dice : sourceTongue - dice;
             return (target >= 0 && target < 24) ? target : (int?) null;
         }
+
+        public sealed class Comparer : IEqualityComparer<PossiblePosition>
+        {
+            public bool Equals(PossiblePosition x, PossiblePosition y)
+            {
+                if (x == null && y == null)
+                    return true;
+                if ((x == null) != (y == null))
+                    return false;
+
+                for (int i = 0; i < Tongues.NumTongues; i++)
+                {
+                    if (x.NumPiecesPerTongue[i] != y.NumPiecesPerTongue[i])
+                        return false;
+                    if (x.NumPiecesPerTongue[i] > 0 && (x.IsWhitePerTongue[i] != y.IsWhitePerTongue[i]))
+                        return false;
+                }
+                return true;
+            }
+
+            public int GetHashCode(PossiblePosition pos)
+            {
+                int hash = 0;
+                for (int i = 0; i < Tongues.NumTongues; i++)
+                    hash = 30 * hash + 2 * pos.NumPiecesPerTongue[i] + (pos.IsWhitePerTongue[i] && pos.NumPiecesPerTongue[i] > 0 ? 1 : 0);
+                return hash;
+            }
+        }
     }
 }

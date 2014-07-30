@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using RT.Util;
 using RT.Util.Serialization;
 
@@ -33,23 +34,18 @@ namespace LiBackgammon
 
         public bool IsWon { get { return NumPiecesPerTongue[Tongues.WhiteHome] == 15 || NumPiecesPerTongue[Tongues.BlackHome] == 15; } }
 
-        public int WinMultiplier
+        public int GetWinMultiplier(bool whiteWon)
         {
-            get
-            {
-                var whiteWon = NumPiecesPerTongue[Tongues.WhiteHome] == 15;
+            // Backgammon
+            if (Enumerable.Range(whiteWon ? 18 : 0, 6).Any(i => NumPiecesPerTongue[i] > 0 && IsWhitePerTongue[i] == !whiteWon))
+                return 3;
 
-                // Backgammon
-                if (Enumerable.Range(whiteWon ? 18 : 0, 6).Any(i => NumPiecesPerTongue[i] > 0 && IsWhitePerTongue[i] == !whiteWon))
-                    return 3;
+            // Gammon
+            if (NumPiecesPerTongue[whiteWon ? Tongues.BlackHome : Tongues.WhiteHome] == 0)
+                return 2;
 
-                // Gammon
-                if (NumPiecesPerTongue[whiteWon ? Tongues.BlackHome : Tongues.WhiteHome] == 0)
-                    return 2;
-
-                // Single
-                return 1;
-            }
+            // Single
+            return 1;
         }
     }
 }

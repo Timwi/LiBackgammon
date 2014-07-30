@@ -38,7 +38,10 @@ namespace LiBackgammon
                         pos = pos.ProcessMove(whiteStarts ? (i % 2 == 0) : (i % 2 != 0), moves[i]);
                 }
                 var lastMove = moves.LastOrDefault();
-                var points = pos.IsWon ? (pos.GameValue ?? 1) * pos.WinMultiplier : 0;
+                var points =
+                    game.State == GameState.Black_Won_Finished || game.State == GameState.White_Won_Finished ? (pos.GameValue ?? 1) * pos.GetWinMultiplier(game.State == GameState.White_Won_Finished) :
+                    game.State == GameState.Black_Won_RejectedDouble || game.State == GameState.White_Won_RejectedDouble ? pos.GameValue ?? 1 :
+                    game.State == GameState.Black_Won_Resignation || game.State == GameState.White_Won_Resignation ? (pos.GameValue ?? 1) * pos.GetWinMultiplier(game.State == GameState.White_Won_Resignation) : 0;
 
                 return page(req,
                     new BODY
@@ -72,6 +75,7 @@ namespace LiBackgammon
                                 new BUTTON { id = "double" },
                                 new BUTTON { id = "accept" },
                                 new BUTTON { id = "reject" },
+                                new DIV { id = "info" },
                                 new DIV { class_ = "dice-back", id = "dice-back-white" },
                                 new DIV { class_ = "dice-back", id = "dice-back-black" },
                                 Enumerable.Range(0, 4).Select(diceNum => new DIV { class_ = "dice" + (lastMove == null ? null : " val-" + (diceNum == 0 ? lastMove.Dice1 : lastMove.Dice2)), id = "dice-" + diceNum }._(
@@ -81,7 +85,7 @@ namespace LiBackgammon
                                     "abcdefg".Select(ch => new DIV { class_ = "pip " + ch }),
                                     new DIV { class_ = "cross" })),
                                 new DIV { id = "cube" }._(new DIV { class_ = "inner" }._(new DIV { id = "cube-text" }._(pos.GameValue))),
-                                Enumerable.Range(0, 15).Select(pieceNum => new[] { "white", "black" }.Select(color => new DIV { class_ = "piece " + color, id = color + "-" + pieceNum })),
+                                Enumerable.Range(0, 15).Select(pieceNum => new[] { "white", "black" }.Select(color => new DIV { class_ = "piece " + color })),
                                 new DIV { class_ = "overlay", id = "overlay-bottom" },
                                 new DIV { class_ = "overlay", id = "overlay-right" },
                                 new DIV { id = "win", class_ = "dialog" }._(

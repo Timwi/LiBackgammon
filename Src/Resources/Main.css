@@ -2,12 +2,18 @@
     font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
     margin: 0;
     padding: 0;
+    background: hsl(27, 35%, 50%);
 }
+
+    body * {
+        cursor: default;
+    }
 
     body > #board, body > #infobar {
         position: absolute;
         background: hsl(31.85, 50%, 30%);
         width: 100vw;
+        box-shadow: 5px 5px 5px rgba(0,0,0,.5);
     }
 
     body > #board {
@@ -488,11 +494,11 @@
     }
 
     body.cube-white > #board > #cube {
-        top: 50.9vw;
+        top: 4.3vw;
     }
 
     body.cube-black > #board > #cube {
-        top: 4.3vw;
+        top: 50.9vw;
     }
 
     body > #board > .arrow {
@@ -825,6 +831,51 @@
         transform: translateX(-50%);
     }
 
+    body > #board > #info {
+        pointer-events: none;
+        opacity: 0;
+        -moz-transition: opacity ease-in-out 1s;
+        -o-transition: opacity ease-in-out 1s;
+        -webkit-transition: opacity ease-in-out 1s;
+        transition: opacity ease-in-out 1s;
+        position: absolute;
+        left: 2vw;
+        top: 30vw;
+        width: 42vw;
+        text-align: center;
+        font-size: 5vw;
+        font-weight: bold;
+        font-style: italic;
+        -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        color: hsl(31.85, 50%, 20%);
+        text-shadow: .1vw .1vw .1vw hsl(31.85, 50%, 80%);
+    }
+
+    body.auto-0 > #board > #info, body.auto-1 > #board > #info {
+        opacity: 1;
+    }
+
+        body.auto-0 > #board > #info::before {
+            content: 'No moves';
+        }
+
+        body.auto-1 > #board > #info::before {
+            content: 'Forced move';
+        }
+
+    body.state-ToConfirmDouble > #board > #info {
+        left: 47vw;
+        opacity: 1;
+    }
+
+        body.state-ToConfirmDouble > #board > #info::before {
+            content: 'Double?';
+        }
+
 button {
     background-color: hsl(32, 52%, 34.3%);
     background-image: linear-gradient(hsl(32, 52%, 44%), hsl(32, 52%, 22%));
@@ -884,7 +935,6 @@ button {
     button#reject::before {
         content: 'Reject';
     }
-
 
 @keyframes hypo-blink {
     from {

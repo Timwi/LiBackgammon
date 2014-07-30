@@ -23,10 +23,13 @@ namespace LiBackgammon
                 new HTML(
                     new HEAD(
                         new TITLE("LiBackgammon"),
+
+                        // CSS must be above JS because the vh conversion might not trigger otherwise
+                        new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
+
                         new SCRIPT { src = jquery },
                         new SCRIPT { src = req.Url.WithParent("js").ToHref() },
                         jsPaths.NullOr(jsp => jsp.Select(p => new SCRIPT { src = req.Url.WithParent(p).ToHref() })),
-                        new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
                         cssPaths.NullOr(cp => cp.Select(p => new LINK { rel = "stylesheet", href = req.Url.WithParent(p).ToHref() }))),
                     body));
         }

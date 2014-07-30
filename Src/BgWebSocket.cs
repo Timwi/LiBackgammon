@@ -121,7 +121,7 @@ namespace LiBackgammon
                             return;
                         acceptedDouble = true;
                         pos.GameValue = pos.GameValue.Value * 2;
-                        sendBoth.Add(new JsonDict { { "cube", new JsonDict { { "GameValue", pos.GameValue.Value }, { "WhiteOwnsCube", _player == Player.Black } } } });
+                        sendBoth.Add(new JsonDict { { "cube", new JsonDict { { "GameValue", pos.GameValue.Value }, { "WhiteOwnsCube", _player == Player.White } } } });
                         // The game continues with a dice roll, which happens inside the following while loop.
                     }
 
@@ -133,7 +133,7 @@ namespace LiBackgammon
                         {
                             // The game is over.
                             game.State = pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 ? GameState.White_Won_Finished : GameState.Black_Won_Finished;
-                            sendBoth.Add(new JsonDict { { "state", game.State.ToString() }, { "win", (pos.GameValue ?? 1) * pos.WinMultiplier } });
+                            sendBoth.Add(new JsonDict { { "state", game.State.ToString() }, { "win", (pos.GameValue ?? 1) * pos.GetWinMultiplier(game.State == GameState.White_Won_Finished) } });
                             break;
                         }
 
@@ -155,7 +155,7 @@ namespace LiBackgammon
                         firstIteration = false;
 
                         // Generate all possible moves
-                        var validMoves = pos.GetAllValidMoves(whiteToPlay, lastMove.Dice1, lastMove.Dice2);
+                        var validMoves = pos.GetAllValidMoves(whiteToPlay, lastMove.Dice1, lastMove.Dice2).GroupBy(move => move.EndPosition, new PossiblePosition.Comparer()).ToList();
 
                         if (validMoves.Count > 1)
                         {
@@ -167,9 +167,9 @@ namespace LiBackgammon
 
                         // Player either cannot move at all, or has only one possible move and thus no choice.
                         // Do not use the same int[] instance for the empty array because Classify then creates JSON that the JavaScript doesn’t cope with.
-                        lastMove.SourceTongues = (validMoves.Count == 0) ? new int[0] : validMoves[0].SourceTongues;
-                        lastMove.TargetTongues = (validMoves.Count == 0) ? new int[0] : validMoves[0].TargetTongues;
-                        sendBoth.Add(new JsonDict { { "move", new JsonDict { { "SourceTongues", lastMove.SourceTongues }, { "TargetTongues", lastMove.TargetTongues } } } });
+                        lastMove.SourceTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().SourceTongues;
+                        lastMove.TargetTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().TargetTongues;
+                        sendBoth.Add(new JsonDict { { "move", new JsonDict { { "SourceTongues", lastMove.SourceTongues }, { "TargetTongues", lastMove.TargetTongues } } }, { "auto", validMoves.Count } });
                         pos = pos.ProcessMove(whiteToPlay, lastMove);
                     }
                 }

@@ -178,7 +178,6 @@ $(function ()
         {
             if (animationQueue.length === 0)
             {
-                deselectPiece();
                 if (callback !== null)
                     callback();
                 return;
@@ -199,7 +198,7 @@ $(function ()
                         top: convertFromVw(topFromTongue(tongue, $(elem).data('index'), num[tongue]))
                     }];
                 });
-            if (num[item.Piece.data('tongue')] > 4 || num[item.Data.tongue] > 5)
+            if ((item.Piece.data('tongue') < 24 && num[item.Piece.data('tongue')] > 4) || (item.Data.tongue < 24 && num[item.Data.tongue] > 5))
                 setTimeout(function () { otherPieces.forEach(function (inf) { inf[0].animate(inf[1], 200); }); }, 100);
             item.Piece
                 .data(item.Data)
@@ -334,7 +333,7 @@ $(function ()
         if (newState)
         {
             state = newState;
-            body.removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, "state-".length) === "state-"; }).join(' '); });
+            body.removeClass(function (_, cl) { return 'auto-0 auto-1 ' + cl.split(' ').filter(function (c) { return c.substr(0, "state-".length) === "state-"; }).join(' '); });
             newState.split('_').forEach(function (cl) { body.addClass('state-' + cl); });
         }
         if (!body.hasClass('state-ToMove'))
@@ -529,13 +528,24 @@ $(function ()
 
         if ('move' in json)
         {
+            if ('auto' in json)
+                body.addClass('auto-' + json.auto);
+
             moves[moves.length - 1].SourceTongues = json.move.SourceTongues;
             moves[moves.length - 1].TargetTongues = json.move.TargetTongues;
-            position = processMove(position, body.hasClass('state-White'), json.move.SourceTongues, json.move.TargetTongues, { mode: 'animate', callback: processSocketQueue });
+            position = processMove(position, body.hasClass('state-White'), json.move.SourceTongues, json.move.TargetTongues, {
+                mode: 'animate', callback: function ()
+                {
+                    if ('auto' in json)
+                        setTimeout(processSocketQueue, json.auto ? 1000 : 2000);
+                    else
+                        processSocketQueue();
+                }
+            });
         }
         else if ('dice' in json)
         {
-            setState(json.dice.state);
+            setState(json.dice.state, true);
             moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
             moves.push({ Dice1: json.dice.dice1, Dice2: json.dice.dice2 });
             lastMove = moves[moves.length - 1];
@@ -547,16 +557,17 @@ $(function ()
             $('#board>#dice-0').addClass('val-' + lastMove.Dice1);
             $('#board>#dice-1,#board>#dice-2,#board>#dice-3').addClass('val-' + lastMove.Dice2);
 
-            // TODO: Dice roll animation
-
             processSocketQueue();
         }
         else if ('cube' in json)
         {
-            $('#cube-text').text(json.GameValue);
-            body.removeClass('cube-white cube-black').addClass(json.WhiteOwnsCube ? 'cube-white' : 'cube-black');
-            position.GameValue = json.GameValue;
-            position.WhiteOwnsCube = json.WhiteOwnsCube;
+            $('#cube-text').text(json.cube.GameValue);
+            var oldTop = $('#cube').position().top;
+            body.removeClass('cube-white cube-black').addClass(json.cube.WhiteOwnsCube ? 'cube-white' : 'cube-black');
+            var newTop = $('#cube').position().top;
+            $('#cube').css('top', oldTop).animate({ top: newTop }, { duration: 1000, complete: function () { $('#cube').css('top', ''); } });
+            position.GameValue = json.cube.GameValue;
+            position.WhiteOwnsCube = json.cube.WhiteOwnsCube;
             setTimeout(processSocketQueue, 1000);
         }
         else if ('state' in json)
@@ -670,7 +681,7 @@ $(function ()
             $('#board>.piece.hypo-target, #board>.arrow').hide();
             var move = $(this).data('move');
             deselectPiece(true);
-            position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate' });
+            position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate', callback: deselectPiece });
             for (var i = 0; i < move.DiceSequence.length; i++)
             {
                 moveSoFar.DiceSequence.push(move.DiceSequence[i]);
@@ -697,7 +708,12 @@ $(function ()
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)
             {
-                position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], { mode: 'animate', undoOpponentPieceTaken: moveSoFar.OpponentPieceTaken[lastIndex] });
+                deselectPiece(true);
+                position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], {
+                    mode: 'animate',
+                    undoOpponentPieceTaken: moveSoFar.OpponentPieceTaken[lastIndex],
+                    callback: deselectPiece
+                });
                 $('#board>.dice.crossed.val-' + moveSoFar.DiceSequence[lastIndex]).last().removeClass('crossed');
                 moveSoFar.DiceSequence.pop();
                 moveSoFar.SourceTongues.pop();

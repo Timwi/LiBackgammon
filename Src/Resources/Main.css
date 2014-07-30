@@ -4,6 +4,827 @@
     padding: 0;
 }
 
+    body > #board, body > #infobar {
+        position: absolute;
+        background: hsl(31.85, 50%, 30%);
+        width: 100vw;
+    }
+
+    body > #board {
+        height: 60vw;
+        top: 8vw;
+    }
+
+        body > #board > * {
+            position: absolute;
+        }
+
+        body > #board > .overlay {
+            background: hsl(31.85, 50%, 30%);
+        }
+
+            body > #board > .overlay#overlay-bottom {
+                top: 58vw;
+                left: 0;
+                width: 100vw;
+                height: 2vw;
+            }
+
+            body > #board > .overlay#overlay-right {
+                top: 0;
+                right: 0;
+                width: 2vw;
+                height: 60vw;
+            }
+
+        body > #board > .background {
+            background: hsl(31.85, 50%, 70%);
+        }
+
+        body > #board > .shadow {
+            box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+        }
+
+        body > #board > .main-area {
+            width: 42vw;
+            height: 56vw;
+            top: 2vw;
+        }
+
+            body > #board > .main-area.left {
+                left: 2vw;
+            }
+
+            body > #board > .main-area.right {
+                right: 10vw;
+            }
+
+        body > #board > .home {
+            width: 6vw;
+            height: 27vw;
+            right: 2vw;
+        }
+
+            body > #board > .home.white {
+                top: 2vw;
+            }
+
+            body > #board > .home.black {
+                bottom: 2vw;
+            }
+
+            body > #board > .home.selectable {
+                background: hsla(110,70%,70%,.5);
+            }
+
+        body > #board > .tongue {
+            width: 0;
+            height: 0;
+            border: none;
+            border-left: 3.5vw solid transparent !important;
+            border-right: 3.5vw solid transparent !important;
+        }
+
+            body > #board > .tongue.top {
+                top: 2vw;
+                border-top-width: 25vw;
+                border-top-style: solid;
+            }
+
+            body > #board > .tongue.bottom {
+                bottom: 2vw;
+                border-bottom-width: 25vw;
+                border-bottom-style: solid;
+            }
+
+            body > #board > .tongue.dark:not(.selectable) {
+                border-color: hsl(27.1, 33.3%, 54.9%);
+            }
+
+            body > #board > .tongue.light:not(.selectable) {
+                border-color: hsl(36.6, 66.7%, 82.5%);
+            }
+
+            body > #board > .tongue.selectable {
+                border-color: hsla(110,70%,70%,.7);
+            }
+
+        body > #board > .tongue-0, body > #board > .tongue-23 {
+            left: 83vw;
+        }
+
+        body > #board > .tongue-1, body > #board > .tongue-22 {
+            left: 76vw;
+        }
+
+        body > #board > .tongue-2, body > #board > .tongue-21 {
+            left: 69vw;
+        }
+
+        body > #board > .tongue-3, body > #board > .tongue-20 {
+            left: 62vw;
+        }
+
+        body > #board > .tongue-4, body > #board > .tongue-19 {
+            left: 55vw;
+        }
+
+        body > #board > .tongue-5, body > #board > .tongue-18 {
+            left: 48vw;
+        }
+
+        body > #board > .tongue-6, body > #board > .tongue-17 {
+            left: 37vw;
+        }
+
+        body > #board > .tongue-7, body > #board > .tongue-16 {
+            left: 30vw;
+        }
+
+        body > #board > .tongue-8, body > #board > .tongue-15 {
+            left: 23vw;
+        }
+
+        body > #board > .tongue-9, body > #board > .tongue-14 {
+            left: 16vw;
+        }
+
+        body > #board > .tongue-10, body > #board > .tongue-13 {
+            left: 9vw;
+        }
+
+        body > #board > .tongue-11, body > #board > .tongue-12 {
+            left: 2vw;
+        }
+
+        body > #board > .piece, body > #board > #win > .piece, body > #infobar > .infobox > .piece {
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            width: 5vw;
+            height: 5vw;
+            border-radius: 100%;
+            border: .3vw solid transparent;
+            border-top: .2vw solid transparent;
+            border-left: .2vw solid transparent;
+            box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        }
+
+            body > #board > .piece.white,
+            body.state-White.state-Won > #board > #win > .piece,
+            body.player-white > #infobar > #info-player > .piece,
+            body.state-White > #infobar > #info-state > .piece {
+                background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
+                border-color: hsl(31.85, 50%, 100%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 100%);
+            }
+
+                body > #board > .piece.white.selected {
+                    background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
+                    border-color: hsl(0, 100%, 90%) hsl(0, 100%, 85%) hsl(0, 100%, 85%) hsl(0, 100%, 90%);
+                }
+
+            body > #board > .piece.black,
+            body.state-Black.state-Won > #board > #win > .piece,
+            body.player-black > #infobar > #info-player > .piece,
+            body.state-Black > #infobar > #info-state > .piece {
+                background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
+                border-color: hsl(31.85, 50%, 20%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 20%);
+            }
+
+                body > #board > .piece.black.selected {
+                    background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
+                    border-color: hsl(0, 100%, 30%) hsl(0, 100%, 20%) hsl(0, 100%, 20%) hsl(0, 100%, 30%);
+                }
+
+            body > #board > .piece.selectable::before {
+                position: absolute;
+                left: -.2vw;
+                top: -.2vw;
+                right: -.3vw;
+                bottom: -.3vw;
+                background: hsl(110, 50%, 50%);
+                border-radius: 100%;
+                content: '';
+                opacity: .3;
+                -moz-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+                -o-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+                -webkit-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+                animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            }
+
+            body > #board > .piece.selectable.selected::before {
+                display: none;
+            }
+
+            body > #board > .piece.hypo-target {
+                opacity: .5;
+                -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+                -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+                -webkit-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+                animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+                pointer-events: none;
+            }
+
+    body.player-white.state-White.state-ToMove > #board > .piece.white,
+    body.player-black.state-Black.state-ToMove > #board > .piece.black {
+        cursor: pointer;
+    }
+
+    body > #board > .dice-back {
+        border-radius: 1vw;
+        width: 6vw;
+        height: 6vw;
+        top: 27vw;
+        opacity: .5;
+        display: none;
+    }
+
+        body > #board > .dice-back#dice-back-white {
+            left: 62.5vw;
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
+        }
+
+        body > #board > .dice-back#dice-back-black {
+            left: 69.5vw;
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
+        }
+
+    body.dice-start > #board > .dice-back {
+        display: block;
+        font-family: "Impact";
+        text-align: right;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    body.dice-start.state-White > #board > #dice-back-white::before,
+    body.dice-start.state-White > #board > #dice-back-white::after {
+        position: absolute;
+        color: hsl(31.85, 50%, 95%);
+        padding-right: .6vw;
+        right: 100%;
+    }
+
+    body.dice-start.state-Black > #board > #dice-back-black::before,
+    body.dice-start.state-Black > #board > #dice-back-black::after {
+        position: absolute;
+        color: hsl(31.85, 50%, 10%);
+        padding-left: .6vw;
+        left: 100%;
+    }
+
+    body.dice-start.state-White > #board > #dice-back-white::before,
+    body.dice-start.state-Black > #board > #dice-back-black::before {
+        font-size: 2.2vw;
+        top: .8vw;
+    }
+
+    body.dice-start.state-White > #board > #dice-back-white::after,
+    body.dice-start.state-Black > #board > #dice-back-black::after {
+        font-size: 1.3vw;
+        bottom: .8vw;
+        content: 'starts';
+    }
+
+    body.dice-start.state-White > #board > #dice-back-white::before {
+        content: 'white';
+    }
+
+    body.dice-start.state-Black > #board > #dice-back-black::before {
+        content: 'black';
+    }
+
+    body > #board > .dice {
+        left: 63vw;
+        top: 27.5vw;
+        width: 5vw;
+        height: 5vw;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        background-image: linear-gradient(135deg, #fff, #ddd);
+        border-radius: .5vw;
+        opacity: .5;
+        display: none;
+    }
+
+        body > #board > .dice > .razor {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            border-radius: inherit;
+        }
+
+            body > #board > .dice > .razor > .face {
+                position: absolute;
+                background-image: linear-gradient(135deg, #ddd, #fff);
+                left: .5vw;
+                top: .5vw;
+                width: 4vw;
+                height: 4vw;
+                border-radius: 30%;
+            }
+
+            body > #board > .dice > .razor > .side {
+                position: absolute;
+                border-radius: 50%;
+                width: 5vw;
+                height: 1vw;
+            }
+
+                body > #board > .dice > .razor > .side.n {
+                    top: -.5vw;
+                    left: .25vw;
+                    background-image: linear-gradient(0deg, #fff, #ccc);
+                }
+
+                body > #board > .dice > .razor > .side.w {
+                    top: .25vw;
+                    left: -.5vw;
+                    width: 1vw;
+                    height: 5vw;
+                    background-image: linear-gradient(-90deg, #fff, #ccc);
+                }
+
+                body > #board > .dice > .razor > .side.s {
+                    bottom: -.5vw;
+                    left: .25vw;
+                    background-image: linear-gradient(0deg, #888, #eee);
+                }
+
+                body > #board > .dice > .razor > .side.e {
+                    top: .25vw;
+                    right: -.5vw;
+                    width: 1vw;
+                    height: 5vw;
+                    background-image: linear-gradient(-90deg, #888, #eee);
+                }
+
+        body > #board > .dice > .pip {
+            position: absolute;
+            background: black;
+            border-radius: 50%;
+            width: .7vw;
+            height: .7vw;
+            box-shadow: .075vw .075vw 0 white;
+        }
+
+            body > #board > .dice > .pip.a, body > #board > .dice > .pip.b, body > #board > .dice > .pip.c {
+                left: 1vw;
+            }
+
+            body > #board > .dice > .pip.g {
+                left: 2.2vw;
+            }
+
+            body > #board > .dice > .pip.b, body > #board > .dice > .pip.e, body > #board > .dice > .pip.g {
+                top: 2.2vw;
+            }
+
+            body > #board > .dice > .pip.d, body > #board > .dice > .pip.e, body > #board > .dice > .pip.f {
+                right: 1vw;
+            }
+
+            body > #board > .dice > .pip.a, body > #board > .dice > .pip.d {
+                top: 1vw;
+            }
+
+            body > #board > .dice > .pip.c, body > #board > .dice > .pip.f {
+                bottom: 1vw;
+            }
+
+        body > #board > .dice.val-1 .pip.a, body > #board > .dice.val-1 .pip.b, body > #board > .dice.val-1 .pip.c, body > #board > .dice.val-1 .pip.d, body > #board > .dice.val-1 .pip.e, body > #board > .dice.val-1 .pip.f, body > #board > .dice.val-2 .pip.b, body > #board > .dice.val-2 .pip.c,
+        body > #board > .dice.val-2 .pip.d, body > #board > .dice.val-2 .pip.e, body > #board > .dice.val-2 .pip.g, body > #board > .dice.val-3 .pip.a, body > #board > .dice.val-3 .pip.b, body > #board > .dice.val-3 .pip.e, body > #board > .dice.val-3 .pip.f, body > #board > .dice.val-4 .pip.b,
+        body > #board > .dice.val-4 .pip.e, body > #board > .dice.val-4 .pip.g, body > #board > .dice.val-5 .pip.b, body > #board > .dice.val-5 .pip.e, body > #board > .dice.val-6 .pip.g {
+            display: none;
+        }
+
+        body > #board > .dice > .cross {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            height: 1em;
+            font-size: 8vw;
+            font-weight: bold;
+            color: hsl(0, 80%, 50%);
+            line-height: 1;
+            cursor: default;
+            opacity: 0;
+            -moz-transition: opacity ease-in-out 1s;
+            -o-transition: opacity ease-in-out 1s;
+            -webkit-transition: opacity ease-in-out 1s;
+            transition: opacity ease-in-out 1s;
+        }
+
+            body > #board > .dice > .cross::after {
+                position: relative;
+                left: -50%;
+                top: -50%;
+                opacity: .8;
+                content: '✗';
+            }
+
+        body > #board > .dice.crossed > .cross {
+            opacity: 1;
+        }
+
+    body.dice-2 > #board > #dice-0, body.dice-2 > #board > #dice-1, body.dice-4 > #board > .dice {
+        display: block;
+    }
+
+    body.dice-2 > #board > #dice-1, body.dice-4 > #board > #dice-2 {
+        left: 70vw;
+    }
+
+    body.dice-4 > #board > #dice-0 {
+        left: 56vw;
+    }
+
+    body.dice-4 > #board > #dice-3 {
+        left: 77vw;
+    }
+
+    body.player-white.state-White.state-ToMove > #board > .dice,
+    body.player-black.state-Black.state-ToMove > #board > .dice,
+    body.player-white.state-White.state-ToMove > #board > .dice-back,
+    body.player-black.state-Black.state-ToMove > #board > .dice-back {
+        opacity: 1;
+    }
+
+    body > #board > #cube {
+        background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
+        border: .3vw solid white;
+        border-radius: .5vw;
+        border-bottom-color: #ccc;
+        border-right-color: #ccc;
+        width: 4.2vw;
+        height: 4.2vw;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        left: 43.6vw;
+        top: 27.6vw;
+    }
+
+        body > #board > #cube > .inner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            font-family: "Calibri";
+            font-size: 4vw;
+            height: 1em;
+            line-height: 1em;
+        }
+
+            body > #board > #cube > .inner > #cube-text {
+                position: relative;
+                left: -50%;
+                top: -50%;
+                color: #222;
+                text-shadow: .075vw .075vw 0 white;
+            }
+
+    body.no-cube > #board > #cube {
+        display: none;
+    }
+
+    body.cube-white > #board > #cube {
+        top: 50.9vw;
+    }
+
+    body.cube-black > #board > #cube {
+        top: 4.3vw;
+    }
+
+    body > #board > .arrow {
+        pointer-events: none;
+        height: 2.5vw;
+        background: #dd5;
+    }
+
+        body > #board > .arrow::before {
+            position: absolute;
+            right: -6.25vw;
+            top: -1.25vw;
+            width: 0;
+            height: 0;
+            border: 2.5vw solid transparent;
+            border-left: 4.0625vw solid #dd5;
+            content: '';
+        }
+
+    body > #board > .dialog {
+        display: none;
+        margin: 0 15vw;
+        top: 20vw;
+        left: 0;
+        right: 0;
+        border: .7vw solid hsl(31.85, 50%, 20%);
+        background: hsl(31.85, 50%, 70%);
+        padding: 1vw 3vw;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, 0.3);
+        color: hsl(31.85, 50%, 30%);
+    }
+
+        body > #board > .dialog > p, body > #board > .dialog > form {
+            text-align: center;
+            font-size: 1.8vw;
+            margin: 2vw 0;
+        }
+
+            body > #board > .dialog > p.link, body > #board > .dialog > form {
+                background: hsl(31.85, 50%, 90%);
+                padding: .5em 0;
+                font-weight: bold;
+            }
+
+            body > #board > .dialog > p.link {
+                font-family: monospace;
+            }
+
+    body > #board > #win > .win {
+        margin: 0 0 2vw;
+    }
+
+        body > #board > #win > .win::before {
+            display: block;
+            background: hsl(31.85, 50%, 90%);
+            padding: .2vw 0;
+            margin-top: 2vw;
+            font-size: 5vw;
+        }
+
+        body > #board > #win > .win::after {
+            display: block;
+            padding: .2vw 0 0;
+            margin-bottom: -1.25vw;
+            font-size: 2vw;
+        }
+
+    body > #board > #win > .piece {
+        position: absolute;
+        top: 3.7vw;
+        left: 4.2vw;
+    }
+
+    body > #board > #win > .points {
+        position: absolute;
+        right: 4vw;
+        text-align: right;
+        top: 3.25vw;
+    }
+
+        body > #board > #win > .points > .number {
+            font-family: "Roboto Light","Calibri";
+            font-size: 4vw;
+            line-height: 4vw;
+            margin: 0;
+        }
+
+        body > #board > #win > .points > .word {
+            font-size: 1.5vw;
+            line-height: 1.5vw;
+            margin: 0;
+        }
+
+        body > #board > #win > .points.singular > .word::before {
+            content: 'point';
+        }
+
+        body > #board > #win > .points.plural > .word::before {
+            content: 'points';
+        }
+
+    body.state-White.state-Waiting.player-white > #board > #waiting,
+    body.state-Black.state-Waiting.player-black > #board > #waiting,
+    body.state-White.state-Waiting:not(.player-white) > #board > #joinable,
+    body.state-Black.state-Waiting:not(.player-black) > #board > #joinable,
+    body.state-Won > #board > #win {
+        display: block;
+    }
+
+    body.state-Won.state-White > #board > #win > .win::before {
+        content: 'White wins';
+    }
+
+    body.state-Won.state-Black > #board > #win > .win::before {
+        content: 'Black wins';
+    }
+
+    body.state-White.state-RejectedDouble > #board > #win > .win::after {
+        content: 'Black rejected a double.';
+    }
+
+    body.state-Black.state-RejectedDouble > #board > #win > .win::after {
+        content: 'White rejected a double.';
+    }
+
+    body.state-White.state-Resignation > #board > #win > .win::after {
+        content: 'Black resigned.';
+    }
+
+    body.state-Black.state-Resignation > #board > #win > .win::after {
+        content: 'White resigned.';
+    }
+
+    body > #board > #joinable #join::before {
+        content: 'Join game';
+    }
+
+    body > #board > #connecting::before {
+        content: 'Reconnecting...';
+    }
+
+    body > #board > button {
+        height: 4vw;
+        top: 28vw;
+        width: 11vw;
+        pointer-events: none;
+        opacity: 0;
+        -moz-transition: opacity ease-in-out 1s;
+        -o-transition: opacity ease-in-out 1s;
+        -webkit-transition: opacity ease-in-out 1s;
+        transition: opacity ease-in-out 1s;
+    }
+
+    body > #board > #undo {
+        font-size: 2vw;
+        left: 11vw;
+    }
+
+    body > #board > #accept {
+        font-size: 1.8vw;
+        left: 11vw;
+    }
+
+    body > #board > #commit, body > #board > #reject {
+        font-size: 1.8vw;
+        left: 24vw;
+    }
+
+    body > #board > #roll {
+        font-size: 2vw;
+        left: 57vw;
+    }
+
+    body > #board > #double {
+        font-size: 1.8vw;
+        left: 70vw;
+    }
+
+    body.state-ToRoll > #board > #roll,
+    body.state-ToRoll > #board > #double,
+    body.state-ToConfirmDouble > #board > #accept,
+    body.state-ToConfirmDouble > #board > #reject {
+        opacity: .5;
+    }
+
+    body.undoable > #board > #undo,
+    body.committable > #board > #commit,
+    body.player-white.state-White.state-ToRoll > #board > #roll,
+    body.player-black.state-Black.state-ToRoll > #board > #roll,
+    body.player-white.state-White.state-ToRoll > #board > #double,
+    body.player-black.state-Black.state-ToRoll > #board > #double,
+    body.player-white.state-White.state-ToConfirmDouble > #board > #accept,
+    body.player-black.state-Black.state-ToConfirmDouble > #board > #accept,
+    body.player-white.state-White.state-ToConfirmDouble > #board > #reject,
+    body.player-black.state-Black.state-ToConfirmDouble > #board > #reject {
+        pointer-events: all;
+        opacity: 1;
+    }
+
+    body > #board > #connecting {
+        color: hsl(0, 100%, 75%);
+        font-size: 1vw;
+        font-weight: bold;
+        top: 0.3vw;
+        right: 0.6vw;
+        display: none;
+    }
+
+    body.connecting > #board > #connecting {
+        display: block;
+    }
+
+    body > #infobar {
+        height: 8vw;
+        top: 0;
+    }
+
+        body > #infobar > .infobox {
+            background: hsl(31.85, 50%, 70%);
+            position: absolute;
+            top: 2vw;
+            height: 6vw;
+        }
+
+            body > #infobar > .infobox#info-player {
+                left: 2vw;
+                width: 16.5vw;
+            }
+
+            body > #infobar > .infobox#info-state {
+                left: 20.5vw;
+                width: 16.5vw;
+            }
+
+                body > #infobar > .infobox#info-player > .piece, body > #infobar > .infobox#info-state > .piece {
+                    position: absolute;
+                    left: .9vw;
+                    top: .5vw;
+                }
+
+        body > #infobar > #info-player::before, body > #infobar > #info-player::after, body > #infobar > #info-state::before, body > #infobar > #info-state::after {
+            position: absolute;
+            left: 7vw;
+            color: hsl(31.85, 50%, 30%);
+            font-family: "Impact";
+            text-transform: uppercase;
+            line-height: 1em;
+            white-space: pre;
+        }
+
+        body > #infobar > #info-player::before {
+            top: .5vw;
+            font-size: 1.3vw;
+        }
+
+        body > #infobar > #info-player::after {
+            bottom: .5vw;
+            font-size: 3.4vw;
+        }
+
+        body > #infobar > #info-state::before {
+            top: .5vw;
+            font-size: 3.4vw;
+        }
+
+        body > #infobar > #info-state::after {
+            bottom: .5vw;
+            font-size: 1.3vw;
+        }
+
+    body.player-white > #infobar > #info-player::before, body.player-black > #infobar > #info-player::before {
+        content: 'You are playing';
+    }
+
+    body.player-white > #infobar > #info-player::after {
+        content: 'white';
+    }
+
+    body.player-black > #infobar > #info-player::after {
+        content: 'black';
+    }
+
+    body.spectating > #infobar > #info-player > .piece {
+        display: none;
+    }
+
+    body.spectating > #infobar > #info-player::before {
+        content: 'You are';
+    }
+
+    body.spectating > #infobar > #info-player::after {
+        content: 'spectating';
+    }
+
+    body.state-White > #infobar > #info-state::before {
+        content: 'White';
+    }
+
+    body.state-Black > #infobar > #info-state::before {
+        content: 'Black';
+    }
+
+    body.state-Waiting > #infobar > #info-state::after {
+        content: 'waiting';
+    }
+
+    body.state-ToRoll > #infobar > #info-state::after {
+        content: 'to roll';
+    }
+
+    body.state-ToConfirmDouble > #infobar > #info-state::after {
+        content: 'to confirm';
+    }
+
+    body.state-ToMove > #infobar > #info-state::after {
+        content: 'to play';
+    }
+
+    body.state-Won > #infobar > #info-state::after {
+        content: 'wins';
+    }
+
+    body.spectating > #infobar > #info-player::before, body.spectating > #infobar > #info-player::after {
+        font-size: 2.4vw;
+        left: 8.25vw;
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -o-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }
+
 button {
     background-color: hsl(32, 52%, 34.3%);
     background-image: linear-gradient(hsl(32, 52%, 44%), hsl(32, 52%, 22%));
@@ -40,640 +861,30 @@ button {
         background-image: linear-gradient(hsl(32, 52%, 32%), hsl(32, 52%, 54%));
     }
 
-#board {
-    position: relative;
-    background: hsl(31.85, 50%, 30%);
-    width: 100vw;
-    height: 60vw;
-}
-
-    #board > * {
-        position: absolute;
+    button#undo::before {
+        content: 'Undo';
     }
 
-    #board > .overlay {
-        background: hsl(31.85, 50%, 30%);
+    button#commit::before {
+        content: 'Commit';
     }
 
-        #board > .overlay#overlay-bottom {
-            top: 58vw;
-            left: 0;
-            width: 100vw;
-            height: 2vw;
-        }
-
-        #board > .overlay#overlay-right {
-            top: 0;
-            right: 0;
-            width: 2vw;
-            height: 60vw;
-        }
-
-    #board > .background {
-        background: hsl(31.85, 50%, 70%);
+    button#roll::before {
+        content: 'Roll';
     }
 
-    #board > .shadow {
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+    button#double::before {
+        content: 'Double';
     }
 
-    #board > .main-area {
-        width: 42vw;
-        height: 56vw;
-        top: 2vw;
+    button#accept::before {
+        content: 'Accept';
     }
 
-        #board > .main-area.left {
-            left: 2vw;
-        }
-
-        #board > .main-area.right {
-            right: 10vw;
-        }
-
-    #board > .home {
-        width: 6vw;
-        height: 27vw;
-        right: 2vw;
+    button#reject::before {
+        content: 'Reject';
     }
 
-        #board > .home.white {
-            top: 2vw;
-        }
-
-        #board > .home.black {
-            bottom: 2vw;
-        }
-
-        #board > .home.selectable {
-            background: hsla(110,70%,70%,.5);
-        }
-
-    #board > .tongue {
-        width: 0;
-        height: 0;
-        border: none;
-        border-left: 3.5vw solid transparent !important;
-        border-right: 3.5vw solid transparent !important;
-    }
-
-        #board > .tongue.top {
-            top: 2vw;
-            border-top: 25vw solid;
-        }
-
-        #board > .tongue.bottom {
-            bottom: 2vw;
-            border-bottom: 25vw solid;
-        }
-
-        #board > .tongue.dark:not(.selectable) {
-            border-color: hsl(27.1, 33.3%, 54.9%);
-        }
-
-        #board > .tongue.light:not(.selectable) {
-            border-color: hsl(36.6, 66.7%, 82.5%);
-        }
-
-        #board > .tongue.selectable {
-            border-color: hsla(110,70%,70%,.7);
-        }
-
-    #board > .tongue-0, #board > .tongue-23 {
-        left: 83vw;
-    }
-
-    #board > .tongue-1, #board > .tongue-22 {
-        left: 76vw;
-    }
-
-    #board > .tongue-2, #board > .tongue-21 {
-        left: 69vw;
-    }
-
-    #board > .tongue-3, #board > .tongue-20 {
-        left: 62vw;
-    }
-
-    #board > .tongue-4, #board > .tongue-19 {
-        left: 55vw;
-    }
-
-    #board > .tongue-5, #board > .tongue-18 {
-        left: 48vw;
-    }
-
-    #board > .tongue-6, #board > .tongue-17 {
-        left: 37vw;
-    }
-
-    #board > .tongue-7, #board > .tongue-16 {
-        left: 30vw;
-    }
-
-    #board > .tongue-8, #board > .tongue-15 {
-        left: 23vw;
-    }
-
-    #board > .tongue-9, #board > .tongue-14 {
-        left: 16vw;
-    }
-
-    #board > .tongue-10, #board > .tongue-13 {
-        left: 9vw;
-    }
-
-    #board > .tongue-11, #board > .tongue-12 {
-        left: 2vw;
-    }
-
-    #board > .piece, #board > #win > .piece {
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
-        width: 5vw;
-        height: 5vw;
-        border-radius: 100%;
-        border: .3vw solid transparent;
-        border-top: .2vw solid transparent;
-        border-left: .2vw solid transparent;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
-    }
-
-        #board > .piece.white, #board > #win > .piece.white {
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
-            border-color: hsl(31.85, 50%, 100%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 100%);
-        }
-
-            #board > .piece.white.selected {
-                background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
-                border-color: hsl(0, 100%, 90%) hsl(0, 100%, 85%) hsl(0, 100%, 85%) hsl(0, 100%, 90%);
-            }
-
-        #board > .piece.black, #board > #win > .piece.black {
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
-            border-color: hsl(31.85, 50%, 20%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 20%);
-        }
-
-            #board > .piece.black.selected {
-                background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
-                border-color: hsl(0, 100%, 30%) hsl(0, 100%, 20%) hsl(0, 100%, 20%) hsl(0, 100%, 30%);
-            }
-
-        #board > .piece.selectable::before {
-            position: absolute;
-            left: -.2vw;
-            top: -.2vw;
-            right: -.3vw;
-            bottom: -.3vw;
-            background: hsl(110, 50%, 50%);
-            border-radius: 100%;
-            content: ' ';
-            opacity: .3;
-            -moz-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-            -o-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-            -webkit-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-            animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-        }
-
-        #board > .piece.selectable.selected::before {
-            display: none;
-        }
-
-        #board > .piece.hypo-target {
-            opacity: .5;
-            -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-            -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-            -webkit-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-            animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-            pointer-events: none;
-        }
-
-    #board.player-white.to-move > .piece.white, #board.player-black.to-move > .piece.black {
-        cursor: pointer;
-    }
-
-    #board > .dice-back {
-        border-radius: 1vw;
-        width: 6vw;
-        height: 6vw;
-        top: 27vw;
-        opacity: .5;
-        display: none;
-    }
-
-        #board > .dice-back#dice-back-white {
-            left: 62.5vw;
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
-        }
-
-        #board > .dice-back#dice-back-black {
-            left: 69.5vw;
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
-        }
-
-    #board.dice-start > .dice-back {
-        display: block;
-        font-family: "Impact";
-        text-align: right;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    #board.white-starts > #dice-back-white::before {
-        position: absolute;
-        content: "white";
-        color: hsl(31.85, 50%, 95%);
-        font-size: 2.2vw;
-        padding-right: .6vw;
-        top: .8vw;
-        right: 100%;
-    }
-
-    #board.white-starts > #dice-back-white::after {
-        position: absolute;
-        content: "plays first";
-        color: hsl(31.85, 50%, 95%);
-        font-size: 1.3vw;
-        padding-right: .6vw;
-        bottom: .8vw;
-        right: 100%;
-    }
-
-    #board.black-starts > #dice-back-black::before {
-        position: absolute;
-        content: "black";
-        color: hsl(31.85, 50%, 10%);
-        font-size: 2.2vw;
-        padding-left: .6vw;
-        top: .8vw;
-        left: 100%;
-    }
-
-    #board.black-starts > #dice-back-black::after {
-        position: absolute;
-        content: "plays first";
-        color: hsl(31.85, 50%, 10%);
-        font-size: 1.3vw;
-        padding-left: .6vw;
-        bottom: .8vw;
-        left: 100%;
-    }
-
-    #board > .dice {
-        left: 63vw;
-        top: 27.5vw;
-        width: 5vw;
-        height: 5vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        background-image: linear-gradient(135deg, #fff, #ddd);
-        border-radius: .5vw;
-        opacity: .5;
-        display: none;
-    }
-
-        #board > .dice > .razor {
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
-            border-radius: inherit;
-        }
-
-            #board > .dice > .razor > .face {
-                position: absolute;
-                background-image: linear-gradient(135deg, #ddd, #fff);
-                left: .5vw;
-                top: .5vw;
-                width: 4vw;
-                height: 4vw;
-                border-radius: 30%;
-            }
-
-            #board > .dice > .razor > .side {
-                position: absolute;
-                border-radius: 50%;
-                width: 5vw;
-                height: 1vw;
-            }
-
-                #board > .dice > .razor > .side.n {
-                    top: -.5vw;
-                    left: .25vw;
-                    background-image: linear-gradient(0deg, #fff, #ccc);
-                }
-
-                #board > .dice > .razor > .side.w {
-                    top: .25vw;
-                    left: -.5vw;
-                    width: 1vw;
-                    height: 5vw;
-                    background-image: linear-gradient(-90deg, #fff, #ccc);
-                }
-
-                #board > .dice > .razor > .side.s {
-                    bottom: -.5vw;
-                    left: .25vw;
-                    background-image: linear-gradient(0deg, #888, #eee);
-                }
-
-                #board > .dice > .razor > .side.e {
-                    top: .25vw;
-                    right: -.5vw;
-                    width: 1vw;
-                    height: 5vw;
-                    background-image: linear-gradient(-90deg, #888, #eee);
-                }
-
-        #board > .dice > .pip {
-            position: absolute;
-            background: black;
-            border-radius: 50%;
-            width: .7vw;
-            height: .7vw;
-            box-shadow: 1px 1px 0 white;
-        }
-
-            #board > .dice > .pip.a, #board > .dice > .pip.b, #board > .dice > .pip.c {
-                left: 1vw;
-            }
-
-            #board > .dice > .pip.g {
-                left: 2.2vw;
-            }
-
-            #board > .dice > .pip.b, #board > .dice > .pip.e, #board > .dice > .pip.g {
-                top: 2.2vw;
-            }
-
-            #board > .dice > .pip.d, #board > .dice > .pip.e, #board > .dice > .pip.f {
-                right: 1vw;
-            }
-
-            #board > .dice > .pip.a, #board > .dice > .pip.d {
-                top: 1vw;
-            }
-
-            #board > .dice > .pip.c, #board > .dice > .pip.f {
-                bottom: 1vw;
-            }
-
-        #board > .dice.val-1 .pip.a, #board > .dice.val-1 .pip.b, #board > .dice.val-1 .pip.c, #board > .dice.val-1 .pip.d, #board > .dice.val-1 .pip.e, #board > .dice.val-1 .pip.f, #board > .dice.val-2 .pip.b, #board > .dice.val-2 .pip.c,
-        #board > .dice.val-2 .pip.d, #board > .dice.val-2 .pip.e, #board > .dice.val-2 .pip.g, #board > .dice.val-3 .pip.a, #board > .dice.val-3 .pip.b, #board > .dice.val-3 .pip.e, #board > .dice.val-3 .pip.f, #board > .dice.val-4 .pip.b,
-        #board > .dice.val-4 .pip.e, #board > .dice.val-4 .pip.g, #board > .dice.val-5 .pip.b, #board > .dice.val-5 .pip.e, #board > .dice.val-6 .pip.g {
-            display: none;
-        }
-
-        #board > .dice > .cross {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            height: 1em;
-            font-size: 8vw;
-            font-weight: bold;
-            color: hsl(0, 80%, 50%);
-            line-height: 1;
-            cursor: default;
-            opacity: 0;
-            -moz-transition: opacity ease-in-out 1s;
-            -o-transition: opacity ease-in-out 1s;
-            -webkit-transition: opacity ease-in-out 1s;
-            transition: opacity ease-in-out 1s;
-        }
-
-            #board > .dice > .cross::after {
-                position: relative;
-                left: -50%;
-                top: -50%;
-                opacity: .8;
-                content: '✗';
-            }
-
-        #board > .dice.crossed > .cross {
-            opacity: 1;
-        }
-
-    #board.dice-2 > #dice-0, #board.dice-2 > #dice-1, #board.dice-4 > #dice-0, #board.dice-4 > #dice-1, #board.dice-4 > #dice-2, #board.dice-4 > #dice-3 {
-        display: block;
-    }
-
-    #board.dice-2 > #dice-1, #board.dice-4 > #dice-2 {
-        left: 70vw;
-    }
-
-    #board.dice-4 > #dice-0 {
-        left: 56vw;
-    }
-
-    #board.dice-4 > #dice-3 {
-        left: 77vw;
-    }
-
-    #board.to-move > .dice, #board.to-move > .dice-back {
-        opacity: 1;
-    }
-
-    #board > #cube {
-        background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
-        border: .3vw solid white;
-        border-radius: .5vw;
-        border-bottom-color: #ccc;
-        border-right-color: #ccc;
-        width: 4.2vw;
-        height: 4.2vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        left: 43.6vw;
-        top: 27.6vw;
-        -moz-transition: top ease-in-out 2s;
-        -o-transition: top ease-in-out 2s;
-        -webkit-transition: top ease-in-out 2s;
-        transition: top ease-in-out 2s;
-    }
-
-        #board > #cube > .inner {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            font-family: "Calibri";
-            font-size: 4vw;
-            height: 1em;
-            line-height: 1em;
-        }
-
-            #board > #cube > .inner > #cube-text {
-                position: relative;
-                left: -50%;
-                top: -50%;
-                color: #222;
-                text-shadow: 1px 1px white;
-            }
-
-    #board.no-cube > #cube {
-        display: none;
-    }
-
-    #board.cube-white > #cube {
-        top: 50.9vw;
-    }
-
-    #board.cube-black > #cube {
-        top: 4.3vw;
-    }
-
-    #board > .arrow {
-        pointer-events: none;
-        height: 2.5vw;
-        background: #dd5;
-    }
-
-        #board > .arrow::before {
-            position: absolute;
-            right: -6.25vw;
-            top: -1.25vw;
-            width: 0;
-            height: 0;
-            border: 2.5vw solid transparent;
-            border-left: 4.0625vw solid #dd5;
-            content: ' ';
-        }
-
-    #board > .dialog {
-        display: none;
-        margin: 0 15vw;
-        top: 20vw;
-        left: 0;
-        right: 0;
-        border: .7vw solid hsl(31.85, 50%, 20%);
-        background: hsl(31.85, 50%, 70%);
-        padding: 1vw 3vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, 0.3);
-        color: hsl(31.85, 50%, 30%);
-    }
-
-        #board > .dialog > p, #board > .dialog > form {
-            text-align: center;
-            font-size: 1.8vw;
-            margin: .5em 0;
-        }
-
-            #board > .dialog > p.link, #board > .dialog > form {
-                background: hsl(31.85, 50%, 90%);
-                padding: .5em 0;
-                font-weight: bold;
-            }
-
-            #board > .dialog > p.link {
-                font-family: monospace;
-            }
-
-    #board.waiting > #waiting, #board.joinable > #joinable {
-        display: block;
-    }
-
-    #board > #win > .win {
-        background: hsl(31.85, 50%, 90%);
-        padding: .2vw 0;
-        font-size: 5vw;
-    }
-
-    #board > #win > .piece {
-        position: absolute;
-        top: 4.2vw;
-        left: 4.2vw;
-    }
-
-    #board > #win > .points {
-        position: absolute;
-        right: 4vw;
-        text-align: right;
-        top: 3.75vw;
-    }
-
-        #board > #win > .points > .number {
-            font-family: "Roboto Light","Calibri";
-            font-size: 4vw;
-            line-height: 4vw;
-            margin: 0;
-        }
-
-        #board > #win > .points > .word {
-            font-size: 1.5vw;
-            line-height: 1.5vw;
-            margin: 0;
-        }
-
-    #board.black-wins > #win, #board.white-wins > #win {
-        display: block;
-    }
-
-        #board.black-wins > #win > .white, #board.white-wins > #win > .black, #board > #win > .rejected {
-            display: none;
-        }
-
-    #board.doubled.white-wins > #win > .rejected.white, #board.doubled.black-wins > #win > .rejected.black {
-        display: block;
-    }
-
-    #board > button {
-        height: 4vw;
-        top: 28vw;
-        width: 11vw;
-        pointer-events: none;
-        opacity: 0;
-        -moz-transition: opacity ease-in-out 1s;
-        -o-transition: opacity ease-in-out 1s;
-        -webkit-transition: opacity ease-in-out 1s;
-        transition: opacity ease-in-out 1s;
-    }
-
-        #board > button#undo {
-            font-size: 2vw;
-            left: 11vw;
-        }
-
-        #board > button#accept {
-            font-size: 1.8vw;
-            left: 11vw;
-        }
-
-        #board > button#commit, #board > button#reject {
-            font-size: 1.8vw;
-            left: 24vw;
-        }
-
-        #board > button#roll {
-            font-size: 2vw;
-            left: 57vw;
-        }
-
-        #board > button#double {
-            font-size: 1.8vw;
-            left: 70vw;
-        }
-
-    #board.undoable > button#undo, #board.committable > button#commit, #board.roll-or-double > button#roll, #board.roll-or-double > button#double, #board.confirm-double > button#accept, #board.confirm-double > button#reject {
-        pointer-events: all;
-        opacity: 1;
-    }
-
-    #board.waiting-to-roll-or-double > button#roll, #board.waiting-to-roll-or-double > button#double, #board.waiting-to-confirm-double > button#accept, #board.waiting-to-confirm-double > button#reject {
-        opacity: .5;
-    }
-
-    #board > #connecting {
-        color: hsl(0, 100%, 75%);
-        font-size: 1vw;
-        font-weight: bold;
-        top: 0.3vw;
-        right: 0.6vw;
-        display: none;
-    }
-
-    #board.connecting > #connecting {
-        display: block;
-    }
 
 @keyframes hypo-blink {
     from {

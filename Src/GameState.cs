@@ -8,19 +8,19 @@ namespace LiBackgammon
 {
     public enum GameState
     {
-        WhiteWaiting = 0,
-        BlackWaiting = 1,
-        WhiteToRoll = 2,
-        BlackToRoll = 3,
-        WhiteToConfirmDouble = 4,
-        BlackToConfirmDouble = 5,
-        WhiteToMove = 6,
-        BlackToMove = 7,
-        WhiteFinished = 8,
-        BlackFinished = 9,
-        WhiteDoubledBlackRejected = 10,
-        BlackDoubledWhiteRejected = 11,
-        WhiteResigned = 12,
-        BlackResigned = 13
+        White_Waiting = 0,
+        Black_Waiting = 1,
+        White_ToRoll = 2,
+        Black_ToRoll = 3,
+        White_ToConfirmDouble = 4,
+        Black_ToConfirmDouble = 5,
+        White_ToMove = 6,
+        Black_ToMove = 7,
+        White_Won_Finished = 8,
+        Black_Won_Finished = 9,
+        White_Won_RejectedDouble = 10,
+        Black_Won_RejectedDouble = 11,
+        White_Won_Resignation = 12,
+        Black_Won_Resignation = 13
     }
 }

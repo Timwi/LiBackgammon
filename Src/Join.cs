@@ -49,7 +49,7 @@ namespace LiBackgammon
                 while (initialDice1 == initialDice2);
 
                 game.Moves = ClassifyJson.Serialize(new[] { new Move { Dice1 = initialDice1, Dice2 = initialDice2 } }).ToString();
-                game.State = initialDice1 > initialDice2 ? GameState.WhiteToMove : GameState.BlackToMove;
+                game.State = initialDice1 > initialDice2 ? GameState.White_ToMove : GameState.Black_ToMove;
 
                 db.SaveChanges();
                 tr.Complete();
@@ -59,7 +59,7 @@ namespace LiBackgammon
                 lock (ActiveSockets)
                     if (ActiveSockets.TryGetValue(publicId, out sockets))
                     {
-                        var send = new JsonDict { { "dice", new JsonList { initialDice1, initialDice2 } }, { "state", (int) game.State } }.ToString().ToUtf8();
+                        var send = new JsonDict { { "dice", new JsonDict { { "dice1", initialDice1 }, { "dice2", initialDice2 }, { "state", game.State.ToString() } } } }.ToString().ToUtf8();
                         foreach (var socket in sockets)
                             socket.SendMessage(1, send);
                     }

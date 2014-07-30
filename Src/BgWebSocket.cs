@@ -68,18 +68,18 @@ namespace LiBackgammon
                 {
                     // Make sure it’s this player’s turn to choose whether to double or roll, and the game is played with a doubling cube
                     // Note “whiteToPlay” is currently off because the double doesn’t have an entry in “moves” yet — hence the not
-                    if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.WhiteToRoll : GameState.BlackToRoll))
+                    if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
                         return;
-                    game.State = _player == Player.White ? GameState.BlackToConfirmDouble : GameState.WhiteToConfirmDouble;
-                    sendBoth.Add(new JsonDict { { "state", (int) game.State } });
+                    game.State = _player == Player.White ? GameState.Black_ToConfirmDouble : GameState.White_ToConfirmDouble;
+                    sendBoth.Add(new JsonDict { { "state", game.State.ToString() } });
                 }
                 else if (json.ContainsKey("reject"))
                 {
                     // Make sure it’s this player’s turn to respond to a double, and the game is played with a doubling cube
-                    if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.WhiteToConfirmDouble : GameState.BlackToConfirmDouble))
+                    if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
                         return;
-                    game.State = _player == Player.White ? GameState.BlackDoubledWhiteRejected : GameState.WhiteDoubledBlackRejected;
-                    sendBoth.Add(new JsonDict { { "state", (int) game.State } });
+                    game.State = _player == Player.White ? GameState.Black_Won_RejectedDouble : GameState.White_Won_RejectedDouble;
+                    sendBoth.Add(new JsonDict { { "state", game.State.ToString() }, { "win", pos.GameValue ?? 1 } });
                 }
                 else
                 {
@@ -88,7 +88,7 @@ namespace LiBackgammon
                     if (json.ContainsKey("move"))
                     {
                         // Make sure it is actually this player’s turn
-                        if (whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.WhiteToMove : GameState.BlackToMove))
+                        if (whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToMove : GameState.Black_ToMove))
                             return;
 
                         var sourceTongues = json["move"]["SourceTongues"].GetInts();
@@ -110,18 +110,18 @@ namespace LiBackgammon
                     {
                         // Make sure it is actually this player’s turn, and the game is played with a doubling cube (otherwise the players do not manually roll)
                         // Note “whiteToPlay” is currently off because the dice roll doesn’t have an entry in “moves” yet — hence the not
-                        if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.WhiteToRoll : GameState.BlackToRoll))
+                        if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
                             return;
                         // The actual dice rolling happens inside the following while loop.
                     }
                     else if (json.ContainsKey("accept"))
                     {
                         // Make sure it’s this player’s turn to respond to a double
-                        if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.WhiteToConfirmDouble : GameState.BlackToConfirmDouble))
+                        if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
                             return;
                         acceptedDouble = true;
                         pos.GameValue = pos.GameValue.Value * 2;
-                        sendBoth.Add(new JsonDict { { "cube", new JsonList { pos.GameValue.Value, _player == Player.Black } } });
+                        sendBoth.Add(new JsonDict { { "cube", new JsonDict { { "GameValue", pos.GameValue.Value }, { "WhiteOwnsCube", _player == Player.Black } } } });
                         // The game continues with a dice roll, which happens inside the following while loop.
                     }
 
@@ -132,8 +132,8 @@ namespace LiBackgammon
                         if (pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 || pos.NumPiecesPerTongue[Tongues.BlackHome] == 15)
                         {
                             // The game is over.
-                            game.State = pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 ? GameState.WhiteFinished : GameState.BlackFinished;
-                            sendBoth.Add(new JsonDict { { "state", (int) game.State } });
+                            game.State = pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 ? GameState.White_Won_Finished : GameState.Black_Won_Finished;
+                            sendBoth.Add(new JsonDict { { "state", game.State.ToString() }, { "win", (pos.GameValue ?? 1) * pos.WinMultiplier } });
                             break;
                         }
 
@@ -143,15 +143,15 @@ namespace LiBackgammon
                             !(firstIteration && (json.ContainsKey("roll") || json.ContainsKey("accept"))))
                         {
                             // The player can choose to roll or double.
-                            game.State = whiteToPlay ? GameState.WhiteToRoll : GameState.BlackToRoll;
-                            sendBoth.Add(new JsonDict { { "state", (int) game.State } });
+                            game.State = whiteToPlay ? GameState.White_ToRoll : GameState.Black_ToRoll;
+                            sendBoth.Add(new JsonDict { { "state", game.State.ToString() } });
                             break;
                         }
 
                         // Roll the dice
                         lastMove = new Move { Dice1 = Rnd.Next(1, 7), Dice2 = Rnd.Next(1, 7), Doubled = acceptedDouble && firstIteration };
                         moves.Add(lastMove);
-                        sendBoth.Add(new JsonDict { { "dice", new JsonList { lastMove.Dice1, lastMove.Dice2 } } });
+                        sendBoth.Add(new JsonDict { { "dice", new JsonDict { { "dice1", lastMove.Dice1 }, { "dice2", lastMove.Dice2 }, { "state", (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString() } } } });
                         firstIteration = false;
 
                         // Generate all possible moves
@@ -160,8 +160,8 @@ namespace LiBackgammon
                         if (validMoves.Count > 1)
                         {
                             // Player must make a move
-                            game.State = whiteToPlay ? GameState.WhiteToMove : GameState.BlackToMove;
-                            sendBoth.Add(new JsonDict { { "state", (int) game.State } });
+                            game.State = whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove;
+                            sendBoth.Add(new JsonDict { { "state", game.State.ToString() } });
                             break;
                         }
 
@@ -170,6 +170,7 @@ namespace LiBackgammon
                         lastMove.SourceTongues = (validMoves.Count == 0) ? new int[0] : validMoves[0].SourceTongues;
                         lastMove.TargetTongues = (validMoves.Count == 0) ? new int[0] : validMoves[0].TargetTongues;
                         sendBoth.Add(new JsonDict { { "move", new JsonDict { { "SourceTongues", lastMove.SourceTongues }, { "TargetTongues", lastMove.TargetTongues } } } });
+                        pos = pos.ProcessMove(whiteToPlay, lastMove);
                     }
                 }
 

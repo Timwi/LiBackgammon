@@ -12,7 +12,7 @@ namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private HttpResponse page(HttpRequest req, object body, string[] jsPaths = null, string[] cssPaths = null)
+        private HttpResponse page(HttpRequest req, Tag body, string[] jsPaths = null, string[] cssPaths = null)
         {
 #if DEBUG
             var jquery = req.Url.WithParent("jquery").ToHref();
@@ -28,7 +28,7 @@ namespace LiBackgammon
                         jsPaths.NullOr(jsp => jsp.Select(p => new SCRIPT { src = req.Url.WithParent(p).ToHref() })),
                         new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
                         cssPaths.NullOr(cp => cp.Select(p => new LINK { rel = "stylesheet", href = req.Url.WithParent(p).ToHref() }))),
-                    new BODY(body)));
+                    body));
         }
     }
 }

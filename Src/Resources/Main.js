@@ -1,68 +1,33 @@
 $(function ()
 {
-    var board = $('#board');
-    if (!board.length)
-        return;
-
-    // Game states
-    var State = {
-        WhiteWaiting: 0,
-        BlackWaiting: 1,
-        WhiteToRoll: 2,
-        BlackToRoll: 3,
-        WhiteToConfirmDouble: 4,
-        BlackToConfirmDouble: 5,
-        WhiteToMove: 6,
-        BlackToMove: 7,
-        WhiteFinished: 8,
-        BlackFinished: 9,
-        WhiteDoubledBlackRejected: 10,
-        BlackDoubledWhiteRejected: 11,
-        WhiteResigned: 12,
-        BlackResigned: 13
-    };
-
-    // Special tongues
-    var Tongue = {
-        WhitePrison: 24,
-        BlackPrison: 25,
-        WhiteHome: 26,
-        BlackHome: 27,
-        NumTongues: 28
-    };
-
-    var moves = board.data('moves');
-    var lastMove = moves[moves.length - 1];
-    var state = board.data('state');
-    var player = board.data('player');
-    var playerIsWhite = player === 'White';
-    var playerIsSpectator = !playerIsWhite && player !== 'Black';
-    board.addClass(playerIsSpectator ? 'spectating' : playerIsWhite ? 'player-white' : 'player-black');
-    var allValidMoves;
-
     function makeArrow(source, dest)
     {
+        var pieceSize = 5; // vw
+
         function midPoint(elem)
         {
-            var pos = elem.position();
-            return { left: pos.left + elem.width() / 2, top: pos.top + elem.height() / 2 };
+            var tongue = +elem.data('tongue');
+            return {
+                left: leftFromTongue(tongue) + pieceSize / 2,
+                top: topFromTongue(tongue, +elem.data('index'), +elem.data('num')) + pieceSize / 2
+            };
         }
 
-        var srcPos = midPoint(source), dstPos = midPoint(dest);
+        var srcPos = midPoint($(source)), dstPos = midPoint($(dest));
         var dx = dstPos.left - srcPos.left, dy = dstPos.top - srcPos.top;
         var dist = Math.sqrt(dx * dx + dy * dy);
         var angle = Math.atan2(dy, dx);
-        var arrowThickness = 40;
-        var arrowLength = dist - 80;
+        var arrowThickness = 2.5; // vw
+        var arrowLength = dist - 4; // vw
 
         return $('<div class="arrow">')
-            .appendTo('#board')
-            .css('left', (srcPos.left + dstPos.left) / 2 - arrowLength / 2)
-            .css('top', (srcPos.top + dstPos.top) / 2 - arrowThickness / 2)
-            .css('width', arrowLength - 35)
-            .css('transform-origin', (arrowLength / 2) + 'px 50%')
-            .css('transform', 'rotate(' + angle + 'rad)')
-            .show();
+            .css({
+                left: convertFromVw((srcPos.left + dstPos.left) / 2 - arrowLength / 2),
+                top: convertFromVw((srcPos.top + dstPos.top) / 2 - arrowThickness / 2),
+                width: convertFromVw(arrowLength - 2),
+                transformOrigin: convertFromVw(arrowLength / 2) + ' 50%',
+                transform: 'rotate(' + angle + 'rad)'
+            });
     }
 
     function leftFromTongue(tongue)
@@ -76,7 +41,7 @@ $(function ()
         return 3 + 7 * (tongue - 12) + (tongue >= 18 ? 4 : 0);
     }
 
-    function topFromTongue(tongue, pieceIndex)
+    function topFromTongue(tongue, pieceIndex, numPieces)
     {
         if (tongue === Tongue.WhiteHome)
             return 2 + 1 + 1.425 * pieceIndex;
@@ -87,85 +52,8 @@ $(function ()
         if (tongue === Tongue.BlackPrison)
             return 19 - 4 * pieceIndex;
         if (tongue < 12)
-            return (60 - 2 - 5) - 5 * pieceIndex;
-        return 2 + 5 * pieceIndex;
-    }
-
-    function resetUi(/* bool */ recalculateValidMoves)
-    {
-        board.removeClass('waiting joinable no-cube cube-white cube-black dice-2 dice-4 dice-start white-starts black-starts to-move roll-or-double waiting-to-roll-or-double confirm-double waiting-to-confirm-double');
-        lastMove = moves[moves.length - 1];
-
-        var whiteIndex = 0, blackIndex = 0;
-        for (var tng = 0; tng < Tongue.NumTongues; tng++)
-            for (var i = (tng < 12 ? position.NumPiecesPerTongue[tng] - 1 : 0) ; (tng < 12) ? (i >= 0) : (i < position.NumPiecesPerTongue[tng]) ; (tng < 12 ? i-- : i++))
-                $('#' + (position.IsWhitePerTongue[tng] ? ('white-' + whiteIndex++) : ('black-' + blackIndex++))).insertBefore('#overlay-bottom').css({ left: leftFromTongue(tng) + "vw", top: topFromTongue(tng, i) + "vw" }).data('tongue', tng).show();
-
-        if (position.GameValue === null)
-            board.addClass('no-cube');
-        else if (position.WhiteOwnsCube !== null)
-            board.addClass(position.WhiteOwnsCube === true ? 'cube-white' : 'cube-black');
-        $('#cube-text').text(position.GameValue);
-
-        switch (state)
-        {
-            case State.WhiteWaiting:
-            case State.BlackWaiting:
-                board.addClass(((state === State.WhiteWaiting) === playerIsWhite) ? 'waiting' : 'joinable');
-                break;
-
-            case State.WhiteToRoll:
-            case State.BlackToRoll:
-                if (isPlayerToRollOrDouble())
-                    board.addClass('roll-or-double');
-                else
-                    board.addClass('waiting-to-roll-or-double');
-                break;
-
-            case State.WhiteToConfirmDouble:
-            case State.BlackToConfirmDouble:
-                if (isPlayerToConfirmDouble())
-                    board.addClass('confirm-double');
-                else
-                    board.addClass('waiting-to-confirm-double');
-                break;
-
-            case State.WhiteToMove:
-            case State.BlackToMove:
-                board.addClass(lastMove.Dice1 === lastMove.Dice2 ? 'dice-4' : 'dice-2');
-                $('.dice').removeClass('val-1 val-2 val-3 val-4 val-5 val-6');
-                $('#dice-0').addClass('val-' + lastMove.Dice1);
-                $('#dice-1,#dice-2,#dice-3').addClass('val-' + lastMove.Dice2);
-                if (moves.length === 1)
-                    board.addClass('dice-start ' + (lastMove.Dice1 > lastMove.Dice2 ? 'white-starts' : 'black-starts'));
-                if (isPlayerToMove())
-                {
-                    if (recalculateValidMoves)
-                        allValidMoves = getAllMoves(position, playerIsWhite,
-                            lastMove.Dice1 === lastMove.Dice2
-                                ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
-                                : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
-                    deselectPiece();
-                    board.addClass('to-move');
-                }
-                break;
-
-            case State.WhiteDoubledBlackRejected:
-            case State.BlackDoubledWhiteRejected:
-            case State.WhiteFinished:
-            case State.BlackFinished:
-            case State.WhiteResigned:
-            case State.BlackResigned:
-                board.addClass(
-                    state === State.WhiteDoubledBlackRejected ? 'doubled white-wins' :
-                    state === State.BlackDoubledWhiteRejected ? 'doubled black-wins' :
-                    state === State.WhiteFinished ? 'white-wins' :
-                    state === State.BlackFinished ? 'black-wins' :
-                    state === State.WhiteResigned ? 'resigned black-wins' : 'resigned white-wins');
-                $('#win>.points>.number').text(position.GameValue);
-                $('#win>.points>.word').text(position.GameValue === 1 ? "point" : "points");
-                break;
-        }
+            return (60 - 2 - 5) - (20 / Math.max(4, numPieces - 1)) * pieceIndex;
+        return 2 + (20 / Math.max(4, numPieces - 1)) * pieceIndex;
     }
 
     function getPrison(/* bool */ whitePlayer) { return whitePlayer ? Tongue.WhitePrison : Tongue.BlackPrison; }
@@ -208,14 +96,12 @@ $(function ()
 
         var newPos = copyPosition(pos);
         var animationQueue = [];
+        var arrows = [];
 
         var piecesByTongue = [];
         for (var i = 0; i < Tongue.NumTongues; i++)
         {
-            piecesByTongue[i] = [];
-            var tonguePieces = $('.piece').filter(function () { return $(this).data('tongue') === i; });
-            for (var j = 0; j < tonguePieces.length; j++)
-                piecesByTongue[i].push($(tonguePieces[j]));
+            piecesByTongue[i] = getPiecesOnTongue(i).get();
             if (i < 12)
                 piecesByTongue[i].reverse();
         }
@@ -230,21 +116,23 @@ $(function ()
             {
                 case 'animate':
                     animationQueue.push({
-                        Piece: piecesByTongue[sourceTongue][newPos.NumPiecesPerTongue[sourceTongue]],
-                        Props: {
-                            left: leftFromTongue(targetTongue) + "vw",
-                            top: topFromTongue(targetTongue, newPos.NumPiecesPerTongue[targetTongue] - 1) + "vw"
+                        Piece: $(piecesByTongue[sourceTongue][newPos.NumPiecesPerTongue[sourceTongue]]),
+                        Data: {
+                            tongue: targetTongue,
+                            index: newPos.NumPiecesPerTongue[targetTongue] - 1,
+                            num: newPos.NumPiecesPerTongue[targetTongue]
                         }
                     });
                     piecesByTongue[targetTongue].push(piecesByTongue[sourceTongue].pop());
                     break;
 
                 case 'indicate':
-                    var hypo = $('<div class="piece hypo-target">').addClass(isWhite ? 'white' : 'black').appendTo(board).css({
-                        left: leftFromTongue(targetTongue) + "vw",
-                        top: topFromTongue(targetTongue, newPos.NumPiecesPerTongue[targetTongue] - 1) + "vw"
-                    });
-                    makeArrow(piecesByTongue[sourceTongue][newPos.NumPiecesPerTongue[sourceTongue]], hypo);
+                    var hypo = $('<div class="piece hypo-target">')
+                        .addClass(isWhite ? 'white' : 'black')
+                        .appendTo(board)
+                        .css({ left: convertFromVw(leftFromTongue(targetTongue)), top: convertFromVw(topFromTongue(targetTongue, newPos.NumPiecesPerTongue[targetTongue] - 1, newPos.NumPiecesPerTongue[targetTongue] - 1)) })
+                        .data({ tongue: targetTongue, index: newPos.NumPiecesPerTongue[targetTongue] - 1, num: newPos.NumPiecesPerTongue[targetTongue] - 1 });
+                    arrows.push(makeArrow(piecesByTongue[sourceTongue][newPos.NumPiecesPerTongue[sourceTongue]], hypo));
                     piecesByTongue[sourceTongue].pop();
                     piecesByTongue[targetTongue].push(hypo);
                     break;
@@ -283,23 +171,66 @@ $(function ()
             }
         }
 
+        for (var i = 0; i < arrows.length; i++)
+            arrows[i].appendTo(board);
+
         function processAnimationQueue()
         {
             if (animationQueue.length === 0)
             {
-                resetUi(false);
                 deselectPiece();
                 if (callback !== null)
                     callback();
                 return;
             }
             var item = animationQueue.shift();
-            item.Piece.insertBefore('#overlay-bottom');
-            item.Piece.animate(item.Props, { complete: processAnimationQueue });
+            var num = new Array();
+            num[item.Data.tongue] = getPiecesOnTongue(item.Data.tongue).length + 1;
+            num[item.Piece.data('tongue')] = getPiecesOnTongue(item.Piece.data('tongue')).length - 1;
+            var otherPieces = $('#board>.piece')
+                .filter(function (i, elem) { return $(elem).data('tongue') === item.Data.tongue || $(elem).data('tongue') === item.Piece.data('tongue'); })
+                .not(item.Piece)
+                .get()
+                .map(function (elem)
+                {
+                    var tongue = $(elem).data('tongue');
+                    return [$(elem), {
+                        left: convertFromVw(leftFromTongue(tongue)),
+                        top: convertFromVw(topFromTongue(tongue, $(elem).data('index'), num[tongue]))
+                    }];
+                });
+            if (num[item.Piece.data('tongue')] > 4 || num[item.Data.tongue] > 5)
+                setTimeout(function () { otherPieces.forEach(function (inf) { inf[0].animate(inf[1], 200); }); }, 100);
+            item.Piece
+                .data(item.Data)
+                .insertAfter($('#board>.piece').last())
+                .animate({
+                    left: convertFromVw(leftFromTongue(item.Data.tongue)),
+                    top: convertFromVw(topFromTongue(item.Data.tongue, item.Data.index, item.Data.num))
+                }, {
+                    duration: 400,
+                    complete: function ()
+                    {
+                        setTimeout(function ()
+                        {
+                            if (item.Data.tongue < 12)
+                                item.Piece.insertBefore($('#board>.piece').first());
+                            processAnimationQueue();
+                        }, 10);
+                    }
+                });
         }
         if (animationQueue.length > 0)
             processAnimationQueue();
+        else if (callback)
+            setTimeout(callback, 100);
         return newPos;
+    }
+
+    function /* $ */ getPiecesOnTongue(tongue)
+    {
+        // $('#board>.piece[data-tongue="x"]') does not work; jQueryâ€™s .data() does not actually change the attributes
+        return $('#board>.piece').filter(function () { return $(this).data('tongue') === tongue; });
     }
 
     function /* int */ getTargetTongue(/* int */ sourceTongue, /* int */ furthestFromHome, /* int */ dice, /* bool */ whitePlayer)
@@ -342,7 +273,7 @@ $(function ()
 
         // Which tongues can the player move a piece from?
         var accessibleTongues = [];
-        // How far from home is the furthest piece? (if it’s 4, say, then you can use a 6 to move the 4-away pieces into home)
+        // How far from home is the furthest piece? (if itâ€™s 4, say, then you can use a 6 to move the 4-away pieces into home)
         var furthestFromHome = null;
 
         if (position.NumPiecesPerTongue[prison] > 0)
@@ -389,157 +320,34 @@ $(function ()
 
     function topPieceOfTongue(tongue)
     {
-        // $('.piece[data-tongue="x"]') does not work due to a bug in jQuery
-        var tonguePieces = $('.piece').filter(function () { return $(this).data('tongue') === tongue; });
+        var tonguePieces = getPiecesOnTongue(tongue);
         return $(tonguePieces[tongue < 12 ? 0 : tonguePieces.length - 1]);
-    }
-
-    function isWhiteToMove()
-    {
-        return state === State.WhiteToMove || state === State.WhiteToRoll;
     }
 
     function isPlayerToMove()
     {
-        return !playerIsSpectator && (
-            (state === State.WhiteToMove && playerIsWhite) ||
-            (state === State.BlackToMove && !playerIsWhite));
+        return !!$('body.player-white.state-White.state-ToMove,body.player-black.state-Black.state-ToMove').length;
     }
 
-    function isPlayerToRollOrDouble()
+    function setState(newState, skipHighlight)
     {
-        return !playerIsSpectator && (
-            (state === State.WhiteToRoll && playerIsWhite) ||
-            (state === State.BlackToRoll && !playerIsWhite));
-    }
-
-    function isPlayerToConfirmDouble()
-    {
-        return !playerIsSpectator && (
-            (state === State.WhiteToConfirmDouble && playerIsWhite) ||
-            (state === State.BlackToConfirmDouble && !playerIsWhite));
-    }
-
-    var position = board.data('initial');
-    if (moves.length > 0)
-    {
-        var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
-        for (var i = 0; i < moves.length; i++)
+        if (newState)
         {
-            var whitePlayer = whiteStarts ? (i % 2 === 0) : (i % 2 !== 0);
-            if (moves[i].Doubled && position.GameValue !== null)
-            {
-                position.GameValue *= 2;
-                position.WhiteOwnsCube = !whitePlayer;
-            }
-            if ('SourceTongues' in moves[i])
-                for (var j = 0; j < moves[i].SourceTongues.length; j++)
-                    position = processMove(position, whitePlayer, moves[i].SourceTongues[j], moves[i].TargetTongues[j]);
+            state = newState;
+            body.removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, "state-".length) === "state-"; }).join(' '); });
+            newState.split('_').forEach(function (cl) { body.addClass('state-' + cl); });
+        }
+        if (!body.hasClass('state-ToMove'))
+            body.removeClass('dice-start dice-2 dice-4');
+        if (isPlayerToMove() && !skipHighlight)
+        {
+            allValidMoves = getAllMoves(position, playerIsWhite,
+                lastMove.Dice1 === lastMove.Dice2
+                    ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
+                    : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
+            deselectPiece();
         }
     }
-
-    var moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
-    var selectedPiece = null;
-
-    resetUi(true);
-
-    var socket;
-    var sendQueue = [];
-    var socketQueue = [];
-    var socketQueueProcessing = false;
-
-    var processSocketQueue = function ()
-    {
-        if (!socketQueue.length)
-        {
-            socketQueueProcessing = false;
-            return;
-        }
-
-        socketQueueProcessing = true;
-        var json = socketQueue.shift();
-
-        if ('move' in json)
-        {
-            moves[moves.length - 1].SourceTongues = json.move.SourceTongues;
-            moves[moves.length - 1].TargetTongues = json.move.TargetTongues;
-            position = processMove(position, isWhiteToMove(), json.move.SourceTongues, json.move.TargetTongues, { mode: 'animate', callback: processSocketQueue });
-        }
-        if ('dice' in json)
-        {
-            $('.dice').removeClass('crossed');
-            moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
-            moves.push({ Dice1: json.dice[0], Dice2: json.dice[1] });
-            // TODO: Dice roll animation
-            processSocketQueue();
-        }
-        if ('cube' in json)
-        {
-            $('#cube-text').text(json.cube[0]);
-            board.removeClass('cube-white cube-black').addClass(json.cube[1] ? 'cube-white' : 'cube-black');
-            position.GameValue = json.cube[0];
-            position.WhiteOwnsCube = json.cube[1];
-            window.setTimeout(processSocketQueue, 1000);
-        }
-        if ('state' in json)
-        {
-            state = json.state;
-            resetUi(true);
-            processSocketQueue();
-        }
-    };
-
-    var newSocket = function ()
-    {
-        socket = new WebSocket(board.data('socket-url'));
-        socket.onopen = function ()
-        {
-            board.removeClass('connecting');
-            for (var i = 0; i < sendQueue.length; i++)
-                socket.send(JSON.stringify(sendQueue[i]));
-            sendQueue = [];
-        };
-        socket.onclose = function ()
-        {
-            reconnect(true);
-        };
-        socket.onmessage = function (msg)
-        {
-            var json = JSON.parse(msg.data);
-            if (json instanceof Array)
-                for (var i = 0; i < json.length; i++)
-                    socketQueue.push(json[i]);
-            else
-                socketQueue.push(json);
-            if (!socketQueueProcessing)
-                processSocketQueue();
-        };
-    };
-    var reconnectInterval = 0;
-    var reconnect = function (useDelay)
-    {
-        board.addClass('connecting');
-        try { socket.close(); } catch (e) { }
-        if (useDelay)
-        {
-            reconnectInterval = (reconnectInterval === 0) ? 1000 : reconnectInterval * 2;
-            window.setTimeout(newSocket, reconnectInterval);
-        }
-        else
-        {
-            reconnectInterval = 0;
-            newSocket();
-        }
-    };
-    reconnect();
-
-    var socketSend = function (msg)
-    {
-        if (socket && socket.readyState === socket.OPEN)
-            socket.send(JSON.stringify(msg));
-        else
-            sendQueue.push(msg);
-    };
 
     function getClickableSourceTongues()
     {
@@ -568,8 +376,8 @@ $(function ()
 
     function deselectPiece(skipHighlight)
     {
-        $('.piece.hypo-target, .arrow, .tongue.selectable, .home.selectable').remove();
-        $('.piece').removeClass('selectable selected');
+        $('#board>.piece.hypo-target, #board>.arrow, #board>.tongue.selectable, #board>.home.selectable').remove();
+        $('#board>.piece').removeClass('selectable selected');
         selectedPiece = null;
 
         // Highlight all the clickable pieces
@@ -625,19 +433,211 @@ $(function ()
         });
     }
 
-    if (!playerIsSpectator)
+    function convertFromVw(val)
+    {
+        if (lastWide)
+            return (val * ratio) + 'vh';
+        return val + 'vw';
+    }
+
+    function onResize()
+    {
+        var isWide = ($(window).width() / $(window).height()) >= ratio;
+
+        if (isWide !== lastWide)
+        {
+            lastWide = isWide;
+
+            // If the aspect ratio has changed, move all the pieces into the right place
+            var whites = $('#board>.piece.white'), blacks = $('#board>.piece.black');
+            var whiteIndex = 0, blackIndex = 0;
+            for (var tng = 0; tng < Tongue.NumTongues; tng++)
+                for (var i = (tng < 12 ? position.NumPiecesPerTongue[tng] - 1 : 0) ; (tng < 12) ? (i >= 0) : (i < position.NumPiecesPerTongue[tng]) ; (tng < 12 ? i-- : i++))
+                    $(position.IsWhitePerTongue[tng] ? whites[whiteIndex++] : blacks[blackIndex++])
+                        .css({ left: convertFromVw(leftFromTongue(tng)), top: convertFromVw(topFromTongue(tng, i, position.NumPiecesPerTongue[tng])) })
+                        .data({ tongue: tng, index: i, num: position.NumPiecesPerTongue[tng] });
+
+            if (isPlayerToMove())
+            {
+                if (selectedPiece !== null)
+                    selectPiece(selectedPiece.data('tongue'));
+                else
+                    deselectPiece();
+            }
+        }
+    }
+
+    var board = $('#board');
+    if (!board.length)
+        return;
+    var body = $(document.body);
+
+    // Special tongues
+    var Tongue = {
+        WhitePrison: 24,
+        BlackPrison: 25,
+        WhiteHome: 26,
+        BlackHome: 27,
+        NumTongues: 28
+    };
+
+    var moves = body.data('moves');
+    var lastMove = moves[moves.length - 1];
+    var playerIsWhite = body.hasClass('player-white');
+    var allValidMoves;
+    var ratio = 100 / 68;
+    var lastWide = null;
+
+    var position = body.data('initial');
+    if (moves.length > 0)
+    {
+        var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
+        for (var i = 0; i < moves.length; i++)
+        {
+            var whitePlayer = whiteStarts ? (i % 2 === 0) : (i % 2 !== 0);
+            if (moves[i].Doubled && position.GameValue !== null)
+            {
+                position.GameValue *= 2;
+                position.WhiteOwnsCube = !whitePlayer;
+            }
+            if ('SourceTongues' in moves[i])
+                for (var j = 0; j < moves[i].SourceTongues.length; j++)
+                    position = processMove(position, whitePlayer, moves[i].SourceTongues[j], moves[i].TargetTongues[j]);
+        }
+    }
+
+    var moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
+    var selectedPiece = null;
+
+    setState();
+
+    var socket;
+    var sendQueue = [];
+    var socketQueue = [];
+    var socketQueueProcessing = false;
+
+    var processSocketQueue = function ()
+    {
+        if (!socketQueue.length)
+        {
+            socketQueueProcessing = false;
+            return;
+        }
+
+        socketQueueProcessing = true;
+        var json = socketQueue.shift();
+
+        if ('move' in json)
+        {
+            moves[moves.length - 1].SourceTongues = json.move.SourceTongues;
+            moves[moves.length - 1].TargetTongues = json.move.TargetTongues;
+            position = processMove(position, body.hasClass('state-White'), json.move.SourceTongues, json.move.TargetTongues, { mode: 'animate', callback: processSocketQueue });
+        }
+        else if ('dice' in json)
+        {
+            setState(json.dice.state);
+            moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
+            moves.push({ Dice1: json.dice.dice1, Dice2: json.dice.dice2 });
+            lastMove = moves[moves.length - 1];
+
+            body
+                .removeClass('dice-2 dice-4 dice-start')
+                .addClass((lastMove.Dice1 === lastMove.Dice2 ? 'dice-4' : 'dice-2') + (moves.length === 1 ? ' dice-start' : ''));
+            $('#board>.dice').removeClass('val-1 val-2 val-3 val-4 val-5 val-6 crossed');
+            $('#board>#dice-0').addClass('val-' + lastMove.Dice1);
+            $('#board>#dice-1,#board>#dice-2,#board>#dice-3').addClass('val-' + lastMove.Dice2);
+
+            // TODO: Dice roll animation
+
+            processSocketQueue();
+        }
+        else if ('cube' in json)
+        {
+            $('#cube-text').text(json.GameValue);
+            body.removeClass('cube-white cube-black').addClass(json.WhiteOwnsCube ? 'cube-white' : 'cube-black');
+            position.GameValue = json.GameValue;
+            position.WhiteOwnsCube = json.WhiteOwnsCube;
+            setTimeout(processSocketQueue, 1000);
+        }
+        else if ('state' in json)
+        {
+            setState(json.state);
+
+            if ('win' in json)
+            {
+                $('#win>.points>.number').text(json.win);
+                $('#win>.points').removeClass('singular plural').addClass(json.win === 1 ? "singular" : "plural");
+            }
+
+            processSocketQueue();
+        }
+    };
+
+    var newSocket = function ()
+    {
+        socket = new WebSocket(body.data('socket-url'));
+        socket.onopen = function ()
+        {
+            body.removeClass('connecting');
+            for (var i = 0; i < sendQueue.length; i++)
+                socket.send(JSON.stringify(sendQueue[i]));
+            sendQueue = [];
+        };
+        socket.onclose = function ()
+        {
+            reconnect(true);
+        };
+        socket.onmessage = function (msg)
+        {
+            var json = JSON.parse(msg.data);
+            if (json instanceof Array)
+                for (var i = 0; i < json.length; i++)
+                    socketQueue.push(json[i]);
+            else
+                socketQueue.push(json);
+            if (!socketQueueProcessing)
+                processSocketQueue();
+        };
+    };
+    var reconnectInterval = 0;
+    var reconnect = function (useDelay)
+    {
+        body.addClass('connecting');
+        try { socket.close(); } catch (e) { }
+        if (useDelay)
+        {
+            reconnectInterval = (reconnectInterval === 0) ? 1000 : reconnectInterval * 2;
+            window.setTimeout(newSocket, reconnectInterval);
+        }
+        else
+        {
+            reconnectInterval = 0;
+            newSocket();
+        }
+    };
+    reconnect();
+
+    var socketSend = function (msg)
+    {
+        if (socket && socket.readyState === socket.OPEN)
+            socket.send(JSON.stringify(msg));
+        else
+            sendQueue.push(msg);
+    };
+
+    if (!body.hasClass('spectating'))
     {
         deselectPiece();
-        $('.piece').click(function ()
+        $('#board>.piece').click(function ()
         {
             if (!isPlayerToMove())
                 return false;
 
-            // Only allow clicking on a piece of the player’s color
+            // Only allow clicking on a piece of the playerâ€™s color
             if ($(this).hasClass('white') !== playerIsWhite)
                 return false;
 
-            // See if the player has any valid moves (or they’ve already entered their move)
+            // See if the player has any valid moves (or theyâ€™ve already entered their move)
             var clickableTongues = getClickableSourceTongues();
             if (clickableTongues.length === 0)
                 return false;
@@ -662,12 +662,12 @@ $(function ()
 
         board.on('mouseleave', '.tongue.selectable, .home.selectable', function ()
         {
-            $('.piece.hypo-target, .arrow').hide();
+            $('#board>.piece.hypo-target, #board>.arrow').remove();
         });
 
         board.on('click', '.tongue.selectable, .home.selectable', function ()
         {
-            $('.piece.hypo-target, .arrow').hide();
+            $('#board>.piece.hypo-target, #board>.arrow').hide();
             var move = $(this).data('move');
             deselectPiece(true);
             position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate' });
@@ -677,11 +677,11 @@ $(function ()
                 moveSoFar.SourceTongues.push(move.SourceTongues[i]);
                 moveSoFar.TargetTongues.push(move.TargetTongues[i]);
                 moveSoFar.OpponentPieceTaken.push(move.OpponentPieceTaken[i]);
-                $('.dice:not(.crossed).val-' + move.DiceSequence[i]).first().addClass('crossed');
+                $('#board>.dice:not(.crossed).val-' + move.DiceSequence[i]).first().addClass('crossed');
             }
-            board.addClass('undoable');
+            body.addClass('undoable');
             if (moveSoFar.DiceSequence.length === allValidMoves[0].DiceSequence.length)
-                board.addClass('committable');
+                body.addClass('committable');
         });
 
         $(document).keydown(function (e)
@@ -692,21 +692,21 @@ $(function ()
 
         $('#undo').click(function ()
         {
-            if (playerIsSpectator)
+            if (body.hasClass('spectating'))
                 return false;
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)
             {
                 position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], { mode: 'animate', undoOpponentPieceTaken: moveSoFar.OpponentPieceTaken[lastIndex] });
-                $('.dice.crossed.val-' + moveSoFar.DiceSequence[lastIndex]).last().removeClass('crossed');
+                $('#board>.dice.crossed.val-' + moveSoFar.DiceSequence[lastIndex]).last().removeClass('crossed');
                 moveSoFar.DiceSequence.pop();
                 moveSoFar.SourceTongues.pop();
                 moveSoFar.TargetTongues.pop();
                 moveSoFar.OpponentPieceTaken.pop();
             }
-            board.removeClass('committable');
+            body.removeClass('committable');
             if (moveSoFar.DiceSequence.length === 0)
-                board.removeClass('undoable');
+                body.removeClass('undoable');
             return false;
         });
 
@@ -714,10 +714,10 @@ $(function ()
         {
             return function ()
             {
-                if (!playerIsSpectator)
+                if (!body.hasClass('spectating'))
                 {
                     socketSend(typeof msgToSend === 'function' ? msgToSend() : msgToSend);
-                    board.removeClass('undoable committable roll-or-double confirm-double');
+                    body.removeClass('undoable committable roll-or-double confirm-double');
                 }
                 return false;
             };
@@ -729,4 +729,23 @@ $(function ()
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
         $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
     }
+
+    // Add extra CSS for screens wider than the playing areaâ€™s aspect ratio by automatically converting all vw to vh
+    var moreCss = [];
+    var vwRe = /(-?\b\d*\.?\d+)vw\b/g;
+    for (var ss = 0; ss < document.styleSheets.length; ss++)
+    {
+        var rules = document.styleSheets[ss].cssRules || document.styleSheets[ss].rules;
+        for (var rule = 0; rule < rules.length; rule++)
+        {
+            var text = rules[rule].cssText || rules[rule].style.cssText;
+            if (vwRe.test(text))
+                moreCss.push(text.replace(vwRe, function (_, vw) { return (vw * ratio) + 'vh'; }));
+        }
+    }
+    $('head').append($('<link id="vh-convert" rel="stylesheet">').attr('href', 'data:text/css;charset=utf-8,' + escape('@media screen and (min-aspect-ratio: 100/68) {' + moreCss.join('') + '}')));
+
+    $(window).resize(onResize);
+    onResize();
+
 });

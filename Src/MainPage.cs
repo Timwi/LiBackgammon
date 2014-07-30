@@ -13,9 +13,10 @@ namespace LiBackgammon
         private HttpResponse mainPage(HttpRequest req)
         {
             return page(req,
-                new UL(
-                    new LI(
-                        "Start a new game as: ", new A { href = req.Url.WithParent("new/white").ToHref() }._("white"), " | ", new A { href = req.Url.WithParent("new/black").ToHref() }._("black"))));
+                new BODY(
+                    new UL(
+                        new LI(
+                            "Start a new game as: ", new A { href = req.Url.WithParent("new/white").ToHref() }._("white"), " | ", new A { href = req.Url.WithParent("new/black").ToHref() }._("black")))));
         }
     }
 }

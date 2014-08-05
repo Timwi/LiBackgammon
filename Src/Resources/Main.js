@@ -33,27 +33,27 @@ $(function ()
     function leftFromTongue(tongue)
     {
         if (tongue === Tongue.WhiteHome || tongue === Tongue.BlackHome)
-            return 92.5;
+            return 90.5;
         if (tongue === Tongue.WhitePrison || tongue === Tongue.BlackPrison)
-            return 43.5;
+            return 41.5;
         if (tongue < 12)
-            return 3 + 7 * (11 - tongue) + (tongue < 6 ? 4 : 0);
-        return 3 + 7 * (tongue - 12) + (tongue >= 18 ? 4 : 0);
+            return 1 + 7 * (11 - tongue) + (tongue < 6 ? 4 : 0);
+        return 1 + 7 * (tongue - 12) + (tongue >= 18 ? 4 : 0);
     }
 
     function topFromTongue(tongue, pieceIndex, numPieces)
     {
         if (tongue === Tongue.WhiteHome)
-            return 2 + 1 + 1.425 * pieceIndex;
+            return 1 + 1.425 * pieceIndex;
         if (tongue === Tongue.BlackHome)
-            return (60 - 2 - 1 - 5) - 1.425 * pieceIndex;
+            return (58 - 2 - 1 - 5) - 1.425 * pieceIndex;
         if (tongue === Tongue.WhitePrison)
-            return 36 + 4 * pieceIndex;
+            return 34 + 4 * pieceIndex;
         if (tongue === Tongue.BlackPrison)
-            return 19 - 4 * pieceIndex;
+            return 17 - 4 * pieceIndex;
         if (tongue < 12)
-            return (60 - 2 - 5) - (20 / Math.max(4, numPieces - 1)) * pieceIndex;
-        return 2 + (20 / Math.max(4, numPieces - 1)) * pieceIndex;
+            return (58 - 2 - 5) - (20 / Math.max(4, numPieces - 1)) * pieceIndex;
+        return (20 / Math.max(4, numPieces - 1)) * pieceIndex;
     }
 
     function getPrison(/* bool */ whitePlayer) { return whitePlayer ? Tongue.WhitePrison : Tongue.BlackPrison; }
@@ -129,7 +129,7 @@ $(function ()
                 case 'indicate':
                     var hypo = $('<div class="piece hypo-target">')
                         .addClass(isWhite ? 'white' : 'black')
-                        .appendTo(board)
+                        .appendTo($('#board'))
                         .css({ left: convertFromVw(leftFromTongue(targetTongue)), top: convertFromVw(topFromTongue(targetTongue, newPos.NumPiecesPerTongue[targetTongue] - 1, newPos.NumPiecesPerTongue[targetTongue] - 1)) })
                         .data({ tongue: targetTongue, index: newPos.NumPiecesPerTongue[targetTongue] - 1, num: newPos.NumPiecesPerTongue[targetTongue] - 1 });
                     arrows.push(makeArrow(piecesByTongue[sourceTongue][newPos.NumPiecesPerTongue[sourceTongue]], hypo));
@@ -172,12 +172,21 @@ $(function ()
         }
 
         for (var i = 0; i < arrows.length; i++)
-            arrows[i].appendTo(board);
+            arrows[i].appendTo($('#board'));
 
         function processAnimationQueue()
         {
             if (animationQueue.length === 0)
             {
+                var pipsWhite = 0, pipsBlack = 0;
+                for (var t = 0; t < 24; t++)
+                    if (newPos.IsWhitePerTongue[t])
+                        pipsWhite += (24 - t) * newPos.NumPiecesPerTongue[t];
+                    else
+                        pipsBlack += (t + 1) * newPos.NumPiecesPerTongue[t];
+                $('#pipcount-white').text(pipsWhite + 25 * newPos.NumPiecesPerTongue[Tongue.WhitePrison]);
+                $('#pipcount-black').text(pipsBlack + 25 * newPos.NumPiecesPerTongue[Tongue.BlackPrison]);
+
                 if (callback !== null)
                     callback();
                 return;
@@ -325,7 +334,12 @@ $(function ()
 
     function isPlayerToMove()
     {
-        return !!$('body.player-white.state-White.state-ToMove,body.player-black.state-Black.state-ToMove').length;
+        return !!$('#main.player-white.state-White.state-ToMove,#main.player-black.state-Black.state-ToMove').length;
+    }
+
+    function isSidebarOn()
+    {
+        return !!$('#main.with-sidebar').length;
     }
 
     function setState(newState, skipHighlight)
@@ -435,18 +449,19 @@ $(function ()
     function convertFromVw(val)
     {
         if (lastWide)
-            return (val * ratio) + 'vh';
+            return (val * 100 / boardHeight) + 'vh';
+        if (isSidebarOn())
+            return (val * 100 / (100 + sidebarWidth)) + 'vw';
         return val + 'vw';
     }
 
-    function onResize()
+    function onResize(force)
     {
-        var isWide = ($(window).width() / $(window).height()) >= ratio;
+        var wasWide = lastWide;
+        lastWide = ($(window).width() / $(window).height()) >= (100 + (isSidebarOn() ? sidebarWidth : 0)) / boardHeight;
 
-        if (isWide !== lastWide)
+        if (force || wasWide !== lastWide)
         {
-            lastWide = isWide;
-
             // If the aspect ratio has changed, move all the pieces into the right place
             var whites = $('#board>.piece.white'), blacks = $('#board>.piece.black');
             var whiteIndex = 0, blackIndex = 0;
@@ -466,10 +481,9 @@ $(function ()
         }
     }
 
-    var board = $('#board');
-    if (!board.length)
+    if (!$('#main>#board').length)
         return;
-    var body = $(document.body);
+    var body = $('#main');
 
     // Special tongues
     var Tongue = {
@@ -484,7 +498,8 @@ $(function ()
     var lastMove = moves[moves.length - 1];
     var playerIsWhite = body.hasClass('player-white');
     var allValidMoves;
-    var ratio = 100 / 68;
+    var boardHeight = 68;   // vw
+    var sidebarWidth = 30;  // vw
     var lastWide = null;
 
     var position = body.data('initial');
@@ -534,7 +549,8 @@ $(function ()
             moves[moves.length - 1].SourceTongues = json.move.SourceTongues;
             moves[moves.length - 1].TargetTongues = json.move.TargetTongues;
             position = processMove(position, body.hasClass('state-White'), json.move.SourceTongues, json.move.TargetTongues, {
-                mode: 'animate', callback: function ()
+                mode: 'animate',
+                callback: function ()
                 {
                     if ('auto' in json)
                         setTimeout(processSocketQueue, json.auto ? 1000 : 2000);
@@ -665,18 +681,18 @@ $(function ()
             return false;
         });
 
-        board.on('mouseenter', '.tongue.selectable, .home.selectable', function ()
+        $('#board').on('mouseenter', '.tongue.selectable, .home.selectable', function ()
         {
             var move = $(this).data('move');
             processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'indicate' });
         });
 
-        board.on('mouseleave', '.tongue.selectable, .home.selectable', function ()
+        $('#board').on('mouseleave', '.tongue.selectable, .home.selectable', function ()
         {
             $('#board>.piece.hypo-target, #board>.arrow').remove();
         });
 
-        board.on('click', '.tongue.selectable, .home.selectable', function ()
+        $('#board').on('click', '.tongue.selectable, .home.selectable', function ()
         {
             $('#board>.piece.hypo-target, #board>.arrow').hide();
             var move = $(this).data('move');
@@ -746,20 +762,58 @@ $(function ()
         $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
     }
 
-    // Add extra CSS for screens wider than the playing area’s aspect ratio by automatically converting all vw to vh
-    var moreCss = [];
+    // Add extra CSS
+    var cssWithSidebar = [];                    // CSS for when the sidebar is visible
+    var cssInMedia = [];                          // CSS for viewports wider than the playing area’s aspect ratio
+    var cssInMediaWithSidebar = [];      // CSS for when the sidebar is visible and the viewport is wider than the whole UI
     var vwRe = /(-?\b\d*\.?\d+)vw\b/g;
     for (var ss = 0; ss < document.styleSheets.length; ss++)
     {
         var rules = document.styleSheets[ss].cssRules || document.styleSheets[ss].rules;
-        for (var rule = 0; rule < rules.length; rule++)
+        for (var ruleix = 0; ruleix < rules.length; ruleix++)
         {
-            var text = rules[rule].cssText || rules[rule].style.cssText;
-            if (vwRe.test(text))
-                moreCss.push(text.replace(vwRe, function (_, vw) { return (vw * ratio) + 'vh'; }));
+            if (!rules[ruleix].selectorText)
+                continue;
+            var oldSelectors = rules[ruleix].selectorText.split(/\s*,\s*/);
+            var newSelectors = [];
+            for (var i = 0; i < oldSelectors.length; i++)
+            {
+                var result = oldSelectors[i].match(/^\s*#main\b(?!-)/);
+                if (!result)
+                    continue;
+                newSelectors.push("#main.with-sidebar" + oldSelectors[i].substr(result[0].length));
+            }
+
+            var props = rules[ruleix].style;
+            var sidebarProps = [], inMediaProps = [], sidebarInMediaProps = [];
+            for (var propix = 0; propix < props.length; propix++)
+            {
+                var propName = props[propix].replace(/-value$/, '');
+                var val = props.getPropertyValue(propName);
+                if (vwRe.test(val))
+                {
+                    var imp = props.getPropertyPriority(propName);
+                    if (imp)
+                        imp = '!' + imp;
+                    sidebarProps.push(propName + ':' + val.replace(vwRe, function (_, vw) { return (vw * 100 / (100 + sidebarWidth)) + 'vw'; }) + imp);
+                    inMediaProps.push(propName + ':' + val.replace(vwRe, function (_, vw) { return (vw * 100 / boardHeight) + 'vh'; }) + imp);
+                    sidebarInMediaProps.push(propName + ':' + val.replace(vwRe, function (_, vw) { return (vw * 100 / boardHeight) + 'vh'; }) + imp);
+                }
+            }
+            if (sidebarProps.length)
+            {
+                newSelectors = newSelectors.join(',');
+                cssWithSidebar.push(newSelectors + '{' + sidebarProps.join(';') + '}\n');
+                cssInMedia.push(rules[ruleix].selectorText + '{' + inMediaProps.join(';') + '}\n');
+                cssInMediaWithSidebar.push(newSelectors + '{' + sidebarInMediaProps.join(';') + '}\n');
+            }
         }
     }
-    $('head').append($('<link id="vh-convert" rel="stylesheet">').attr('href', 'data:text/css;charset=utf-8,' + escape('@media screen and (min-aspect-ratio: 100/68) {' + moreCss.join('') + '}')));
+    var cssText =
+        cssWithSidebar.join('') +
+        '@media screen and (min-aspect-ratio: 100/' + boardHeight + ') {' + cssInMedia.join('') + '}' +
+        '@media screen and (min-aspect-ratio: ' + (100 + sidebarWidth) + '/' + boardHeight + ') {' + cssInMediaWithSidebar.join('') + '}';
+    $('#converted-css').text(cssText);
 
     $(window).resize(onResize);
     onResize();

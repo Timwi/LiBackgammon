@@ -9,81 +9,68 @@
         cursor: default;
     }
 
-    body > #board, body > #infobar {
+#main {
+    position: absolute;
+    background: hsl(31.85, 50%, 30%);
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 68vw;
+    box-shadow: .6vw .6vw .5vw rgba(0,0,0,.5);
+}
+
+    #main > *, #main > *:not(.dialog) > * {
         position: absolute;
-        background: hsl(31.85, 50%, 30%);
-        width: 100vw;
-        box-shadow: .6vw .6vw .5vw rgba(0,0,0,.5);
     }
 
-    body > #board {
-        height: 60vw;
-        top: 8vw;
+    #main > #board {
+        left: 2vw;
+        top: 10vw;
+        width: 98vw;
+        height: 58vw;
     }
 
-        body > #board > * {
-            position: absolute;
-        }
-
-        body > #board > .overlay {
-            background: hsl(31.85, 50%, 30%);
-        }
-
-            body > #board > .overlay#overlay-bottom {
-                top: 58vw;
-                left: 0;
-                width: 100vw;
-                height: 2vw;
-            }
-
-            body > #board > .overlay#overlay-right {
-                top: 0;
-                right: 0;
-                width: 2vw;
-                height: 60vw;
-            }
-
-        body > #board > .background {
+        #main > #board > .background {
             background: hsl(31.85, 50%, 70%);
         }
 
-        body > #board > .shadow {
+        #main > #board > .shadow {
             box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
         }
 
-        body > #board > .main-area {
+        #main > #board > .main-area {
             width: 42vw;
             height: 56vw;
-            top: 2vw;
+            top: 0;
         }
 
-            body > #board > .main-area.left {
-                left: 2vw;
+            #main > #board > .main-area.left {
+                left: 0;
             }
 
-            body > #board > .main-area.right {
+            #main > #board > .main-area.right {
                 right: 10vw;
             }
 
-        body > #board > .home {
+        #main > #board > .home {
             width: 6vw;
             height: 27vw;
             right: 2vw;
         }
 
-            body > #board > .home.white {
-                top: 2vw;
+            #main > #board > .home.white {
+                top: 0;
             }
 
-            body > #board > .home.black {
+            #main > #board > .home.black {
                 bottom: 2vw;
             }
 
-            body > #board > .home.selectable {
+            #main > #board > .home.selectable {
                 background: hsla(110,70%,70%,.5);
             }
 
-        body > #board > .tongue {
+        #main > #board > .tongue {
             width: 0;
             height: 0;
             border: none;
@@ -91,79 +78,79 @@
             border-right: 3.5vw solid transparent !important;
         }
 
-            body > #board > .tongue.top {
-                top: 2vw;
+            #main > #board > .tongue.top {
+                top: 0;
                 border-top-width: 25vw;
                 border-top-style: solid;
             }
 
-            body > #board > .tongue.bottom {
+            #main > #board > .tongue.bottom {
                 bottom: 2vw;
                 border-bottom-width: 25vw;
                 border-bottom-style: solid;
             }
 
-            body > #board > .tongue.dark:not(.selectable) {
+            #main > #board > .tongue.dark:not(.selectable) {
                 border-color: hsl(27.1, 33.3%, 54.9%);
             }
 
-            body > #board > .tongue.light:not(.selectable) {
+            #main > #board > .tongue.light:not(.selectable) {
                 border-color: hsl(36.6, 66.7%, 82.5%);
             }
 
-            body > #board > .tongue.selectable {
+            #main > #board > .tongue.selectable {
                 border-color: hsla(110,70%,70%,.7);
             }
 
-        body > #board > .tongue-0, body > #board > .tongue-23 {
-            left: 83vw;
+        #main > #board > .tongue-0, #main > #board > .tongue-23 {
+            left: 81vw;
         }
 
-        body > #board > .tongue-1, body > #board > .tongue-22 {
-            left: 76vw;
+        #main > #board > .tongue-1, #main > #board > .tongue-22 {
+            left: 74vw;
         }
 
-        body > #board > .tongue-2, body > #board > .tongue-21 {
-            left: 69vw;
+        #main > #board > .tongue-2, #main > #board > .tongue-21 {
+            left: 67vw;
         }
 
-        body > #board > .tongue-3, body > #board > .tongue-20 {
-            left: 62vw;
+        #main > #board > .tongue-3, #main > #board > .tongue-20 {
+            left: 60vw;
         }
 
-        body > #board > .tongue-4, body > #board > .tongue-19 {
-            left: 55vw;
+        #main > #board > .tongue-4, #main > #board > .tongue-19 {
+            left: 53vw;
         }
 
-        body > #board > .tongue-5, body > #board > .tongue-18 {
-            left: 48vw;
+        #main > #board > .tongue-5, #main > #board > .tongue-18 {
+            left: 46vw;
         }
 
-        body > #board > .tongue-6, body > #board > .tongue-17 {
-            left: 37vw;
+        #main > #board > .tongue-6, #main > #board > .tongue-17 {
+            left: 35vw;
         }
 
-        body > #board > .tongue-7, body > #board > .tongue-16 {
-            left: 30vw;
+        #main > #board > .tongue-7, #main > #board > .tongue-16 {
+            left: 28vw;
         }
 
-        body > #board > .tongue-8, body > #board > .tongue-15 {
-            left: 23vw;
+        #main > #board > .tongue-8, #main > #board > .tongue-15 {
+            left: 21vw;
         }
 
-        body > #board > .tongue-9, body > #board > .tongue-14 {
-            left: 16vw;
+        #main > #board > .tongue-9, #main > #board > .tongue-14 {
+            left: 14vw;
         }
 
-        body > #board > .tongue-10, body > #board > .tongue-13 {
-            left: 9vw;
+        #main > #board > .tongue-10, #main > #board > .tongue-13 {
+            left: 7vw;
         }
 
-        body > #board > .tongue-11, body > #board > .tongue-12 {
-            left: 2vw;
+        #main > #board > .tongue-11, #main > #board > .tongue-12 {
+            left: 0;
         }
 
-        body > #board > .piece, body > #board > #win > .piece, body > #infobar > .infobox > .piece {
+        #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece {
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
@@ -176,33 +163,35 @@
             box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
-            body > #board > .piece.white,
-            body.state-White.state-Won > #board > #win > .piece,
-            body.player-white > #infobar > #info-player > .piece,
-            body.state-White > #infobar > #info-state > .piece {
+            #main > #board > .piece.white,
+            #main.state-White.state-Won > #win > .piece,
+            #main.player-white > #infobar > #info-player > .piece,
+            #main.state-White > #infobar > #info-state > .piece,
+            #main > #infobar > .infobox > .infobox-white > .piece {
                 background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
                 border-color: hsl(31.85, 50%, 100%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 100%);
             }
 
-                body > #board > .piece.white.selected {
+                #main > #board > .piece.white.selected {
                     background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
                     border-color: hsl(0, 100%, 90%) hsl(0, 100%, 85%) hsl(0, 100%, 85%) hsl(0, 100%, 90%);
                 }
 
-            body > #board > .piece.black,
-            body.state-Black.state-Won > #board > #win > .piece,
-            body.player-black > #infobar > #info-player > .piece,
-            body.state-Black > #infobar > #info-state > .piece {
+            #main > #board > .piece.black,
+            #main.state-Black.state-Won > #win > .piece,
+            #main.player-black > #infobar > #info-player > .piece,
+            #main.state-Black > #infobar > #info-state > .piece,
+            #main > #infobar > .infobox > .infobox-black > .piece {
                 background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
                 border-color: hsl(31.85, 50%, 20%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 20%);
             }
 
-                body > #board > .piece.black.selected {
+                #main > #board > .piece.black.selected {
                     background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
                     border-color: hsl(0, 100%, 30%) hsl(0, 100%, 20%) hsl(0, 100%, 20%) hsl(0, 100%, 30%);
                 }
 
-            body > #board > .piece.selectable::before {
+            #main > #board > .piece.selectable::before {
                 position: absolute;
                 left: -.2vw;
                 top: -.2vw;
@@ -218,11 +207,11 @@
                 animation: selectable-blink 1s ease-in-out 0s infinite alternate;
             }
 
-            body > #board > .piece.selectable.selected::before {
+            #main > #board > .piece.selectable.selected::before {
                 display: none;
             }
 
-            body > #board > .piece.hypo-target {
+            #main > #board > .piece.hypo-target {
                 opacity: .5;
                 -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
                 -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
@@ -231,31 +220,31 @@
                 pointer-events: none;
             }
 
-    body.player-white.state-White.state-ToMove > #board > .piece.white,
-    body.player-black.state-Black.state-ToMove > #board > .piece.black {
+    #main.player-white.state-White.state-ToMove > #board > .piece.white,
+    #main.player-black.state-Black.state-ToMove > #board > .piece.black {
         cursor: pointer;
     }
 
-    body > #board > .dice-back {
+    #main > #board > .dice-back {
         border-radius: 1vw;
         width: 6vw;
         height: 6vw;
-        top: 27vw;
+        top: 25vw;
         opacity: .5;
         display: none;
     }
 
-        body > #board > .dice-back#dice-back-white {
-            left: 62.5vw;
+        #main > #board > .dice-back#dice-back-white {
+            left: 60.5vw;
             background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
         }
 
-        body > #board > .dice-back#dice-back-black {
-            left: 69.5vw;
+        #main > #board > .dice-back#dice-back-black {
+            left: 67.5vw;
             background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
         }
 
-    body.dice-start > #board > .dice-back {
+    #main.dice-start > #board > .dice-back {
         display: block;
         font-family: "Impact";
         text-align: right;
@@ -263,46 +252,46 @@
         white-space: nowrap;
     }
 
-    body.dice-start.state-White > #board > #dice-back-white::before,
-    body.dice-start.state-White > #board > #dice-back-white::after {
+    #main.dice-start.state-White > #board > #dice-back-white::before,
+    #main.dice-start.state-White > #board > #dice-back-white::after {
         position: absolute;
         color: hsl(31.85, 50%, 95%);
         padding-right: .6vw;
         right: 100%;
     }
 
-    body.dice-start.state-Black > #board > #dice-back-black::before,
-    body.dice-start.state-Black > #board > #dice-back-black::after {
+    #main.dice-start.state-Black > #board > #dice-back-black::before,
+    #main.dice-start.state-Black > #board > #dice-back-black::after {
         position: absolute;
         color: hsl(31.85, 50%, 10%);
         padding-left: .6vw;
         left: 100%;
     }
 
-    body.dice-start.state-White > #board > #dice-back-white::before,
-    body.dice-start.state-Black > #board > #dice-back-black::before {
+    #main.dice-start.state-White > #board > #dice-back-white::before,
+    #main.dice-start.state-Black > #board > #dice-back-black::before {
         font-size: 2.2vw;
         top: .8vw;
     }
 
-    body.dice-start.state-White > #board > #dice-back-white::after,
-    body.dice-start.state-Black > #board > #dice-back-black::after {
+    #main.dice-start.state-White > #board > #dice-back-white::after,
+    #main.dice-start.state-Black > #board > #dice-back-black::after {
         font-size: 1.3vw;
         bottom: .8vw;
         content: 'starts';
     }
 
-    body.dice-start.state-White > #board > #dice-back-white::before {
+    #main.dice-start.state-White > #board > #dice-back-white::before {
         content: 'white';
     }
 
-    body.dice-start.state-Black > #board > #dice-back-black::before {
+    #main.dice-start.state-Black > #board > #dice-back-black::before {
         content: 'black';
     }
 
-    body > #board > .dice {
-        left: 63vw;
-        top: 27.5vw;
+    #main > #board > .dice {
+        left: 61vw;
+        top: 25.5vw;
         width: 5vw;
         height: 5vw;
         box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
@@ -312,7 +301,7 @@
         display: none;
     }
 
-        body > #board > .dice > .razor {
+        #main > #board > .dice > .razor {
             position: absolute;
             left: 0;
             top: 0;
@@ -322,7 +311,7 @@
             border-radius: inherit;
         }
 
-            body > #board > .dice > .razor > .face {
+            #main > #board > .dice > .razor > .face {
                 position: absolute;
                 background-image: linear-gradient(135deg, #ddd, #fff);
                 left: .5vw;
@@ -332,20 +321,20 @@
                 border-radius: 30%;
             }
 
-            body > #board > .dice > .razor > .side {
+            #main > #board > .dice > .razor > .side {
                 position: absolute;
                 border-radius: 50%;
                 width: 5vw;
                 height: 1vw;
             }
 
-                body > #board > .dice > .razor > .side.n {
+                #main > #board > .dice > .razor > .side.n {
                     top: -.5vw;
                     left: .25vw;
                     background-image: linear-gradient(0deg, #fff, #ccc);
                 }
 
-                body > #board > .dice > .razor > .side.w {
+                #main > #board > .dice > .razor > .side.w {
                     top: .25vw;
                     left: -.5vw;
                     width: 1vw;
@@ -353,13 +342,13 @@
                     background-image: linear-gradient(-90deg, #fff, #ccc);
                 }
 
-                body > #board > .dice > .razor > .side.s {
+                #main > #board > .dice > .razor > .side.s {
                     bottom: -.5vw;
                     left: .25vw;
                     background-image: linear-gradient(0deg, #888, #eee);
                 }
 
-                body > #board > .dice > .razor > .side.e {
+                #main > #board > .dice > .razor > .side.e {
                     top: .25vw;
                     right: -.5vw;
                     width: 1vw;
@@ -367,7 +356,7 @@
                     background-image: linear-gradient(-90deg, #888, #eee);
                 }
 
-        body > #board > .dice > .pip {
+        #main > #board > .dice > .pip {
             position: absolute;
             background: black;
             border-radius: 50%;
@@ -376,37 +365,37 @@
             box-shadow: .075vw .075vw 0 white;
         }
 
-            body > #board > .dice > .pip.a, body > #board > .dice > .pip.b, body > #board > .dice > .pip.c {
+            #main > #board > .dice > .pip.a, #main > #board > .dice > .pip.b, #main > #board > .dice > .pip.c {
                 left: 1vw;
             }
 
-            body > #board > .dice > .pip.g {
+            #main > #board > .dice > .pip.g {
                 left: 2.2vw;
             }
 
-            body > #board > .dice > .pip.b, body > #board > .dice > .pip.e, body > #board > .dice > .pip.g {
+            #main > #board > .dice > .pip.b, #main > #board > .dice > .pip.e, #main > #board > .dice > .pip.g {
                 top: 2.2vw;
             }
 
-            body > #board > .dice > .pip.d, body > #board > .dice > .pip.e, body > #board > .dice > .pip.f {
+            #main > #board > .dice > .pip.d, #main > #board > .dice > .pip.e, #main > #board > .dice > .pip.f {
                 right: 1vw;
             }
 
-            body > #board > .dice > .pip.a, body > #board > .dice > .pip.d {
+            #main > #board > .dice > .pip.a, #main > #board > .dice > .pip.d {
                 top: 1vw;
             }
 
-            body > #board > .dice > .pip.c, body > #board > .dice > .pip.f {
+            #main > #board > .dice > .pip.c, #main > #board > .dice > .pip.f {
                 bottom: 1vw;
             }
 
-        body > #board > .dice.val-1 .pip.a, body > #board > .dice.val-1 .pip.b, body > #board > .dice.val-1 .pip.c, body > #board > .dice.val-1 .pip.d, body > #board > .dice.val-1 .pip.e, body > #board > .dice.val-1 .pip.f, body > #board > .dice.val-2 .pip.b, body > #board > .dice.val-2 .pip.c,
-        body > #board > .dice.val-2 .pip.d, body > #board > .dice.val-2 .pip.e, body > #board > .dice.val-2 .pip.g, body > #board > .dice.val-3 .pip.a, body > #board > .dice.val-3 .pip.b, body > #board > .dice.val-3 .pip.e, body > #board > .dice.val-3 .pip.f, body > #board > .dice.val-4 .pip.b,
-        body > #board > .dice.val-4 .pip.e, body > #board > .dice.val-4 .pip.g, body > #board > .dice.val-5 .pip.b, body > #board > .dice.val-5 .pip.e, body > #board > .dice.val-6 .pip.g {
+        #main > #board > .dice.val-1 .pip.a, #main > #board > .dice.val-1 .pip.b, #main > #board > .dice.val-1 .pip.c, #main > #board > .dice.val-1 .pip.d, #main > #board > .dice.val-1 .pip.e, #main > #board > .dice.val-1 .pip.f, #main > #board > .dice.val-2 .pip.b, #main > #board > .dice.val-2 .pip.c,
+        #main > #board > .dice.val-2 .pip.d, #main > #board > .dice.val-2 .pip.e, #main > #board > .dice.val-2 .pip.g, #main > #board > .dice.val-3 .pip.a, #main > #board > .dice.val-3 .pip.b, #main > #board > .dice.val-3 .pip.e, #main > #board > .dice.val-3 .pip.f, #main > #board > .dice.val-4 .pip.b,
+        #main > #board > .dice.val-4 .pip.e, #main > #board > .dice.val-4 .pip.g, #main > #board > .dice.val-5 .pip.b, #main > #board > .dice.val-5 .pip.e, #main > #board > .dice.val-6 .pip.g {
             display: none;
         }
 
-        body > #board > .dice > .cross {
+        #main > #board > .dice > .cross {
             position: absolute;
             left: 50%;
             top: 50%;
@@ -423,7 +412,7 @@
             transition: opacity ease-in-out 1s;
         }
 
-            body > #board > .dice > .cross::after {
+            #main > #board > .dice > .cross::after {
                 position: relative;
                 left: -50%;
                 top: -50%;
@@ -431,34 +420,34 @@
                 content: '✗';
             }
 
-        body > #board > .dice.crossed > .cross {
+        #main > #board > .dice.crossed > .cross {
             opacity: 1;
         }
 
-    body.dice-2 > #board > #dice-0, body.dice-2 > #board > #dice-1, body.dice-4 > #board > .dice {
+    #main.dice-2 > #board > #dice-0, #main.dice-2 > #board > #dice-1, #main.dice-4 > #board > .dice {
         display: block;
     }
 
-    body.dice-2 > #board > #dice-1, body.dice-4 > #board > #dice-2 {
-        left: 70vw;
+    #main.dice-2 > #board > #dice-1, #main.dice-4 > #board > #dice-2 {
+        left: 68vw;
     }
 
-    body.dice-4 > #board > #dice-0 {
-        left: 56vw;
+    #main.dice-4 > #board > #dice-0 {
+        left: 54vw;
     }
 
-    body.dice-4 > #board > #dice-3 {
-        left: 77vw;
+    #main.dice-4 > #board > #dice-3 {
+        left: 75vw;
     }
 
-    body.player-white.state-White.state-ToMove > #board > .dice,
-    body.player-black.state-Black.state-ToMove > #board > .dice,
-    body.player-white.state-White.state-ToMove > #board > .dice-back,
-    body.player-black.state-Black.state-ToMove > #board > .dice-back {
+    #main.player-white.state-White.state-ToMove > #board > .dice,
+    #main.player-black.state-Black.state-ToMove > #board > .dice,
+    #main.player-white.state-White.state-ToMove > #board > .dice-back,
+    #main.player-black.state-Black.state-ToMove > #board > .dice-back {
         opacity: 1;
     }
 
-    body > #board > #cube {
+    #main > #board > #cube {
         background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
         border: .3vw solid white;
         border-radius: .5vw;
@@ -467,11 +456,11 @@
         width: 4.2vw;
         height: 4.2vw;
         box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        left: 43.6vw;
-        top: 27.6vw;
+        left: 41.6vw;
+        top: 25.6vw;
     }
 
-        body > #board > #cube > .inner {
+        #main > #board > #cube > .inner {
             position: absolute;
             left: 50%;
             top: 50%;
@@ -481,7 +470,7 @@
             line-height: 1em;
         }
 
-            body > #board > #cube > .inner > #cube-text {
+            #main > #board > #cube > .inner > #cube-text {
                 position: relative;
                 left: -50%;
                 top: -50%;
@@ -489,25 +478,25 @@
                 text-shadow: .075vw .075vw 0 white;
             }
 
-    body.no-cube > #board > #cube {
+    #main.no-cube > #board > #cube {
         display: none;
     }
 
-    body.cube-white > #board > #cube {
-        top: 4.3vw;
+    #main.cube-white > #board > #cube {
+        top: 2.3vw;
     }
 
-    body.cube-black > #board > #cube {
-        top: 50.9vw;
+    #main.cube-black > #board > #cube {
+        top: 48.9vw;
     }
 
-    body > #board > .arrow {
+    #main > #board > .arrow {
         pointer-events: none;
         height: 2.5vw;
         background: #dd5;
     }
 
-        body > #board > .arrow::before {
+        #main > #board > .arrow::before {
             position: absolute;
             right: -6.25vw;
             top: -1.25vw;
@@ -518,131 +507,13 @@
             content: '';
         }
 
-    body > #board > .dialog {
-        display: none;
-        margin: 0 15vw;
-        top: 20vw;
-        left: 0;
-        right: 0;
-        border: .7vw solid hsl(31.85, 50%, 20%);
-        background: hsl(31.85, 50%, 70%);
-        padding: 1vw 3vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, 0.3);
-        color: hsl(31.85, 50%, 30%);
-    }
-
-        body > #board > .dialog > p, body > #board > .dialog > form {
-            text-align: center;
-            font-size: 1.8vw;
-            margin: 2vw 0;
-        }
-
-            body > #board > .dialog > p.link, body > #board > .dialog > form {
-                background: hsl(31.85, 50%, 90%);
-                padding: .5em 0;
-                font-weight: bold;
-            }
-
-            body > #board > .dialog > p.link {
-                font-family: monospace;
-            }
-
-    body > #board > #win > .win {
-        margin: 0 0 2vw;
-    }
-
-        body > #board > #win > .win::before {
-            display: block;
-            background: hsl(31.85, 50%, 90%);
-            padding: .2vw 0;
-            margin-top: 2vw;
-            font-size: 5vw;
-        }
-
-        body > #board > #win > .win::after {
-            display: block;
-            padding: .2vw 0 0;
-            margin-bottom: -1.25vw;
-            font-size: 2vw;
-        }
-
-    body > #board > #win > .piece {
-        position: absolute;
-        top: 3.7vw;
-        left: 4.2vw;
-    }
-
-    body > #board > #win > .points {
-        position: absolute;
-        right: 4vw;
-        text-align: right;
-        top: 3.25vw;
-    }
-
-        body > #board > #win > .points > .number {
-            font-family: "Roboto Light","Calibri";
-            font-size: 4vw;
-            line-height: 4vw;
-            margin: 0;
-        }
-
-        body > #board > #win > .points > .word {
-            font-size: 1.5vw;
-            line-height: 1.5vw;
-            margin: 0;
-        }
-
-        body > #board > #win > .points.singular > .word::before {
-            content: 'point';
-        }
-
-        body > #board > #win > .points.plural > .word::before {
-            content: 'points';
-        }
-
-    body.state-White.state-Waiting.player-white > #board > #waiting,
-    body.state-Black.state-Waiting.player-black > #board > #waiting,
-    body.state-White.state-Waiting:not(.player-white) > #board > #joinable,
-    body.state-Black.state-Waiting:not(.player-black) > #board > #joinable,
-    body.state-Won > #board > #win {
-        display: block;
-    }
-
-    body.state-Won.state-White > #board > #win > .win::before {
-        content: 'White wins';
-    }
-
-    body.state-Won.state-Black > #board > #win > .win::before {
-        content: 'Black wins';
-    }
-
-    body.state-White.state-RejectedDouble > #board > #win > .win::after {
-        content: 'Black rejected a double.';
-    }
-
-    body.state-Black.state-RejectedDouble > #board > #win > .win::after {
-        content: 'White rejected a double.';
-    }
-
-    body.state-White.state-Resignation > #board > #win > .win::after {
-        content: 'Black resigned.';
-    }
-
-    body.state-Black.state-Resignation > #board > #win > .win::after {
-        content: 'White resigned.';
-    }
-
-    body > #board > #joinable #join::before {
-        content: 'Join game';
-    }
-
-    body > #board > #connecting::before {
+    #main > #board > #connecting::before {
         content: 'Reconnecting...';
     }
 
-    body > #board > button {
+    #main > #board > button {
         height: 4vw;
-        top: 28vw;
+        top: 26vw;
         width: 11vw;
         pointer-events: none;
         opacity: 0;
@@ -652,195 +523,67 @@
         transition: opacity ease-in-out 1s;
     }
 
-    body > #board > #undo {
+    #main > #board > #commit {
+        font-size: 1.8vw;
+        left: 9vw;
+    }
+
+    #main > #board > #undo {
         font-size: 2vw;
-        left: 11vw;
+        left: 22vw;
     }
 
-    body > #board > #accept {
+    #main > #board > #accept {
         font-size: 1.8vw;
-        left: 11vw;
+        left: 9vw;
     }
 
-    body > #board > #commit, body > #board > #reject {
+    #main > #board > #reject {
         font-size: 1.8vw;
-        left: 24vw;
+        left: 22vw;
     }
 
-    body > #board > #roll {
+    #main > #board > #roll {
         font-size: 2vw;
-        left: 57vw;
+        left: 55vw;
     }
 
-    body > #board > #double {
+    #main > #board > #double {
         font-size: 1.8vw;
-        left: 70vw;
+        left: 68vw;
     }
 
-    body.state-ToRoll > #board > #roll,
-    body.state-ToRoll > #board > #double,
-    body.state-ToConfirmDouble > #board > #accept,
-    body.state-ToConfirmDouble > #board > #reject {
+    #main.state-ToRoll > #board > #roll,
+    #main.state-ToRoll > #board > #double,
+    #main.state-ToConfirmDouble > #board > #accept,
+    #main.state-ToConfirmDouble > #board > #reject {
         opacity: .5;
     }
 
-    body.undoable > #board > #undo,
-    body.committable > #board > #commit,
-    body.player-white.state-White.state-ToRoll > #board > #roll,
-    body.player-black.state-Black.state-ToRoll > #board > #roll,
-    body.player-white.state-White.state-ToRoll > #board > #double,
-    body.player-black.state-Black.state-ToRoll > #board > #double,
-    body.player-white.state-White.state-ToConfirmDouble > #board > #accept,
-    body.player-black.state-Black.state-ToConfirmDouble > #board > #accept,
-    body.player-white.state-White.state-ToConfirmDouble > #board > #reject,
-    body.player-black.state-Black.state-ToConfirmDouble > #board > #reject {
+    #main.undoable > #board > #undo,
+    #main.committable > #board > #commit,
+    #main.player-white.state-White.state-ToRoll > #board > #roll,
+    #main.player-black.state-Black.state-ToRoll > #board > #roll,
+    #main.player-white.state-White.state-ToRoll > #board > #double,
+    #main.player-black.state-Black.state-ToRoll > #board > #double,
+    #main.player-white.state-White.state-ToConfirmDouble > #board > #accept,
+    #main.player-black.state-Black.state-ToConfirmDouble > #board > #accept,
+    #main.player-white.state-White.state-ToConfirmDouble > #board > #reject,
+    #main.player-black.state-Black.state-ToConfirmDouble > #board > #reject {
         pointer-events: all;
         opacity: 1;
     }
 
-    body > #board > #connecting {
-        color: hsl(0, 100%, 75%);
-        font-size: 1vw;
-        font-weight: bold;
-        top: 0.3vw;
-        right: 0.6vw;
-        display: none;
-    }
-
-    body.connecting > #board > #connecting {
-        display: block;
-    }
-
-    body > #infobar {
-        height: 8vw;
-        top: 0;
-    }
-
-        body > #infobar > .infobox {
-            background: hsl(31.85, 50%, 70%);
-            position: absolute;
-            top: 2vw;
-            height: 6vw;
-        }
-
-            body > #infobar > .infobox#info-player {
-                left: 2vw;
-                width: 16.5vw;
-            }
-
-            body > #infobar > .infobox#info-state {
-                left: 20.5vw;
-                width: 16.5vw;
-            }
-
-                body > #infobar > .infobox#info-player > .piece, body > #infobar > .infobox#info-state > .piece {
-                    position: absolute;
-                    left: .9vw;
-                    top: .5vw;
-                }
-
-        body > #infobar > #info-player::before, body > #infobar > #info-player::after, body > #infobar > #info-state::before, body > #infobar > #info-state::after {
-            position: absolute;
-            left: 7vw;
-            color: hsl(31.85, 50%, 30%);
-            font-family: "Impact";
-            text-transform: uppercase;
-            line-height: 1em;
-            white-space: pre;
-        }
-
-        body > #infobar > #info-player::before {
-            top: .5vw;
-            font-size: 1.3vw;
-        }
-
-        body > #infobar > #info-player::after {
-            bottom: .5vw;
-            font-size: 3.4vw;
-        }
-
-        body > #infobar > #info-state::before {
-            top: .5vw;
-            font-size: 3.4vw;
-        }
-
-        body > #infobar > #info-state::after {
-            bottom: .5vw;
-            font-size: 1.3vw;
-        }
-
-    body.player-white > #infobar > #info-player::before, body.player-black > #infobar > #info-player::before {
-        content: 'You are playing';
-    }
-
-    body.player-white > #infobar > #info-player::after {
-        content: 'white';
-    }
-
-    body.player-black > #infobar > #info-player::after {
-        content: 'black';
-    }
-
-    body.spectating > #infobar > #info-player > .piece {
-        display: none;
-    }
-
-    body.spectating > #infobar > #info-player::before {
-        content: 'You are';
-    }
-
-    body.spectating > #infobar > #info-player::after {
-        content: 'spectating';
-    }
-
-    body.state-White > #infobar > #info-state::before {
-        content: 'White';
-    }
-
-    body.state-Black > #infobar > #info-state::before {
-        content: 'Black';
-    }
-
-    body.state-Waiting > #infobar > #info-state::after {
-        content: 'waiting';
-    }
-
-    body.state-ToRoll > #infobar > #info-state::after {
-        content: 'to roll';
-    }
-
-    body.state-ToConfirmDouble > #infobar > #info-state::after {
-        content: 'to confirm';
-    }
-
-    body.state-ToMove > #infobar > #info-state::after {
-        content: 'to play';
-    }
-
-    body.state-Won > #infobar > #info-state::after {
-        content: 'wins';
-    }
-
-    body.spectating > #infobar > #info-player::before, body.spectating > #infobar > #info-player::after {
-        font-size: 2.4vw;
-        left: 8.25vw;
-        -moz-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        -webkit-transform: translateX(-50%);
-        transform: translateX(-50%);
-    }
-
-    body > #board > #info {
+    #main > #board > #info {
         pointer-events: none;
         opacity: 0;
-        -moz-transition: opacity ease-in-out 1s;
-        -o-transition: opacity ease-in-out 1s;
-        -webkit-transition: opacity ease-in-out 1s;
-        transition: opacity ease-in-out 1s;
+        -moz-transition: opacity ease-in-out 1s, transform linear 2s;
+        -o-transition: opacity ease-in-out 1s, transform linear 2s;
+        -webkit-transition: opacity ease-in-out 1s, transform linear 2s;
+        transition: opacity ease-in-out 1s, transform linear 2s;
         position: absolute;
-        left: 2vw;
-        top: 30vw;
+        left: 0vw;
+        top: 28vw;
         width: 42vw;
         text-align: center;
         font-size: 5vw;
@@ -855,26 +598,417 @@
         text-shadow: .1vw .1vw .1vw hsl(31.85, 50%, 80%);
     }
 
-    body.auto-0 > #board > #info, body.auto-1 > #board > #info {
+    #main.auto-0 > #board > #info, #main.auto-1 > #board > #info {
         opacity: 1;
+        -moz-transform: translateY(-50%) scale(1.5);
+        -ms-transform: translateY(-50%) scale(1.5);
+        -o-transform: translateY(-50%) scale(1.5);
+        -webkit-transform: translateY(-50%) scale(1.5);
+        transform: translateY(-50%) scale(1.5);
     }
 
-        body.auto-0 > #board > #info::before {
+        #main.auto-0 > #board > #info::before {
             content: 'No moves';
         }
 
-        body.auto-1 > #board > #info::before {
+        #main.auto-1 > #board > #info::before {
             content: 'Forced move';
         }
 
-    body.state-ToConfirmDouble > #board > #info {
+    #main.state-ToConfirmDouble > #board > #info {
         left: 47vw;
         opacity: 1;
     }
 
-        body.state-ToConfirmDouble > #board > #info::before {
+        #main.state-ToConfirmDouble > #board > #info::before {
             content: 'Double?';
         }
+
+    #main > #connecting {
+        color: hsl(0, 100%, 75%);
+        font-size: 1vw;
+        font-weight: bold;
+        top: 0.3vw;
+        right: 0.6vw;
+        display: none;
+    }
+
+    #main.connecting > #connecting {
+        display: block;
+    }
+
+    #main > .dialog {
+        opacity: 0;
+        pointer-events: none;
+        margin: 0 15vw;
+        top: 36vw;
+        left: 0;
+        right: 0;
+        border: .7vw solid hsl(31.85, 50%, 20%);
+        background: hsl(31.85, 50%, 70%);
+        padding: 0 3vw;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, 0.3);
+        color: hsl(31.85, 50%, 30%);
+        -moz-transform: translateY(-50%) scale(.5);
+        -ms-transform: translateY(-50%) scale(.5);
+        -o-transform: translateY(-50%) scale(.5);
+        -webkit-transform: translateY(-50%) scale(.5);
+        transform: translateY(-50%) scale(.5);
+        -moz-transition: transform 1s ease-out,opacity 1s ease-in-out;
+        -o-transition: transform 1s ease-out,opacity 1s ease-in-out;
+        -webkit-transition: transform 1s ease-out,opacity 1s ease-in-out;
+        transition: transform 1s ease-out,opacity 1s ease-in-out;
+    }
+
+        #main > .dialog > p, #main > .dialog > form {
+            text-align: center;
+            font-size: 1.8vw;
+            margin: 2vw 0;
+        }
+
+            #main > .dialog > p.link, #main > .dialog > form {
+                background: hsl(31.85, 50%, 90%);
+                padding: .5em 0;
+                font-weight: bold;
+            }
+
+            #main > .dialog > p.link {
+                font-family: monospace;
+            }
+
+    #main > #win > .win {
+        margin: 3vw 0;
+    }
+
+        #main > #win > .win::before {
+            display: block;
+            background: hsl(31.85, 50%, 90%);
+            padding: .2vw 0;
+            font-size: 5vw;
+        }
+
+        #main > #win > .win::after {
+            display: block;
+            padding: .2vw 0 0;
+            margin-bottom: -1.25vw;
+            font-size: 2vw;
+        }
+
+    #main > #win > .piece {
+        position: absolute;
+        top: 3.7vw;
+        left: 4.2vw;
+    }
+
+    #main > #win > .points {
+        position: absolute;
+        right: 4vw;
+        text-align: right;
+        top: 3.25vw;
+    }
+
+        #main > #win > .points > .number {
+            font-family: "Roboto Light", "Calibri";
+            font-size: 4vw;
+            line-height: 4vw;
+            margin: 0;
+        }
+
+        #main > #win > .points > .word {
+            font-size: 1.5vw;
+            line-height: 1.5vw;
+            margin: 0;
+        }
+
+        #main > #win > .points.singular > .word::before {
+            content: 'point';
+        }
+
+        #main > #win > .points.plural > .word::before {
+            content: 'points';
+        }
+
+    #main.state-White.state-Waiting.player-white > #waiting,
+    #main.state-Black.state-Waiting.player-black > #waiting,
+    #main.state-White.state-Waiting:not(.player-white) > #joinable,
+    #main.state-Black.state-Waiting:not(.player-black) > #joinable,
+    #main.state-Won > #win {
+        opacity: 1;
+        pointer-events: all;
+        -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    #main > #waiting > #send-this-link::before {
+        content: 'Send the following link to your friend to allow them to join the game:';
+    }
+
+    #main > #waiting > #game-will-begin::before {
+        content: 'The game will begin when the other player joins the game.';
+    }
+
+    #main > #joinable > #player-waiting::before {
+        content: 'The player is waiting for an opponent to play with.';
+    }
+
+    #main.state-Won.state-White > #win > .win::before {
+        content: 'White wins';
+    }
+
+    #main.state-Won.state-Black > #win > .win::before {
+        content: 'Black wins';
+    }
+
+    #main.state-White.state-RejectedDouble > #win > .win::after {
+        content: 'Black rejected a double.';
+    }
+
+    #main.state-Black.state-RejectedDouble > #win > .win::after {
+        content: 'White rejected a double.';
+    }
+
+    #main.state-White.state-Resignation > #win > .win::after {
+        content: 'Black resigned.';
+    }
+
+    #main.state-Black.state-Resignation > #win > .win::after {
+        content: 'White resigned.';
+    }
+
+    #main > #joinable #join::before {
+        content: 'Join game';
+    }
+
+    #main > #infobar {
+        height: 6vw;
+        top: 2vw;
+    }
+
+        #main > #infobar > .infobox {
+            background: hsl(31.85, 50%, 70%);
+            position: absolute;
+            top: 0;
+            height: 6vw;
+        }
+
+            #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece {
+                position: absolute;
+                top: .5vw;
+            }
+
+            #main > #infobar > .infobox#info-player {
+                left: 2vw;
+                width: 16.5vw;
+            }
+
+            #main > #infobar > .infobox#info-state {
+                left: 20.5vw;
+                width: 16.5vw;
+            }
+
+                #main > #infobar > .infobox#info-player > .piece, #main > #infobar > .infobox#info-state > .piece {
+                    left: .9vw;
+                }
+
+            #main > #infobar > .infobox > .infobox-inner {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 10vw;
+                overflow: hidden;
+            }
+
+                #main > #infobar > .infobox > .infobox-inner > .piece {
+                    -moz-transform: translateX(-50%);
+                    -ms-transform: translateX(-50%);
+                    -o-transform: translateX(-50%);
+                    -webkit-transform: translateX(-50%);
+                    transform: translateX(-50%);
+                }
+
+                #main > #infobar > .infobox > .infobox-inner.infobox-white {
+                    left: 0;
+                }
+
+                    #main > #infobar > .infobox > .infobox-inner.infobox-white > .piece {
+                        left: 100%;
+                    }
+
+                #main > #infobar > .infobox > .infobox-inner.infobox-black {
+                    right: 0;
+                }
+
+                    #main > #infobar > .infobox > .infobox-inner.infobox-black > .piece {
+                        left: 0;
+                    }
+
+                #main > #infobar > #info-player::before, #main > #infobar > #info-player::after,
+                #main > #infobar > #info-state::before, #main > #infobar > #info-state::after,
+                #main > #infobar > .infobox > .infobox-inner > .number {
+                    position: absolute;
+                    color: hsl(31.85, 50%, 30%);
+                    font-family: "Impact";
+                    text-transform: uppercase;
+                    line-height: 1em;
+                    white-space: pre;
+                }
+
+            #main > #infobar > .infobox#info-pips {
+                left: 39vw;
+                width: 20vw;
+            }
+
+            #main > #infobar > .infobox#info-match {
+                left: 61vw;
+                width: 20vw;
+            }
+
+        #main > #infobar > #info-player::before {
+            left: 7vw;
+            top: .5vw;
+            font-size: 1.3vw;
+        }
+
+        #main > #infobar > #info-player::after {
+            left: 7vw;
+            bottom: .5vw;
+            font-size: 3.4vw;
+        }
+
+        #main > #infobar > #info-state::before {
+            left: 7vw;
+            top: .5vw;
+            font-size: 3.4vw;
+        }
+
+        #main > #infobar > #info-state::after {
+            left: 7vw;
+            bottom: .5vw;
+            font-size: 1.3vw;
+        }
+
+        #main > #infobar > .infobox > .infobox-inner > .number {
+            top: 3vw;
+            -moz-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            -o-transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+            font-size: 4vw;
+            text-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        }
+
+        #main > #infobar > .infobox > .infobox-inner::after {
+            text-transform: uppercase;
+            position: absolute;
+            top: 3vw;
+            font-family: "Impact";
+        }
+
+        #main > #infobar > #info-pips > .infobox-inner::after {
+            content: 'pips';
+            font-size: 2vw;
+        }
+
+        #main > #infobar > #info-match > .infobox-inner::after {
+            content: 'match';
+            font-size: 1.5vw;
+        }
+
+        #main > #infobar > .infobox > .infobox-white::after {
+            right: 0;
+            -moz-transform: translateX(50%) translateY(-50%);
+            -ms-transform: translateX(50%) translateY(-50%);
+            -o-transform: translateX(50%) translateY(-50%);
+            -webkit-transform: translateX(50%) translateY(-50%);
+            transform: translateX(50%) translateY(-50%);
+            color: hsl(31.85, 50%, 10%);
+        }
+
+        #main > #infobar > .infobox > .infobox-black::after {
+            left: 0;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -ms-transform: translateX(-50%) translateY(-50%);
+            -o-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+            color: hsl(31.85, 50%, 95%);
+        }
+
+        #main > #infobar > .infobox > .infobox-white > .number {
+            right: 3.5vw;
+            color: hsl(31.85, 50%, 95%);
+        }
+
+        #main > #infobar > .infobox > .infobox-black > .number {
+            left: 3.5vw;
+            color: hsl(31.85, 50%, 10%);
+        }
+
+    #main.spectating > #infobar > #info-player::before, #main.spectating > #infobar > #info-player::after {
+        font-size: 2.4vw;
+        left: 8.25vw;
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -o-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }
+
+    #main.player-white > #infobar > #info-player::before, #main.player-black > #infobar > #info-player::before {
+        content: 'You are playing';
+    }
+
+    #main.player-white > #infobar > #info-player::after {
+        content: 'white';
+    }
+
+    #main.player-black > #infobar > #info-player::after {
+        content: 'black';
+    }
+
+    #main.spectating > #infobar > #info-player > .piece {
+        display: none;
+    }
+
+    #main.spectating > #infobar > #info-player::before {
+        content: 'You are';
+    }
+
+    #main.spectating > #infobar > #info-player::after {
+        content: 'spectating';
+    }
+
+    #main.state-White > #infobar > #info-state::before {
+        content: 'White';
+    }
+
+    #main.state-Black > #infobar > #info-state::before {
+        content: 'Black';
+    }
+
+    #main.state-Waiting > #infobar > #info-state::after {
+        content: 'waiting';
+    }
+
+    #main.state-ToRoll > #infobar > #info-state::after {
+        content: 'to roll';
+    }
+
+    #main.state-ToConfirmDouble > #infobar > #info-state::after {
+        content: 'to confirm';
+    }
+
+    #main.state-ToMove > #infobar > #info-state::after {
+        content: 'to play';
+    }
+
+    #main.state-Won > #infobar > #info-state::after {
+        content: 'wins';
+    }
 
 button {
     background-color: hsl(32, 52%, 34.3%);

@@ -36,7 +36,8 @@ namespace LiBackgammon
                 {
                     PublicID = publicId,
                     InitialPosition = ClassifyJson.Serialize(Position.StandardInitialPosition).ToString(),
-                    Moves = "[]"
+                    Moves = "[]",
+                    State = black ? GameState.Black_Waiting : GameState.White_Waiting
                 };
                 var token = Rnd.GenerateString(4);
                 if (black)

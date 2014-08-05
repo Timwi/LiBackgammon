@@ -12,7 +12,7 @@ namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private HttpResponse page(HttpRequest req, Tag body, string[] jsPaths = null, string[] cssPaths = null)
+        private HttpResponse page(HttpRequest req, object bodyContent, string[] jsPaths = null, string[] cssPaths = null)
         {
 #if DEBUG
             var jquery = req.Url.WithParent("jquery").ToHref();
@@ -27,11 +27,15 @@ namespace LiBackgammon
                         // CSS must be above JS because the vh conversion might not trigger otherwise
                         new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
 
+                        new STYLE { id = "converted-css" },
+
                         new SCRIPT { src = jquery },
                         new SCRIPT { src = req.Url.WithParent("js").ToHref() },
+
+                        new META { name = "viewport", content = "width=device-width, user-scalable=no" },
                         jsPaths.NullOr(jsp => jsp.Select(p => new SCRIPT { src = req.Url.WithParent(p).ToHref() })),
                         cssPaths.NullOr(cp => cp.Select(p => new LINK { rel = "stylesheet", href = req.Url.WithParent(p).ToHref() }))),
-                    body));
+                    new BODY(bodyContent)));
         }
     }
 }

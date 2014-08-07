@@ -347,11 +347,11 @@ $(function ()
         if (newState)
         {
             state = newState;
-            body.removeClass(function (_, cl) { return 'auto-0 auto-1 ' + cl.split(' ').filter(function (c) { return c.substr(0, "state-".length) === "state-"; }).join(' '); });
-            newState.split('_').forEach(function (cl) { body.addClass('state-' + cl); });
+            main.removeClass(function (_, cl) { return 'auto-0 auto-1 ' + cl.split(' ').filter(function (c) { return c.substr(0, "state-".length) === "state-"; }).join(' '); });
+            newState.split('_').forEach(function (cl) { main.addClass('state-' + cl); });
         }
-        if (!body.hasClass('state-ToMove'))
-            body.removeClass('dice-start dice-2 dice-4');
+        if (!main.hasClass('state-ToMove'))
+            main.removeClass('dice-start dice-2 dice-4');
         if (isPlayerToMove() && !skipHighlight)
         {
             allValidMoves = getAllMoves(position, playerIsWhite,
@@ -483,7 +483,7 @@ $(function ()
 
     if (!$('#main>#board').length)
         return;
-    var body = $('#main');
+    var main = $('#main');
 
     // Special tongues
     var Tongue = {
@@ -494,15 +494,15 @@ $(function ()
         NumTongues: 28
     };
 
-    var moves = body.data('moves');
+    var moves = main.data('moves');
     var lastMove = moves[moves.length - 1];
-    var playerIsWhite = body.hasClass('player-white');
+    var playerIsWhite = main.hasClass('player-white');
     var allValidMoves;
     var boardHeight = 68;   // vw
     var sidebarWidth = 30;  // vw
     var lastWide = null;
 
-    var position = body.data('initial');
+    var position = main.data('initial');
     if (moves.length > 0)
     {
         var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
@@ -544,11 +544,11 @@ $(function ()
         if ('move' in json)
         {
             if ('auto' in json)
-                body.addClass('auto-' + json.auto);
+                main.addClass('auto-' + json.auto);
 
             moves[moves.length - 1].SourceTongues = json.move.SourceTongues;
             moves[moves.length - 1].TargetTongues = json.move.TargetTongues;
-            position = processMove(position, body.hasClass('state-White'), json.move.SourceTongues, json.move.TargetTongues, {
+            position = processMove(position, main.hasClass('state-White'), json.move.SourceTongues, json.move.TargetTongues, {
                 mode: 'animate',
                 callback: function ()
                 {
@@ -566,7 +566,7 @@ $(function ()
             moves.push({ Dice1: json.dice.dice1, Dice2: json.dice.dice2 });
             lastMove = moves[moves.length - 1];
 
-            body
+            main
                 .removeClass('dice-2 dice-4 dice-start')
                 .addClass((lastMove.Dice1 === lastMove.Dice2 ? 'dice-4' : 'dice-2') + (moves.length === 1 ? ' dice-start' : ''));
             $('#board>.dice').removeClass('val-1 val-2 val-3 val-4 val-5 val-6 crossed');
@@ -579,7 +579,7 @@ $(function ()
         {
             $('#cube-text').text(json.cube.GameValue);
             var oldTop = $('#cube').position().top;
-            body.removeClass('cube-white cube-black').addClass(json.cube.WhiteOwnsCube ? 'cube-white' : 'cube-black');
+            main.removeClass('cube-white cube-black').addClass(json.cube.WhiteOwnsCube ? 'cube-white' : 'cube-black');
             var newTop = $('#cube').position().top;
             $('#cube').css('top', oldTop).animate({ top: newTop }, { duration: 1000, complete: function () { $('#cube').css('top', ''); } });
             position.GameValue = json.cube.GameValue;
@@ -602,10 +602,10 @@ $(function ()
 
     var newSocket = function ()
     {
-        socket = new WebSocket(body.data('socket-url'));
+        socket = new WebSocket(main.data('socket-url'));
         socket.onopen = function ()
         {
-            body.removeClass('connecting');
+            main.removeClass('connecting');
             for (var i = 0; i < sendQueue.length; i++)
                 socket.send(JSON.stringify(sendQueue[i]));
             sendQueue = [];
@@ -629,7 +629,7 @@ $(function ()
     var reconnectInterval = 0;
     var reconnect = function (useDelay)
     {
-        body.addClass('connecting');
+        main.addClass('connecting');
         try { socket.close(); } catch (e) { }
         if (useDelay)
         {
@@ -652,7 +652,7 @@ $(function ()
             sendQueue.push(msg);
     };
 
-    if (!body.hasClass('spectating'))
+    if (!main.hasClass('spectating'))
     {
         deselectPiece();
         $('#board>.piece').click(function ()
@@ -706,9 +706,9 @@ $(function ()
                 moveSoFar.OpponentPieceTaken.push(move.OpponentPieceTaken[i]);
                 $('#board>.dice:not(.crossed).val-' + move.DiceSequence[i]).first().addClass('crossed');
             }
-            body.addClass('undoable');
+            main.addClass('undoable');
             if (moveSoFar.DiceSequence.length === allValidMoves[0].DiceSequence.length)
-                body.addClass('committable');
+                main.addClass('committable');
         });
 
         $(document).keydown(function (e)
@@ -719,7 +719,7 @@ $(function ()
 
         $('#undo').click(function ()
         {
-            if (body.hasClass('spectating'))
+            if (main.hasClass('spectating'))
                 return false;
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)
@@ -736,9 +736,9 @@ $(function ()
                 moveSoFar.TargetTongues.pop();
                 moveSoFar.OpponentPieceTaken.pop();
             }
-            body.removeClass('committable');
+            main.removeClass('committable');
             if (moveSoFar.DiceSequence.length === 0)
-                body.removeClass('undoable');
+                main.removeClass('undoable');
             return false;
         });
 
@@ -746,10 +746,10 @@ $(function ()
         {
             return function ()
             {
-                if (!body.hasClass('spectating'))
+                if (!main.hasClass('spectating'))
                 {
                     socketSend(typeof msgToSend === 'function' ? msgToSend() : msgToSend);
-                    body.removeClass('undoable committable roll-or-double confirm-double');
+                    main.removeClass('undoable committable roll-or-double confirm-double');
                 }
                 return false;
             };
@@ -803,9 +803,9 @@ $(function ()
             if (sidebarProps.length)
             {
                 newSelectors = newSelectors.join(',');
-                cssWithSidebar.push(newSelectors + '{' + sidebarProps.join(';') + '}\n');
-                cssInMedia.push(rules[ruleix].selectorText + '{' + inMediaProps.join(';') + '}\n');
-                cssInMediaWithSidebar.push(newSelectors + '{' + sidebarInMediaProps.join(';') + '}\n');
+                cssWithSidebar.push(newSelectors + '{' + sidebarProps.join(';') + '}');
+                cssInMedia.push(rules[ruleix].selectorText + '{' + inMediaProps.join(';') + '}');
+                cssInMediaWithSidebar.push(newSelectors + '{' + sidebarInMediaProps.join(';') + '}');
             }
         }
     }

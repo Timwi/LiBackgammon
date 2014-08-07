@@ -16,7 +16,7 @@
     top: 0;
     width: 100vw;
     height: 68vw;
-    box-shadow: .6vw .6vw .5vw rgba(0,0,0,.5);
+    box-shadow: .6vw .6vw 1vw rgba(0,0,0,.5);
 }
 
     #main > *, #main > *:not(.dialog) > * {
@@ -29,6 +29,24 @@
         width: 98vw;
         height: 58vw;
     }
+
+        #main > #board > .overlay {
+            background: hsl(31.85, 50%, 30%);
+        }
+
+            #main > #board > .overlay#overlay-bottom {
+                top: 56vw;
+                left: 0;
+                width: 96vw;
+                height: 2vw;
+            }
+
+            #main > #board > .overlay#overlay-right {
+                top: 0;
+                right: 0;
+                width: 2vw;
+                height: 58vw;
+            }
 
         #main > #board > .background {
             background: hsl(31.85, 50%, 70%);
@@ -784,7 +802,9 @@
 
     #main > #infobar {
         height: 6vw;
+        left: 2vw;
         top: 2vw;
+        width: 96vw;
     }
 
         #main > #infobar > .infobox {
@@ -800,13 +820,13 @@
             }
 
             #main > #infobar > .infobox#info-player {
-                left: 2vw;
-                width: 16.5vw;
+                left: 0;
+                width: 19vw;
             }
 
             #main > #infobar > .infobox#info-state {
-                left: 20.5vw;
-                width: 16.5vw;
+                left: 21vw;
+                width: 19vw;
             }
 
                 #main > #infobar > .infobox#info-player > .piece, #main > #infobar > .infobox#info-state > .piece {
@@ -817,24 +837,16 @@
                 position: absolute;
                 top: 0;
                 bottom: 0;
-                width: 10vw;
+                width: 11vw;
                 overflow: hidden;
             }
-
-                #main > #infobar > .infobox > .infobox-inner > .piece {
-                    -moz-transform: translateX(-50%);
-                    -ms-transform: translateX(-50%);
-                    -o-transform: translateX(-50%);
-                    -webkit-transform: translateX(-50%);
-                    transform: translateX(-50%);
-                }
 
                 #main > #infobar > .infobox > .infobox-inner.infobox-white {
                     left: 0;
                 }
 
                     #main > #infobar > .infobox > .infobox-inner.infobox-white > .piece {
-                        left: 100%;
+                        right: -2.5vw;
                     }
 
                 #main > #infobar > .infobox > .infobox-inner.infobox-black {
@@ -842,7 +854,7 @@
                 }
 
                     #main > #infobar > .infobox > .infobox-inner.infobox-black > .piece {
-                        left: 0;
+                        left: -2.5vw;
                     }
 
                 #main > #infobar > #info-player::before, #main > #infobar > #info-player::after,
@@ -857,13 +869,13 @@
                 }
 
             #main > #infobar > .infobox#info-pips {
-                left: 39vw;
-                width: 20vw;
+                left: 42vw;
+                width: 22vw;
             }
 
             #main > #infobar > .infobox#info-match {
-                left: 61vw;
-                width: 20vw;
+                left: 66vw;
+                width: 22vw;
             }
 
         #main > #infobar > #info-player::before {
@@ -906,16 +918,6 @@
             position: absolute;
             top: 3vw;
             font-family: "Impact";
-        }
-
-        #main > #infobar > #info-pips > .infobox-inner::after {
-            content: 'pips';
-            font-size: 2vw;
-        }
-
-        #main > #infobar > #info-match > .infobox-inner::after {
-            content: 'match';
-            font-size: 1.5vw;
         }
 
         #main > #infobar > .infobox > .infobox-white::after {
@@ -1009,6 +1011,145 @@
     #main.state-Won > #infobar > #info-state::after {
         content: 'wins';
     }
+
+    #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before {
+        opacity: 0;
+        pointer-events: none;
+        -moz-transition: opacity .1s ease-in-out;
+        -o-transition: opacity .1s ease-in-out;
+        -webkit-transition: opacity .1s ease-in-out;
+        transition: opacity .1s ease-in-out;
+        position: absolute;
+        background: hsl(31.85, 50%, 80%);
+        padding: .2vw 1vw;
+        font-size: 1.1vw;
+        color: hsl(31.85, 50%, 20%);
+        border: .2vw solid hsl(31.85, 50%, 20%);
+        border-radius: .5vw;
+        box-shadow: .1vw .1vw .2vw rgba(0, 0, 0, .5);
+        text-align: center;
+    }
+
+    #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before {
+        width: 16vw;
+        top: 6.1vw;
+        left: 50%;
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -o-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }
+
+    #main > #infobar > .mini-button::before {
+        width: auto;
+        white-space: nowrap;
+        top: 1.5vw;
+        right: -1.25vw;
+    }
+
+    #main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before {
+        opacity: 1;
+    }
+
+    #main > #infobar > #info-pips::before {
+        content: 'Shows the sum of how many steps all of your pieces are away from home.';
+    }
+
+    #main > #infobar > #info-match::before {
+        content: 'Shows your score within the current match.';
+    }
+
+    #main > #infobar > #info-pips > .infobox-inner::after {
+        content: 'pips';
+        font-size: 2vw;
+    }
+
+    #main > #infobar > #info-match > .infobox-inner::after {
+        content: 'match';
+        font-size: 1.5vw;
+    }
+
+    #main > #infobar > .mini-button {
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: 91.25vw;
+        top: 1.25vw;
+    }
+
+        #main > #infobar > .mini-button:hover {
+            border-radius: 100%;
+            box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
+        }
+
+        #main > #infobar > .mini-button::after {
+            content: '';
+            position: absolute;
+            left: -1.25vw;
+            top: -1.25vw;
+            right: -1.25vw;
+            bottom: -1.25vw;
+            background-position: center center;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        #main > #infobar > .mini-button#chat, #main > #infobar > .mini-button#settings {
+            left: 94.75vw;
+        }
+
+        #main > #infobar > .mini-button#resign, #main > #infobar > .mini-button#settings {
+            top: 4.75vw;
+        }
+
+        #main > #infobar > .mini-button#help::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23d9b58c" d="M 582,745 410,745 C 409,720 409,705 409,700 409,644 418,598 437,562 455,526 492,485 548,440 603,395 636,366 647,352 664,330 672,306 672,279 672,242 657,210 628,184 598,158 558,145 508,145 460,145 420,158 388,186 355,213 333,255 321,311 L 146,290 C 151,209 186,141 249,85 313,28 397,0 500,0 609,0 696,29 760,86 825,142 857,209 857,284 857,326 845,366 822,403 798,441 747,492 670,556 630,589 605,616 595,636 586,657 581,693 582,745 z M 410,1000 410,811 600,811 600,1000 z"/></g></svg>');
+        }
+
+        #main > #infobar > .mini-button#chat::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23d9b58c" d="M 1000,351 C 1000,448 944,535 854,599 809,631 755,656 695,674 665,683 634,690 601,694 557,859 411,979 251,1000 356,957 407,817 399,694 367,689 335,683 305,674 246,656 192,630 146,599 56,535 0,447 0,351 0,157 224,0 500,0 776,0 1000,157 1000,351 z"/></g></svg>');
+        }
+
+        #main > #infobar > .mini-button#resign::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23d9b58c" d="M 100,0 0,25 225,1000 300,975 211,539 C 244,510 301,475 375,475 525,475 525,550 525,550 525,550 525,600 550,600 591,600 662,550 750,550 875,550 900,625 900,625 L 1000,175 C 1000,175 925,100 775,100 625,100 575,125 575,125 575,125 600,25 375,25 288,25 177,61 117,83 z"/></g></svg>');
+        }
+
+        #main > #infobar > .mini-button#settings::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23d9b58c" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></g></svg>');
+        }
+
+        #main > #infobar > .mini-button#help::before {
+            content: 'Rules and other help';
+        }
+
+        #main > #infobar > .mini-button#chat::before {
+            content: 'Chat';
+        }
+
+        #main > #infobar > .mini-button#resign::before {
+            content: 'Resign this game';
+        }
+
+        #main > #infobar > .mini-button#settings::before {
+            content: 'Settings';
+        }
+
+        #main > #infobar > .mini-button#help:hover::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23f0d9b5" d="M 582,745 410,745 C 409,720 409,705 409,700 409,644 418,598 437,562 455,526 492,485 548,440 603,395 636,366 647,352 664,330 672,306 672,279 672,242 657,210 628,184 598,158 558,145 508,145 460,145 420,158 388,186 355,213 333,255 321,311 L 146,290 C 151,209 186,141 249,85 313,28 397,0 500,0 609,0 696,29 760,86 825,142 857,209 857,284 857,326 845,366 822,403 798,441 747,492 670,556 630,589 605,616 595,636 586,657 581,693 582,745 z M 410,1000 410,811 600,811 600,1000 z"/></g></svg>');
+        }
+
+        #main > #infobar > .mini-button#chat:hover::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23f0d9b5" d="M 1000,351 C 1000,448 944,535 854,599 809,631 755,656 695,674 665,683 634,690 601,694 557,859 411,979 251,1000 356,957 407,817 399,694 367,689 335,683 305,674 246,656 192,630 146,599 56,535 0,447 0,351 0,157 224,0 500,0 776,0 1000,157 1000,351 z"/></g></svg>');
+        }
+
+        #main > #infobar > .mini-button#resign:hover::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23f0d9b5" d="M 100,0 0,25 225,1000 300,975 211,539 C 244,510 301,475 375,475 525,475 525,550 525,550 525,550 525,600 550,600 591,600 662,550 750,550 875,550 900,625 900,625 L 1000,175 C 1000,175 925,100 775,100 625,100 575,125 575,125 575,125 600,25 375,25 288,25 177,61 117,83 z"/></g></svg>');
+        }
+
+        #main > #infobar > .mini-button#settings:hover::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><g><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></g></svg>');
+        }
 
 button {
     background-color: hsl(32, 52%, 34.3%);

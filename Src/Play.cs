@@ -64,15 +64,6 @@ namespace LiBackgammon
                         .Data("player", player)
                         .Data("socket-url", Regex.Replace(req.Url.WithParent("socket/" + publicId + playerToken).ToFull(), @"^http", "ws"))
                         ._(
-                            new DIV { id = "infobar" }._(
-                                new DIV { class_ = "infobox", id = "info-player" }._(new DIV { class_ = "piece" }),
-                                new DIV { class_ = "infobox", id = "info-state" }._(new DIV { class_ = "piece" }),
-                                new DIV { class_ = "infobox", id = "info-pips" }._(
-                                    new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-white" }._(pipsWhite)),
-                                    new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-black" }._(pipsBlack))),
-                                new DIV { class_ = "infobox", id = "info-match" }._(
-                                    new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-white" }._(0)),
-                                    new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-black" }._(0)))),
                             new DIV { id = "board" }._(
                                 new[] { "left", "right" }.Select(loc => new DIV { class_ = "background main-area " + loc }),
                                 new[] { "white", "black" }.Select(col => new DIV { class_ = "background home " + col }),
@@ -98,6 +89,19 @@ namespace LiBackgammon
                                 Enumerable.Range(0, 15).Select(pieceNum => new[] { "white", "black" }.Select(color => new DIV { class_ = "piece " + color })),
                                 new DIV { class_ = "overlay", id = "overlay-bottom" },
                                 new DIV { class_ = "overlay", id = "overlay-right" }),
+                            new DIV { id = "infobar" }._(
+                                new DIV { class_ = "infobox", id = "info-player" }._(new DIV { class_ = "piece" }),
+                                new DIV { class_ = "infobox", id = "info-state" }._(new DIV { class_ = "piece" }),
+                                new DIV { class_ = "infobox", id = "info-pips" }._(
+                                    new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-white" }._(pipsWhite)),
+                                    new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-black" }._(pipsBlack))),
+                                new DIV { class_ = "infobox", id = "info-match" }._(
+                                    new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-white" }._(0)),
+                                    new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-black" }._(0))),
+                                new DIV { class_ = "mini-button", id = "resign" },
+                                new DIV { class_ = "mini-button", id = "settings" },
+                                new DIV { class_ = "mini-button", id = "help" },
+                                new DIV { class_ = "mini-button", id = "chat" }),
                             new DIV { id = "win", class_ = "dialog" }._(
                                 new DIV { class_ = "piece" },
                                 new DIV { class_ = "points" + (points == 1 ? " singular" : " plural") }._(

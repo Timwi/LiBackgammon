@@ -98,12 +98,16 @@ $(function ()
         var animationQueue = [];
         var arrows = [];
 
-        var piecesByTongue = [];
-        for (var i = 0; i < Tongue.NumTongues; i++)
+        var piecesByTongue;
+        if (options && (options.mode === 'animate' || options.mode === 'indicate'))
         {
-            piecesByTongue[i] = getPiecesOnTongue(i).get();
-            if (i < 12)
-                piecesByTongue[i].reverse();
+            piecesByTongue = [];
+            for (var i = 0; i < Tongue.NumTongues; i++)
+            {
+                piecesByTongue[i] = getPiecesOnTongue(i).get();
+                if (i < 12)
+                    piecesByTongue[i].reverse();
+            }
         }
 
         function processSubmove(isWhite, sourceTongue, targetTongue)
@@ -347,7 +351,7 @@ $(function ()
         if (newState)
         {
             state = newState;
-            main.removeClass(function (_, cl) { return 'auto-0 auto-1 ' + cl.split(' ').filter(function (c) { return c.substr(0, "state-".length) === "state-"; }).join(' '); });
+            main.removeClass(function (_, cl) { return 'auto-0 auto-1 undoable committable ' + cl.split(' ').filter(function (c) { return c.substr(0, "state-".length) === "state-"; }).join(' '); });
             newState.split('_').forEach(function (cl) { main.addClass('state-' + cl); });
         }
         if (!main.hasClass('state-ToMove'))
@@ -749,7 +753,7 @@ $(function ()
                 if (!main.hasClass('spectating'))
                 {
                     socketSend(typeof msgToSend === 'function' ? msgToSend() : msgToSend);
-                    main.removeClass('undoable committable roll-or-double confirm-double');
+                    main.removeClass('undoable committable resigning roll-or-double confirm-double');
                 }
                 return false;
             };
@@ -760,6 +764,15 @@ $(function ()
         $('#double').click(getGeneralisedButtonClick({ double: 1 }));
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
         $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
+        $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }));
+
+        $('#resign').click(function ()
+        {
+            if (!$('#main.state-Won').length)
+                main.addClass('resigning');
+            return false;
+        });
+        $('#resign-cancel').click(function () { main.removeClass('resigning'); return false; });
     }
 
     // Add extra CSS

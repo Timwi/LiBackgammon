@@ -76,6 +76,8 @@ namespace LiBackgammon
                                 new BUTTON { id = "double" },
                                 new BUTTON { id = "accept" },
                                 new BUTTON { id = "reject" },
+                                new BUTTON { id = "resign-confirm" },
+                                new BUTTON { id = "resign-cancel" },
                                 new DIV { id = "info" },
                                 new DIV { class_ = "dice-back", id = "dice-back-white" },
                                 new DIV { class_ = "dice-back", id = "dice-back-black" },

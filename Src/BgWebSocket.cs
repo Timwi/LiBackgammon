@@ -34,7 +34,7 @@ namespace LiBackgammon
                 _server.ActiveSockets.RemoveSafe(_gameId, this);
         }
 
-        private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject" };
+        private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject", "resign" };
 
         public override void OnTextMessageReceived(string msg)
         {
@@ -80,6 +80,11 @@ namespace LiBackgammon
                         return;
                     game.State = _player == Player.White ? GameState.Black_Won_RejectedDouble : GameState.White_Won_RejectedDouble;
                     sendBoth.Add(new JsonDict { { "state", game.State.ToString() }, { "win", pos.GameValue ?? 1 } });
+                }
+                else if (json.ContainsKey("resign"))
+                {
+                    game.State = _player == Player.White ? GameState.Black_Won_Resignation : GameState.White_Won_Resignation;
+                    sendBoth.Add(new JsonDict { { "state", game.State.ToString() }, { "win", (pos.GameValue ?? 1) * pos.GetWinMultiplier(game.State == GameState.White_Won_Resignation) } });
                 }
                 else
                 {

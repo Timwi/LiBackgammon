@@ -73,7 +73,7 @@
         #main > #board > .home {
             width: 6vw;
             height: 27vw;
-            right: 2vw;
+            left: 90vw;
         }
 
             #main > #board > .home.white {
@@ -168,78 +168,106 @@
             left: 0;
         }
 
-        #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece {
-            -moz-box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-            width: 5vw;
-            height: 5vw;
-            border-radius: 100%;
-            border: .3vw solid transparent;
-            border-top: .2vw solid transparent;
-            border-left: .2vw solid transparent;
-            box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        #main > #board > .automove {
+            width: 3.5vw;
+            height: 2vw;
+            background: hsla(110,70%,70%,.6);
         }
 
-            #main > #board > .piece.white,
-            #main.state-White.state-Won > #win > .piece,
-            #main.player-white > #infobar > #info-player > .piece,
-            #main.state-White > #infobar > #info-state > .piece,
-            #main > #infobar > .infobox > .infobox-white > .piece {
-                background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
-                border-color: hsl(31.85, 50%, 100%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 100%);
+            #main > #board > .automove.prison {
+                left: 42.25vw;
             }
 
-                #main > #board > .piece.white.selected {
-                    background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
-                    border-color: hsl(0, 100%, 90%) hsl(0, 100%, 85%) hsl(0, 100%, 85%) hsl(0, 100%, 90%);
-                }
-
-            #main > #board > .piece.black,
-            #main.state-Black.state-Won > #win > .piece,
-            #main.player-black > #infobar > #info-player > .piece,
-            #main.state-Black > #infobar > #info-state > .piece,
-            #main > #infobar > .infobox > .infobox-black > .piece {
-                background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
-                border-color: hsl(31.85, 50%, 20%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 20%);
+            #main > #board > .automove.top, #main > #board > .automove.white.home, #main > #board > .automove.black.prison {
+                top: 0;
+                border-radius: 0 0 2vw 2vw;
             }
 
-                #main > #board > .piece.black.selected {
-                    background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
-                    border-color: hsl(0, 100%, 30%) hsl(0, 100%, 20%) hsl(0, 100%, 20%) hsl(0, 100%, 30%);
-                }
-
-            #main > #board > .piece.selectable::before {
-                position: absolute;
-                left: -.2vw;
-                top: -.2vw;
-                right: -.3vw;
-                bottom: -.3vw;
-                background: hsl(110, 50%, 50%);
-                border-radius: 100%;
-                content: '';
-                opacity: .3;
-                -moz-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-                -o-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-                -webkit-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-                animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            #main > #board > .automove.bottom, #main > #board > .automove.black.home, #main > #board > .automove.white.prison {
+                bottom: 2vw;
+                border-radius: 2vw 2vw 0 0;
             }
 
-            #main > #board > .piece.selectable.selected::before {
-                display: none;
+    #main.player-white > #board > .automove.bottom.target,
+    #main.player-white > #board > .automove.top.source,
+    #main.player-black > #board > .automove.bottom.source,
+    #main.player-black > #board > .automove.top.target {
+        margin-left: 3.5vw;
+    }
+
+    #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 5vw;
+        height: 5vw;
+        border-radius: 100%;
+        border: .3vw solid transparent;
+        border-top: .2vw solid transparent;
+        border-left: .2vw solid transparent;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+    }
+
+        #main > #board > .piece.white,
+        #main.state-White.state-Won > #win > .piece,
+        #main.player-white > #infobar > #info-player > .piece,
+        #main.state-White > #infobar > #info-state > .piece,
+        #main > #infobar > .infobox > .infobox-white > .piece {
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
+            border-color: hsl(31.85, 50%, 100%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 100%);
+        }
+
+            #main > #board > .piece.white.selected {
+                background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
+                border-color: hsl(0, 100%, 90%) hsl(0, 100%, 85%) hsl(0, 100%, 85%) hsl(0, 100%, 90%);
             }
 
-            #main > #board > .piece.hypo-target {
-                opacity: .5;
-                -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-                -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-                -webkit-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-                animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-                pointer-events: none;
+        #main > #board > .piece.black,
+        #main.state-Black.state-Won > #win > .piece,
+        #main.player-black > #infobar > #info-player > .piece,
+        #main.state-Black > #infobar > #info-state > .piece,
+        #main > #infobar > .infobox > .infobox-black > .piece {
+            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
+            border-color: hsl(31.85, 50%, 20%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 20%);
+        }
+
+            #main > #board > .piece.black.selected {
+                background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
+                border-color: hsl(0, 100%, 30%) hsl(0, 100%, 20%) hsl(0, 100%, 20%) hsl(0, 100%, 30%);
             }
+
+        #main > #board > .piece.selectable::before {
+            position: absolute;
+            left: -.2vw;
+            top: -.2vw;
+            right: -.3vw;
+            bottom: -.3vw;
+            background: hsl(110, 50%, 50%);
+            border-radius: 100%;
+            content: '';
+            opacity: .3;
+            -moz-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            -o-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            -webkit-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+            animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+        }
+
+        #main > #board > .piece.selectable.selected::before {
+            display: none;
+        }
+
+        #main > #board > .piece.hypo-target {
+            opacity: .5;
+            -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            -webkit-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+            pointer-events: none;
+        }
 
     #main.player-white.state-White.state-ToMove > #board > .piece.white,
-    #main.player-black.state-Black.state-ToMove > #board > .piece.black {
+    #main.player-black.state-Black.state-ToMove > #board > .piece.black,
+    #main > #board > .automove {
         cursor: pointer;
     }
 
@@ -430,7 +458,6 @@
             font-weight: bold;
             color: hsl(0, 80%, 50%);
             line-height: 1;
-            cursor: default;
             opacity: 0;
             -moz-transition: opacity ease-in-out .2s;
             -o-transition: opacity ease-in-out .2s;
@@ -1174,7 +1201,7 @@
     }
 
     #main.state-Won > #infobar > .mini-button#resign {
-        opacity: .5;
+        opacity: .2;
     }
 
 button {

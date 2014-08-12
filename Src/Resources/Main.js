@@ -362,6 +362,7 @@ $(function ()
                 lastMove.Dice1 === lastMove.Dice2
                     ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
                     : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
+            allValidRestMoves = allValidMoves;
             deselectPiece();
         }
     }
@@ -369,41 +370,114 @@ $(function ()
     function getClickableSourceTongues()
     {
         var result = [];
-        if (allValidMoves.length === 0 || allValidMoves[0].SourceTongues.length === moveSoFar.DiceSequence.length)
-            return result;
-        for (var i = 0; i < allValidMoves.length; i++)
-        {
-            var applicable = true;
-            for (var j = 0; j < moveSoFar.DiceSequence.length; j++)
-                if (allValidMoves[i].DiceSequence[j] !== moveSoFar.DiceSequence[j] ||
-                    allValidMoves[i].SourceTongues[j] !== moveSoFar.SourceTongues[j] ||
-                    allValidMoves[i].TargetTongues[j] !== moveSoFar.TargetTongues[j])
-                    applicable = false;
-            if (!applicable)
-                continue;
-            for (var k = moveSoFar.DiceSequence.length; k < allValidMoves[i].SourceTongues.length; k++)
-            {
-                var tongue = allValidMoves[i].SourceTongues[k];
-                if (position.NumPiecesPerTongue[tongue] > 0 && position.IsWhitePerTongue[tongue] === playerIsWhite && result.indexOf(tongue) === -1)
-                    result.push(tongue);
-            }
-        }
+        for (var i = 0; i < allValidRestMoves.length; i++)
+            for (var k = 0; k < allValidRestMoves[i].SourceTongues.length; k++)
+                if (result.indexOf(allValidRestMoves[i].SourceTongues[k]) === -1)
+                    result.push(allValidRestMoves[i].SourceTongues[k]);
         return result;
     }
 
     function deselectPiece(skipHighlight)
     {
-        $('#board>.piece.hypo-target, #board>.arrow, #board>.tongue.selectable, #board>.home.selectable').remove();
+        $('#board>.piece.hypo-target, #board>.arrow, #board>.tongue.selectable, #board>.home.selectable, #board>.automove').remove();
         $('#board>.piece').removeClass('selectable selected');
         selectedPiece = null;
 
-        // Highlight all the clickable pieces
         if (isPlayerToMove() && !skipHighlight)
         {
+            // Highlight all the clickable pieces
             var clickable = getClickableSourceTongues();
             for (var tongue = 0; tongue < clickable.length; tongue++)
                 topPieceOfTongue(clickable[tongue]).addClass('selectable');
+
+            // Highlight all the auto-move targets
+            var autoSourceMoves = {}, autoTargetMoves = {};
+            function processTongue(tongue, tongueInfos)
+            {
+                if (tongue in tongueInfos)
+                {
+                    tongueInfos[tongue].num++;
+                    tongueInfos[tongue].numOthers = j - tongueInfos[tongue].num + 1;
+                }
+                else
+                    tongueInfos[tongue] = { num: 1, numOthers: j };
+            }
+            function considerAutoMove(tongueInfos, autoMoves, move)
+            {
+                for (var tongue in tongueInfos)
+                    if (tongueInfos[tongue].num > 1)
+                        if (!autoMoves[tongue] || autoMoves[tongue].numOthers > tongueInfos[tongue].numOthers || (autoMoves[tongue].numOthers === tongueInfos[tongue].numOthers && autoMoves[tongue].num < tongueInfos[tongue].num))
+                        {
+                            var index = tongueInfos[tongue].num + tongueInfos[tongue].numOthers;
+                            autoMoves[tongue] = {
+                                num: tongueInfos[tongue].num,
+                                numOthers: tongueInfos[tongue].numOthers,
+                                move: {
+                                    SourceTongues: move.SourceTongues.slice(0, index),
+                                    TargetTongues: move.TargetTongues.slice(0, index),
+                                    DiceSequence: move.DiceSequence.slice(0, index),
+                                    OpponentPieceTaken: move.OpponentPieceTaken.slice(0, index)
+                                }
+                            };
+                        }
+            }
+            function tongueCssClass(tongue)
+            {
+                switch (tongue)
+                {
+                    case Tongue.WhiteHome:
+                        return 'white home';
+                    case Tongue.BlackHome:
+                        return 'black home';
+                    case Tongue.WhitePrison:
+                        return 'white prison';
+                    case Tongue.BlackPrison:
+                        return 'black prison';
+                    default:
+                        return 'tongue-' + tongue + (tongue < 12 ? ' bottom' : ' top');
+                }
+            }
+            for (var i = 0; i < allValidRestMoves.length; i++)
+            {
+                var move = allValidRestMoves[i];
+                var sourceTongues = {}, targetTongues = {};
+                for (var j = 0; j < move.SourceTongues.length; j++)
+                {
+                    processTongue(move.SourceTongues[j], sourceTongues);
+                    processTongue(move.TargetTongues[j], targetTongues);
+                }
+                considerAutoMove(sourceTongues, autoSourceMoves, move);
+                considerAutoMove(targetTongues, autoTargetMoves, move);
+            }
+            for (var tongue in autoSourceMoves)
+                $('<div>').addClass('automove source ' + tongueCssClass(+tongue)).data('move', autoSourceMoves[tongue].move).appendTo('#board');
+            for (var tongue in autoTargetMoves)
+                $('<div>').addClass('automove target ' + tongueCssClass(+tongue)).data('move', autoTargetMoves[tongue].move).appendTo('#board');
         }
+    }
+
+    function filterMoveByTargetTongue(move, tt)
+    {
+        var lastIndex = -1;
+        for (var i = 0; i < move.TargetTongues.length; i++)
+            if (move.TargetTongues[i] === tt)
+                lastIndex = i;
+
+        var ret = {
+            SourceTongues: [],
+            TargetTongues: [],
+            DiceSequence: [],
+            OpponentPieceTaken: []
+        };
+        for (var i = 0; i < move.TargetTongues.length; i++)
+            if (move.TargetTongues[i] === tt)
+            {
+                ret.SourceTongues.push(move.SourceTongues[i]);
+                ret.TargetTongues.push(move.TargetTongues[i]);
+                ret.DiceSequence.push(move.DiceSequence[i]);
+                ret.OpponentPieceTaken.push(move.OpponentPieceTaken[i]);
+            }
+        return ret;
     }
 
     function selectPiece(tongue)
@@ -443,10 +517,10 @@ $(function ()
         Object.keys(targetMoves).map(function (i)
         {
             var rawTongueElem = $('.tongue-' + i);
-            return (rawTongueElem.length
+            var selectable = rawTongueElem.length
                 ? rawTongueElem.clone().addClass('selectable')
-                : $('<div>').addClass('selectable ' + (+i === Tongue.WhiteHome ? 'white home' : 'black home'))
-            ).data('move', targetMoves[i]).insertBefore('#overlay-bottom');
+                : $('<div>').addClass('selectable ' + (+i === Tongue.WhiteHome ? 'white home' : 'black home'));
+            selectable.data('move', targetMoves[i]).insertBefore('#overlay-bottom');
         });
     }
 
@@ -485,6 +559,27 @@ $(function ()
         }
     }
 
+    function recomputeValidRestMoves()
+    {
+        allValidRestMoves = allValidMoves.filter(function (move)
+        {
+            for (var i = 0; i < moveSoFar.DiceSequence.length; i++)
+                if (move.DiceSequence[i] !== moveSoFar.DiceSequence[i] ||
+                    move.SourceTongues[i] !== moveSoFar.SourceTongues[i] ||
+                    move.TargetTongues[i] !== moveSoFar.TargetTongues[i])
+                    return false;
+            return true;
+        }).map(function (move)
+        {
+            return {
+                DiceSequence: move.DiceSequence.slice(moveSoFar.DiceSequence.length),
+                SourceTongues: move.SourceTongues.slice(moveSoFar.DiceSequence.length),
+                TargetTongues: move.TargetTongues.slice(moveSoFar.DiceSequence.length),
+                OpponentPieceTaken: move.OpponentPieceTaken.slice(moveSoFar.DiceSequence.length)
+            };
+        });
+    }
+
     if (!$('#main>#board').length)
         return;
     var main = $('#main');
@@ -501,7 +596,7 @@ $(function ()
     var moves = main.data('moves');
     var lastMove = moves[moves.length - 1];
     var playerIsWhite = main.hasClass('player-white');
-    var allValidMoves;
+    var allValidMoves, allValidRestMoves;
     var boardHeight = 68;   // vw
     var sidebarWidth = 30;  // vw
     var lastWide = null;
@@ -685,18 +780,18 @@ $(function ()
             return false;
         });
 
-        $('#board').on('mouseenter', '.tongue.selectable, .home.selectable', function ()
+        $('#board').on('mouseenter', '.tongue.selectable, .home.selectable, .automove', function ()
         {
             var move = $(this).data('move');
             processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'indicate' });
         });
 
-        $('#board').on('mouseleave', '.tongue.selectable, .home.selectable', function ()
+        $('#board').on('mouseleave', '.tongue.selectable, .home.selectable, .automove', function ()
         {
             $('#board>.piece.hypo-target, #board>.arrow').remove();
         });
 
-        $('#board').on('click', '.tongue.selectable, .home.selectable', function ()
+        $('#board').on('click', '.tongue.selectable, .home.selectable, .automove', function ()
         {
             $('#board>.piece.hypo-target, #board>.arrow').hide();
             var move = $(this).data('move');
@@ -713,6 +808,7 @@ $(function ()
             main.addClass('undoable');
             if (moveSoFar.DiceSequence.length === allValidMoves[0].DiceSequence.length)
                 main.addClass('committable');
+            recomputeValidRestMoves();
         });
 
         $(document).keydown(function (e)
@@ -743,6 +839,7 @@ $(function ()
             main.removeClass('committable');
             if (moveSoFar.DiceSequence.length === 0)
                 main.removeClass('undoable');
+            recomputeValidRestMoves();
             return false;
         });
 

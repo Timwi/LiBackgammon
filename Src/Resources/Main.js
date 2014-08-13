@@ -46,13 +46,13 @@ $(function ()
         if (tongue === Tongue.WhiteHome)
             return 1 + 1.425 * pieceIndex;
         if (tongue === Tongue.BlackHome)
-            return (58 - 2 - 1 - 5) - 1.425 * pieceIndex;
+            return 50 - 1.425 * pieceIndex;
         if (tongue === Tongue.WhitePrison)
             return 34 + 4 * pieceIndex;
         if (tongue === Tongue.BlackPrison)
             return 17 - 4 * pieceIndex;
         if (tongue < 12)
-            return (58 - 2 - 5) - (20 / Math.max(4, numPieces - 1)) * pieceIndex;
+            return 51 - (20 / Math.max(4, numPieces - 1)) * pieceIndex;
         return (20 / Math.max(4, numPieces - 1)) * pieceIndex;
     }
 
@@ -580,6 +580,15 @@ $(function ()
         });
     }
 
+    function sidebar(id)
+    {
+        if ($('#main.with-sidebar.sidebar-' + id).length)
+            main.removeClass('with-sidebar sidebar-' + id);
+        else
+            main.addClass('with-sidebar sidebar-' + id);
+        onResize(true);
+    }
+
     if (!$('#main>#board').length)
         return;
     var main = $('#main');
@@ -843,11 +852,11 @@ $(function ()
             return false;
         });
 
-        function getGeneralisedButtonClick(msgToSend)
+        function getGeneralisedButtonClick(msgToSend, condition)
         {
             return function ()
             {
-                if (!main.hasClass('spectating'))
+                if (!main.hasClass('spectating') && (!condition || condition()))
                 {
                     socketSend(typeof msgToSend === 'function' ? msgToSend() : msgToSend);
                     main.removeClass('undoable committable resigning roll-or-double confirm-double');
@@ -861,7 +870,6 @@ $(function ()
         $('#double').click(getGeneralisedButtonClick({ double: 1 }));
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
         $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
-        $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }));
 
         $('#resign').click(function ()
         {
@@ -869,8 +877,22 @@ $(function ()
                 main.addClass('resigning');
             return false;
         });
+        $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function () { return $('#main.resigning:not(.state-Won)').length > 0; }));
         $('#resign-cancel').click(function () { main.removeClass('resigning'); return false; });
+
+        $('#chat').click(function () { sidebar('chat'); return false; });
     }
+
+    $(document).keydown(function (e)
+    {
+        if (e.keyCode === 18)  // ALT key
+            $(document.body).addClass('show-shortcuts');
+    });
+    $(document).keyup(function (e)
+    {
+        if (e.keyCode === 18)  // ALT key
+            $(document.body).removeClass('show-shortcuts');
+    });
 
     // Add extra CSS
     var cssWithSidebar = [];                    // CSS for when the sidebar is visible
@@ -924,6 +946,9 @@ $(function ()
         '@media screen and (min-aspect-ratio: 100/' + boardHeight + ') {' + cssInMedia.join('') + '}' +
         '@media screen and (min-aspect-ratio: ' + (100 + sidebarWidth) + '/' + boardHeight + ') {' + cssInMediaWithSidebar.join('') + '}';
     $('#converted-css').text(cssText);
+
+    // Add elements for the keyboard shortcuts
+    $('*[accesskey]').each(function () { $(this).append($('<span>').addClass('shortcut').text($(this).attr('accesskey'))); });
 
     $(window).resize(onResize);
     onResize();

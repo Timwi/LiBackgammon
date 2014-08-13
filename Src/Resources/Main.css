@@ -170,7 +170,7 @@
             left: 0;
         }
 
-        #main > #board > .automove {
+        #main > #board > .automove, #main > #board > .automove.home {
             border-left: 3.5vw solid hsla(110,70%,70%,.6);
             border-top: 1.5vw solid transparent;
             border-bottom: 1.5vw solid transparent;
@@ -185,11 +185,11 @@
             }
 
             #main > #board > .automove.top, #main > #board > .automove.white.home, #main > #board > .automove.black.prison {
-                top: -1.5vw;
+                top: 1vw;
             }
 
             #main > #board > .automove.bottom, #main > #board > .automove.black.home, #main > #board > .automove.white.prison {
-                bottom: 1.5vw;
+                bottom: 3vw;
             }
 
     #main.player-black > #board > .automove.top,
@@ -594,35 +594,67 @@
         left: 9vw;
     }
 
+        #main > #board > #commit::before {
+            content: 'Commit';
+        }
+
     #main > #board > #undo {
         font-size: 2vw;
         left: 22vw;
     }
+
+        #main > #board > #undo::before {
+            content: 'Undo';
+        }
 
     #main > #board > #accept {
         font-size: 1.8vw;
         left: 9vw;
     }
 
+        #main > #board > #accept::before {
+            content: 'Accept';
+        }
+
     #main > #board > #reject {
         font-size: 1.8vw;
         left: 22vw;
     }
+
+        #main > #board > #reject::before {
+            content: 'Reject';
+        }
 
     #main > #board > #roll, #main > #board > #resign-confirm {
         font-size: 2vw;
         left: 55vw;
     }
 
+        #main > #board > #roll::before {
+            content: 'Roll';
+        }
+
+        #main > #board > #resign-confirm::before {
+            content: 'Resign';
+        }
+
     #main > #board > #double {
         font-size: 1.8vw;
         left: 68vw;
     }
 
+        #main > #board > #double::before {
+            content: 'Double';
+        }
+
     #main > #board > #resign-cancel {
         font-size: 2vw;
         left: 68vw;
     }
+
+        #main > #board > #resign-cancel::before {
+            content: 'Cancel';
+        }
 
     #main.state-ToRoll:not(.resigning) > #board > #roll,
     #main.state-ToRoll:not(.resigning) > #board > #double,
@@ -1135,11 +1167,22 @@
         height: 0;
         left: 91.25vw;
         top: 1.25vw;
+        border-radius: 100%;
     }
 
-        #main:not(.state-Won) > #infobar > .mini-button:hover, #main > #infobar > .mini-button:not(#resign):hover {
-            border-radius: 100%;
+        #main:not(.state-Won) > #infobar > .mini-button:hover:not(:active):not(:focus), #main > #infobar > .mini-button:not(#resign):hover:not(:active):not(:focus) {
             box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
+        }
+
+        #main > #infobar > .mini-button:focus:not(:active) {
+            outline: none;
+            box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
+        }
+
+        #main > #infobar > .mini-button:active {
+            outline: none;
+            box-shadow: 0 0 2vw 1vw rgba(0, 0, 0, 1);
+            margin: .1vw 0 0 .1vw;
         }
 
         #main > #infobar > .mini-button::after {
@@ -1163,15 +1206,15 @@
         }
 
         #main > #infobar > .mini-button#help::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 582,745 410,745 C 409,720 409,705 409,700 409,644 418,598 437,562 455,526 492,485 548,440 603,395 636,366 647,352 664,330 672,306 672,279 672,242 657,210 628,184 598,158 558,145 508,145 460,145 420,158 388,186 355,213 333,255 321,311 L 146,290 C 151,209 186,141 249,85 313,28 397,0 500,0 609,0 696,29 760,86 825,142 857,209 857,284 857,326 845,366 822,403 798,441 747,492 670,556 630,589 605,616 595,636 586,657 581,693 582,745 z M 410,1000 410,811 600,811 600,1000 z"/></svg>');
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
         }
 
         #main > #infobar > .mini-button#chat::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 1000,351 C 1000,448 944,535 854,599 809,631 755,656 695,674 665,683 634,690 601,694 557,859 411,979 251,1000 356,957 407,817 399,694 367,689 335,683 305,674 246,656 192,630 146,599 56,535 0,447 0,351 0,157 224,0 500,0 776,0 1000,157 1000,351 z"/></svg>');
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
         }
 
         #main > #infobar > .mini-button#resign::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 100,0 0,25 225,1000 300,975 211,539 C 244,510 301,475 375,475 525,475 525,550 525,550 525,550 525,600 550,600 591,600 662,550 750,550 875,550 900,625 900,625 L 1000,175 C 1000,175 925,100 775,100 625,100 575,125 575,125 575,125 600,25 375,25 288,25 177,61 117,83 z"/></svg>');
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
         }
 
         #main > #infobar > .mini-button#settings::after {
@@ -1182,23 +1225,23 @@
             content: 'Rules and help';
         }
 
-        #main > #infobar > .mini-button#help:hover::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 582,745 410,745 C 409,720 409,705 409,700 409,644 418,598 437,562 455,526 492,485 548,440 603,395 636,366 647,352 664,330 672,306 672,279 672,242 657,210 628,184 598,158 558,145 508,145 460,145 420,158 388,186 355,213 333,255 321,311 L 146,290 C 151,209 186,141 249,85 313,28 397,0 500,0 609,0 696,29 760,86 825,142 857,209 857,284 857,326 845,366 822,403 798,441 747,492 670,556 630,589 605,616 595,636 586,657 581,693 582,745 z M 410,1000 410,811 600,811 600,1000 z"/></svg>');
+        #main > #infobar > .mini-button#help:hover::after, #main > #infobar > .mini-button#help:active::after, #main > #infobar > .mini-button#help:focus::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
         }
 
         #main > #infobar > .mini-button#chat::before {
             content: 'Chat';
         }
 
-        #main > #infobar > .mini-button#chat:hover::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 1000,351 C 1000,448 944,535 854,599 809,631 755,656 695,674 665,683 634,690 601,694 557,859 411,979 251,1000 356,957 407,817 399,694 367,689 335,683 305,674 246,656 192,630 146,599 56,535 0,447 0,351 0,157 224,0 500,0 776,0 1000,157 1000,351 z"/></svg>');
+        #main > #infobar > .mini-button#chat:hover::after, #main > #infobar > .mini-button#chat:active::after, #main > #infobar > .mini-button#chat:focus::after {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
         }
 
         #main > #infobar > .mini-button#settings::before {
             content: 'Settings';
         }
 
-        #main > #infobar > .mini-button#settings:hover::after {
+        #main > #infobar > .mini-button#settings:hover::after, #main > #infobar > .mini-button#settings:active::after, #main > #infobar > .mini-button#settings:focus::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
         }
 
@@ -1206,8 +1249,8 @@
         content: 'Resign this game';
     }
 
-    #main:not(.state-Won) > #infobar > .mini-button#resign:hover::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 100,0 0,25 225,1000 300,975 211,539 C 244,510 301,475 375,475 525,475 525,550 525,550 525,550 525,600 550,600 591,600 662,550 750,550 875,550 900,625 900,625 L 1000,175 C 1000,175 925,100 775,100 625,100 575,125 575,125 575,125 600,25 375,25 288,25 177,61 117,83 z"/></svg>');
+    #main:not(.state-Won) > #infobar > .mini-button#resign:hover::after, #main:not(.state-Won) > #infobar > .mini-button#resign:active::after, #main:not(.state-Won) > #infobar > .mini-button#resign:focus::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
     }
 
     #main.state-Won > #infobar > .mini-button#resign {
@@ -1250,37 +1293,29 @@ button {
         background-image: linear-gradient(hsl(32, 52%, 32%), hsl(32, 52%, 54%));
     }
 
-    button#undo::before {
-        content: 'Undo';
-    }
+.shortcut {
+    opacity: 0;
+    pointer-events: none;
+    -moz-transition: opacity .5s ease-in-out;
+    -o-transition: opacity .5s ease-in-out;
+    -webkit-transition: opacity .5s ease-in-out;
+    transition: opacity .5s ease-in-out;
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    background: hsl(220, 50%, 80%);
+    border: .1vw solid hsl(220, 50%, 20%);
+    text-transform: uppercase;
+    padding: 0 .2vw;
+    z-index: 1;
+    text-shadow: none;
+    color: hsl(220, 50%, 20%);
+    font-size: 1.5vw;
+}
 
-    button#commit::before {
-        content: 'Commit';
-    }
-
-    button#roll::before {
-        content: 'Roll';
-    }
-
-    button#double::before {
-        content: 'Double';
-    }
-
-    button#accept::before {
-        content: 'Accept';
-    }
-
-    button#reject::before {
-        content: 'Reject';
-    }
-
-    button#resign-confirm::before {
-        content: 'Resign';
-    }
-
-    button#resign-cancel::before {
-        content: 'Cancel';
-    }
+body.show-shortcuts .shortcut {
+    opacity: 1;
+}
 
 @keyframes hypo-blink {
     from {

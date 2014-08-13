@@ -42,7 +42,7 @@ namespace LiBackgammon
                 return;
 
             var json = JsonValue.Parse(msg);
-            if (!(json is JsonDict) || json.Count != 1 || ValidKeys.All(key => !json.ContainsKey(key)))
+            if (!(json is JsonDict) || json.Count != 1 || json.Keys.Any(key => !ValidKeys.Contains(key)))
                 return;
 
             var sendBoth = new List<JsonValue>();
@@ -83,6 +83,10 @@ namespace LiBackgammon
                 }
                 else if (json.ContainsKey("resign"))
                 {
+                    // You can’t resign if the game is already over
+                    if (game.State == GameState.Black_Won_Finished || game.State == GameState.Black_Won_RejectedDouble || game.State == GameState.Black_Won_Resignation ||
+                        game.State == GameState.White_Won_Finished || game.State == GameState.White_Won_RejectedDouble || game.State == GameState.White_Won_Resignation)
+                        return;
                     game.State = _player == Player.White ? GameState.Black_Won_Resignation : GameState.White_Won_Resignation;
                     sendBoth.Add(new JsonDict { { "state", game.State.ToString() }, { "win", (pos.GameValue ?? 1) * pos.GetWinMultiplier(game.State == GameState.White_Won_Resignation) } });
                 }

@@ -46,6 +46,35 @@ namespace LiBackgammon
                 var pipsWhite = Enumerable.Range(0, 24).Sum(t => pos.IsWhitePerTongue[t] ? (24 - t) * pos.NumPiecesPerTongue[t] : 0) + 25 * pos.NumPiecesPerTongue[Tongues.WhitePrison];
                 var pipsBlack = Enumerable.Range(0, 24).Sum(t => !pos.IsWhitePerTongue[t] ? (t + 1) * pos.NumPiecesPerTongue[t] : 0) + 25 * pos.NumPiecesPerTongue[Tongues.BlackPrison];
 
+                // Keyboard Shortcuts
+                // ────────────
+                // A = Accept double
+                // B
+                // C = Commit
+                // D = Double
+                // E = Reject Double
+                // F
+                // G = Resign
+                // H = Help
+                // I
+                // J
+                // K
+                // L
+                // M
+                // N = Resign cancel
+                // O
+                // P
+                // Q
+                // R = Roll
+                // S = Settings
+                // T = Chat
+                // U = Undo
+                // V
+                // W
+                // X
+                // Y = Resign confirm
+                // Z
+
                 return page(req,
                     new DIV
                     {
@@ -70,14 +99,14 @@ namespace LiBackgammon
                                 Enumerable.Range(0, 24).Select(i => new DIV { class_ = "tongue tongue-" + i + (i < 12 ? " bottom" : " top") + (i % 2 == 0 ? " light" : " dark") + " m3r" + (i % 3) + " m6r" + (i % 6) + " group" + (i / 6 + 1) }.Data("tongue", i)),
                                 new[] { "left", "right" }.Select(loc => new DIV { class_ = "shadow main-area " + loc }),
                                 new[] { "white", "black" }.Select(col => new DIV { class_ = "shadow home " + col }),
-                                new BUTTON { id = "undo" },
-                                new BUTTON { id = "commit" },
-                                new BUTTON { id = "roll" },
-                                new BUTTON { id = "double" },
-                                new BUTTON { id = "accept" },
-                                new BUTTON { id = "reject" },
-                                new BUTTON { id = "resign-confirm" },
-                                new BUTTON { id = "resign-cancel" },
+                                new BUTTON { accesskey = "u", id = "undo" },
+                                new BUTTON { accesskey = "c", id = "commit" },
+                                new BUTTON { accesskey = "r", id = "roll" },
+                                new BUTTON { accesskey = "d", id = "double" },
+                                new BUTTON { accesskey = "a", id = "accept" },
+                                new BUTTON { accesskey = "e", id = "reject" },
+                                new BUTTON { accesskey = "y", id = "resign-confirm" },
+                                new BUTTON { accesskey = "n", id = "resign-cancel" },
                                 new DIV { id = "info" },
                                 new DIV { class_ = "dice-back", id = "dice-back-white" },
                                 new DIV { class_ = "dice-back", id = "dice-back-black" },
@@ -100,10 +129,10 @@ namespace LiBackgammon
                                 new DIV { class_ = "infobox", id = "info-match" }._(
                                     new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-white" }._(0)),
                                     new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-black" }._(0))),
-                                new DIV { class_ = "mini-button", id = "resign" },
-                                new DIV { class_ = "mini-button", id = "settings" },
-                                new DIV { class_ = "mini-button", id = "help" },
-                                new DIV { class_ = "mini-button", id = "chat" }),
+                                new A { href = "#", class_ = "mini-button", accesskey = "g", id = "resign" },
+                                new A { href = "#", class_ = "mini-button", accesskey = "s", id = "settings" },
+                                new A { href = "#", class_ = "mini-button", accesskey = "h", id = "help" },
+                                new A { href = "#", class_ = "mini-button", accesskey = "t", id = "chat" }),
                             new DIV { id = "win", class_ = "dialog" }._(
                                 new DIV { class_ = "piece" },
                                 new DIV { class_ = "points" + (points == 1 ? " singular" : " plural") }._(
@@ -118,7 +147,9 @@ namespace LiBackgammon
                                 new P { id = "player-waiting" },
                                 new FORM { action = req.Url.WithParent("join/" + publicId).ToHref(), method = method.post }._(
                                     new BUTTON { type = btype.submit, id = "join" })),
-                            new DIV { id = "connecting" }));
+                            new DIV { id = "connecting" },
+                            new DIV { id = "sidebar" }._(
+                                new DIV { id = "sidebar-chat" })));
             }
         }
     }

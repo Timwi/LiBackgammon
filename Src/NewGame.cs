@@ -15,40 +15,23 @@ namespace LiBackgammon
         private HttpResponse newGame(HttpRequest req)
         {
             bool black;
-            if (req.Url.Path == "/black")
+            if (req.Post["playas"].Value == "black")
                 black = true;
-            else if (req.Url.Path == "/white")
+            else if (req.Post["playas"].Value == "white")
                 black = false;
             else
                 return HttpResponse.Redirect(req.Url.WithParent(""));
 
+            var playTo = int.Parse(req.Post["playto"].Value);
+            var cubeRules = EnumStrong.Parse<DoublingCubeRules>(req.Post["cube"].Value);
+
             using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             using (var db = new Db())
             {
-                string publicId;
-                do
-                {
-                    publicId = Rnd.GenerateString(8);
-                }
-                while (db.Games.Any(g => g.PublicID == publicId));
-
-                var game = new Game
-                {
-                    PublicID = publicId,
-                    InitialPosition = ClassifyJson.Serialize(Position.StandardInitialPosition).ToString(),
-                    Moves = "[]",
-                    State = black ? GameState.Black_Waiting : GameState.White_Waiting
-                };
-                var token = Rnd.GenerateString(4);
-                if (black)
-                    game.BlackToken = token;
-                else
-                    game.WhiteToken = token;
-                db.Games.Add(game);
+                var result = db.CreateNewMatch(black ? CreateNewGameOption.BlackWaits : CreateNewGameOption.WhiteWaits, playTo, cubeRules);
                 db.SaveChanges();
                 tr.Complete();
-
-                return HttpResponse.Redirect(req.Url.WithParent("play/" + publicId + token));
+                return HttpResponse.Redirect(req.Url.WithParent("play/" + result.PublicID + (black ? result.BlackToken : result.WhiteToken)));
             }
         }
     }

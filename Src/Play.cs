@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Transactions;
 using RT.Servers;
 using RT.TagSoup;
+using RT.Util;
 using RT.Util.ExtensionMethods;
 
 namespace LiBackgammon
@@ -22,6 +23,7 @@ namespace LiBackgammon
                 var game = db.Games.FirstOrDefault(g => g.PublicID == publicId);
                 if (game == null)
                     return HttpResponse.Redirect(req.Url.WithParent(""));
+                var match = game.Match.NullOr(id => db.Matches.FirstOrDefault(m => m.ID == id));
 
                 var playerToken = stuff.Substring(8);
                 if (playerToken != "" && playerToken != game.WhiteToken && playerToken != game.BlackToken)
@@ -46,6 +48,11 @@ namespace LiBackgammon
                 var pipsWhite = Enumerable.Range(0, 24).Sum(t => pos.IsWhitePerTongue[t] ? (24 - t) * pos.NumPiecesPerTongue[t] : 0) + 25 * pos.NumPiecesPerTongue[Tongues.WhitePrison];
                 var pipsBlack = Enumerable.Range(0, 24).Sum(t => !pos.IsWhitePerTongue[t] ? (t + 1) * pos.NumPiecesPerTongue[t] : 0) + 25 * pos.NumPiecesPerTongue[Tongues.BlackPrison];
 
+                var whiteMatchScore = game.Match.NullOr(m => db.Games.Where(g => g.Match == m && g.GameInMatch <= game.GameInMatch).Select(g => g.WhiteScore).DefaultIfEmpty().Sum());
+                var blackMatchScore = game.Match.NullOr(m => db.Games.Where(g => g.Match == m && g.GameInMatch <= game.GameInMatch).Select(g => g.BlackScore).DefaultIfEmpty().Sum());
+
+                var nextGame = game.NextGame.NullOr(ng => db.Games.FirstOrDefault(g => g.PublicID == ng));
+
                 // Keyboard Shortcuts
                 // ────────────
                 // A = Accept double
@@ -57,7 +64,7 @@ namespace LiBackgammon
                 // G = Resign
                 // H = Help
                 // I
-                // J
+                // J = Join game
                 // K
                 // L
                 // M
@@ -87,11 +94,15 @@ namespace LiBackgammon
                                     : "")
                             + (pos.GameValue == null ? " no-cube" : pos.WhiteOwnsCube == null ? "" : pos.WhiteOwnsCube.Value ? " cube-white" : " cube-black")
                             + (player == Player.White ? " player-white" : player == Player.Black ? " player-black" : " spectating")
+                            + match.NullOr(m => " in-match" + (whiteMatchScore >= match.MaxScore || blackMatchScore >= match.MaxScore ? " end-of-match" : null))
+                            + nextGame.NullOr(ng => " has-next-game")
+                            + (game.RematchOffer != RematchOffer.None ? " rematch-" + game.RematchOffer : null)
                     }
                         .Data("moves", game.Moves)
                         .Data("initial", game.InitialPosition)
                         .Data("player", player)
                         .Data("socket-url", Regex.Replace(req.Url.WithParent("socket/" + publicId + playerToken).ToFull(), @"^http", "ws"))
+                        .Data("next-game", nextGame.NullOr(ng => req.Url.WithParent("play/" + ng.PublicID + (player == Player.White ? ng.WhiteToken : player == Player.Black ? ng.BlackToken : null)).ToFull()))
                         ._(
                             new DIV { id = "board" }._(
                                 new[] { "left", "right" }.Select(loc => new DIV { class_ = "background main-area " + loc }),
@@ -126,9 +137,9 @@ namespace LiBackgammon
                                 new DIV { class_ = "infobox", id = "info-pips" }._(
                                     new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-white" }._(pipsWhite)),
                                     new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-black" }._(pipsBlack))),
-                                new DIV { class_ = "infobox", id = "info-match" }._(
-                                    new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-white" }._(0)),
-                                    new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-black" }._(0))),
+                                game.Match == null ? null : new DIV { class_ = "infobox", id = "info-match" }._(
+                                    new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-white" }._(whiteMatchScore)),
+                                    new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-black" }._(blackMatchScore))),
                                 new A { href = "#", class_ = "mini-button", accesskey = "g", id = "resign" },
                                 new A { href = "#", class_ = "mini-button", accesskey = "s", id = "settings" },
                                 new A { href = "#", class_ = "mini-button", accesskey = "h", id = "help" },
@@ -138,7 +149,13 @@ namespace LiBackgammon
                                 new DIV { class_ = "points" + (points == 1 ? " singular" : " plural") }._(
                                     new P { class_ = "number" }._(points),
                                     new P { class_ = "word" }),
-                                new P { class_ = "win" }),
+                                new P { class_ = "win" },
+                                new P { id = "next-game" }._(
+                                    new SPAN { id = "next-game-text" },
+                                    new BUTTON { id = "offer-rematch" },
+                                    new BUTTON { id = "accept-rematch" },
+                                    new BUTTON { id = "cancel-rematch" },
+                                    new BUTTON { id = "goto-next-game" })),
                             new DIV { id = "waiting", class_ = "dialog" }._(
                                 new P { id = "send-this-link" },
                                 new P { class_ = "link" }._(req.Url.WithPathOnly("/" + publicId).ToFull()),
@@ -146,7 +163,7 @@ namespace LiBackgammon
                             new DIV { id = "joinable", class_ = "dialog" }._(
                                 new P { id = "player-waiting" },
                                 new FORM { action = req.Url.WithParent("join/" + publicId).ToHref(), method = method.post }._(
-                                    new BUTTON { type = btype.submit, id = "join" })),
+                                    new BUTTON { type = btype.submit, id = "join", accesskey = "j" })),
                             new DIV { id = "connecting" },
                             new DIV { id = "sidebar" }._(
                                 new DIV { id = "sidebar-chat" })));

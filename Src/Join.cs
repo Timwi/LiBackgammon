@@ -39,14 +39,10 @@ namespace LiBackgammon
                 else
                     game.BlackToken = newToken;
 
-                int initialDice1;
-                int initialDice2;
-                do
-                {
-                    initialDice1 = Rnd.Next(1, 7);
-                    initialDice2 = Rnd.Next(1, 7);
-                }
-                while (initialDice1 == initialDice2);
+                int initialDice1 = Rnd.Next(1, 7);
+                int initialDice2 = Rnd.Next(1, 6);
+                if (initialDice2 >= initialDice1)
+                    initialDice2++;
 
                 game.Moves = ClassifyJson.Serialize(new[] { new Move { Dice1 = initialDice1, Dice2 = initialDice2 } }).ToString();
                 game.State = initialDice1 > initialDice2 ? GameState.White_ToMove : GameState.Black_ToMove;

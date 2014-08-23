@@ -9,9 +9,122 @@
         cursor: default;
     }
 
+#newgame {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100vw;
+    border: 1vw solid hsl(32, 50%, 30%);
+    background: hsl(32, 50%, 70%);
+    box-shadow: .6vw .6vw 1vw rgba(0,0,0,.5);
+    padding: 2vw 4vw;
+}
+
+    #newgame > .row {
+        text-align: center;
+        margin-bottom: 2vw;
+    }
+
+        #newgame > .row:last-child {
+            margin-bottom: 0;
+        }
+
+        #newgame > .row > input {
+            display: none;
+        }
+
+        #newgame > .row > label {
+            position: relative;
+            display: inline-block;
+            padding: 1vw;
+            margin-right: 1vw;
+            border-radius: 1vw;
+            border: .2vw solid transparent;
+        }
+
+    #newgame > #newgame-playas > label::after {
+        display: block;
+        content: '';
+    }
+
+    #newgame > #newgame-playas > label.white::before {
+        content: 'Play as white.';
+    }
+
+    #newgame > #newgame-playas > label.black::before {
+        content: 'Play as black.';
+    }
+
+    #newgame > .row > input:checked + label {
+        background-image: linear-gradient(180deg, hsl(32, 50%, 45%), hsl(32, 50%, 55%));
+        border-color: hsl(32, 50%, 80%);
+        border-left-color: hsl(32, 50%, 40%);
+        border-top-color: hsl(32, 50%, 30%);
+    }
+
+    #newgame > #newgame-playto > label {
+        font-family: "Roboto Light", "Calibri";
+        font-size: 3.5vw;
+        padding: .2em .5em;
+        margin-right: 1vw;
+    }
+
+        #newgame > #newgame-playto > label::before {
+            content: 'Decide how many points to play to. The first player to reach this many points wins the match.';
+            line-height: 1.2em;
+        }
+
+    #newgame > #newgame-cube > label {
+        padding: .2em .75em;
+        font-size: 2vw;
+    }
+
+    #newgame > #newgame-cube > #newgame-cube-label-None::after {
+        content: 'None';
+    }
+
+    #newgame > #newgame-cube > #newgame-cube-label-None::before {
+        content: 'No doubling cube in this match.';
+    }
+
+    #newgame > #newgame-cube > #newgame-cube-label-Standard::after {
+        content: 'Standard';
+    }
+
+    #newgame > #newgame-cube > #newgame-cube-label-Standard::before {
+        content: 'Use the doubling cube in every game of this match.';
+    }
+
+    #newgame > #newgame-cube > #newgame-cube-label-Crawford::after {
+        content: 'Crawford';
+    }
+
+    #newgame > #newgame-cube > #newgame-cube-label-Crawford::before {
+        content: 'Crawford rule: Use the doubling cube in all games except the first game in which either player has one less than the winning number of points.';
+    }
+
+    #newgame > .row > label::before {
+        width: 15vw;
+        top: 100%;
+        left: -.2vw;
+        margin-top: .2vw;
+    }
+
+    #newgame > .row#newgame-playas > label::before {
+        width: 7vw;
+    }
+
+    #newgame > #newgame-submit {
+        font-size: 2vw;
+    }
+
+        #newgame > #newgame-submit > #newgame-submit-btn::before {
+            content: 'Start a new game';
+        }
+
 #main {
     position: absolute;
-    background: hsl(31.85, 50%, 30%);
+    background: hsl(32, 50%, 30%);
     left: 0;
     top: 0;
     width: 100vw;
@@ -31,7 +144,7 @@
     }
 
         #main > #board > .overlay {
-            background: hsl(31.85, 50%, 30%);
+            background: hsl(32, 50%, 30%);
         }
 
             #main > #board > .overlay#overlay-bottom {
@@ -49,7 +162,7 @@
             }
 
         #main > #board > .background {
-            background: hsl(31.85, 50%, 70%);
+            background: hsl(32, 50%, 70%);
         }
 
         #main > #board > .shadow {
@@ -205,7 +318,7 @@
             margin-left: 4vw;
         }
 
-    #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece {
+    #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece, #newgame > #newgame-playas > label::after {
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -222,9 +335,10 @@
         #main.state-White.state-Won > #win > .piece,
         #main.player-white > #infobar > #info-player > .piece,
         #main.state-White > #infobar > #info-state > .piece,
-        #main > #infobar > .infobox > .infobox-white > .piece {
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
-            border-color: hsl(31.85, 50%, 100%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 90%) hsl(31.85, 50%, 100%);
+        #main > #infobar > .infobox > .infobox-white > .piece,
+        #newgame > #newgame-playas > label.white::after {
+            background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
+            border-color: hsl(32, 50%, 100%) hsl(32, 50%, 90%) hsl(32, 50%, 90%) hsl(32, 50%, 100%);
         }
 
             #main > #board > .piece.white.selected {
@@ -236,9 +350,10 @@
         #main.state-Black.state-Won > #win > .piece,
         #main.player-black > #infobar > #info-player > .piece,
         #main.state-Black > #infobar > #info-state > .piece,
-        #main > #infobar > .infobox > .infobox-black > .piece {
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
-            border-color: hsl(31.85, 50%, 20%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 0%) hsl(31.85, 50%, 20%);
+        #main > #infobar > .infobox > .infobox-black > .piece,
+        #newgame > #newgame-playas > label.black::after {
+            background-image: linear-gradient(135deg, hsl(32, 50%, 0%), hsl(32, 50%, 20%));
+            border-color: hsl(32, 50%, 20%) hsl(32, 50%, 0%) hsl(32, 50%, 0%) hsl(32, 50%, 20%);
         }
 
             #main > #board > .piece.black.selected {
@@ -300,12 +415,12 @@
 
         #main > #board > .dice-back#dice-back-white {
             left: 60.5vw;
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 90%), hsl(31.85, 50%, 100%));
+            background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
         }
 
         #main > #board > .dice-back#dice-back-black {
             left: 67.5vw;
-            background-image: linear-gradient(135deg, hsl(31.85, 50%, 0%), hsl(31.85, 50%, 20%));
+            background-image: linear-gradient(135deg, hsl(32, 50%, 0%), hsl(32, 50%, 20%));
         }
 
     #main.dice-start:not(.resigning) > #board > .dice-back {
@@ -315,7 +430,7 @@
     #main.dice-start.state-White > #board > #dice-back-white::before,
     #main.dice-start.state-White > #board > #dice-back-white::after {
         position: absolute;
-        color: hsl(31.85, 50%, 95%);
+        color: hsl(32, 50%, 95%);
         padding-right: .6vw;
         right: 100%;
     }
@@ -323,7 +438,7 @@
     #main.dice-start.state-Black > #board > #dice-back-black::before,
     #main.dice-start.state-Black > #board > #dice-back-black::after {
         position: absolute;
-        color: hsl(31.85, 50%, 10%);
+        color: hsl(32, 50%, 10%);
         padding-left: .6vw;
         left: 100%;
     }
@@ -463,7 +578,7 @@
             position: absolute;
             left: 50%;
             top: 50%;
-            height: 1em;
+            height: 8vw;
             font-size: 8vw;
             font-weight: bold;
             color: hsl(0, 80%, 50%);
@@ -530,10 +645,10 @@
             position: absolute;
             left: 50%;
             top: 50%;
-            font-family: "Calibri";
-            font-size: 4vw;
-            height: 1em;
-            line-height: 1em;
+            font-family: "Roboto Light", "Calibri";
+            font-size: 3.5vw;
+            line-height: 3.75vw;
+            height: 4vw;
         }
 
             #main > #board > #cube > .inner > #cube-text {
@@ -572,10 +687,6 @@
             border-left: 4.0625vw solid #dd5;
             content: '';
         }
-
-    #main > #board > #connecting::before {
-        content: 'Reconnecting...';
-    }
 
     #main > #board > button {
         height: 4vw;
@@ -699,8 +810,8 @@
         -o-transform: translateY(-50%);
         -webkit-transform: translateY(-50%);
         transform: translateY(-50%);
-        color: hsl(31.85, 50%, 20%);
-        text-shadow: .1vw .1vw .1vw hsl(31.85, 50%, 80%);
+        color: hsl(32, 50%, 20%);
+        text-shadow: .1vw .1vw .1vw hsl(32, 50%, 80%);
     }
 
     #main.auto-0 > #board > #info, #main.auto-1 > #board > #info, #main.resigning > #board > #info {
@@ -734,13 +845,18 @@
         }
 
     #main > #connecting {
+        position: absolute;
         color: hsl(0, 100%, 75%);
         font-size: 1vw;
         font-weight: bold;
-        top: 0.3vw;
-        right: 0.6vw;
+        top: 8.3vw;
+        right: 10vw;
         display: none;
     }
+
+        #main > #connecting::before {
+            content: 'Reconnecting...';
+        }
 
     #main.connecting > #connecting {
         display: block;
@@ -749,15 +865,14 @@
     #main > .dialog {
         opacity: 0;
         pointer-events: none;
-        margin: 0 15vw;
         top: 36vw;
-        left: 0;
-        right: 0;
-        border: .7vw solid hsl(31.85, 50%, 20%);
-        background: hsl(31.85, 50%, 70%);
+        left: 15vw;
+        right: 15vw;
+        border: .7vw solid hsl(32, 50%, 20%);
+        background: hsl(32, 50%, 70%);
         padding: 0 3vw;
         box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, 0.3);
-        color: hsl(31.85, 50%, 30%);
+        color: hsl(32, 50%, 30%);
         -moz-transform: translateY(-50%) scale(.5);
         -ms-transform: translateY(-50%) scale(.5);
         -o-transform: translateY(-50%) scale(.5);
@@ -776,8 +891,8 @@
         }
 
             #main > .dialog > p.link, #main > .dialog > form {
-                background: hsl(31.85, 50%, 90%);
-                padding: .5em 0;
+                background: hsl(32, 50%, 90%);
+                padding: 1vw 0;
                 font-weight: bold;
             }
 
@@ -791,7 +906,7 @@
 
         #main > #win > .win::before {
             display: block;
-            background: hsl(31.85, 50%, 90%);
+            background: hsl(32, 50%, 90%);
             padding: .2vw 0;
             font-size: 5vw;
         }
@@ -837,10 +952,34 @@
             content: 'points';
         }
 
+    #main > #win > #next-game > button {
+        display: none;
+        margin-right: 1vw;
+    }
+
+        #main > #win > #next-game > button#goto-next-game::before {
+            content: 'Go to next game';
+        }
+
+        #main > #win > #next-game > button#offer-rematch::before {
+            content: 'Offer a rematch';
+        }
+
+        #main > #win > #next-game > button#accept-rematch::before {
+            content: 'Accept';
+        }
+
+        #main > #win > #next-game > button#cancel-rematch::before {
+            content: 'Cancel';
+        }
+
+    #main > #joinable > form > #join::before {
+        content: 'Join game';
+    }
+
     #main.state-White.state-Waiting.player-white > #waiting,
     #main.state-Black.state-Waiting.player-black > #waiting,
-    #main.state-White.state-Waiting:not(.player-white) > #joinable,
-    #main.state-Black.state-Waiting:not(.player-black) > #joinable,
+    #main.state-Waiting.spectating > #joinable,
     #main.state-Won > #win {
         opacity: 1;
         pointer-events: all;
@@ -849,6 +988,48 @@
         -o-transform: translateY(-50%);
         -webkit-transform: translateY(-50%);
         transform: translateY(-50%);
+    }
+
+    #main.has-next-game > #win > #next-game > button#goto-next-game,
+    #main.rematch-White.player-black > #win > #next-game > button#accept-rematch,
+    #main.rematch-Black.player-white > #win > #next-game > button#accept-rematch,
+    #main.rematch-White.player-black > #win > #next-game > button#cancel-rematch,
+    #main.rematch-Black.player-white > #win > #next-game > button#cancel-rematch,
+    #main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
+    #main.rematch-WhiteRejected.player-white > #win > #next-game > button#offer-rematch,
+    #main.rematch-BlackRejected.player-black > #win > #next-game > button#offer-rematch {
+        display: inline;
+    }
+
+    #main.rematch-White > #win > #next-game > #next-game-text,
+    #main.rematch-Black > #win > #next-game > #next-game-text,
+    #main.rematch-Accepted > #win > #next-game > #next-game-text {
+        margin-right: 1.5vw;
+    }
+
+    #main.rematch-White:not(.player-white) > #win > #next-game > #next-game-text::before {
+        content: 'White is offering a rematch.';
+    }
+
+    #main.rematch-Black:not(.player-black) > #win > #next-game > #next-game-text::before {
+        content: 'Black is offering a rematch.';
+    }
+
+    #main.rematch-White.player-white > #win > #next-game > #next-game-text::before,
+    #main.rematch-Black.player-black > #win > #next-game > #next-game-text::before {
+        content: 'Rematch offer sent.';
+    }
+
+    #main.rematch-Accepted > #win > #next-game > #next-game-text::before {
+        content: 'Rematch is on.';
+    }
+
+    #main.rematch-WhiteRejected:not(.player-white) > #win > #next-game > #next-game-text::before {
+        content: 'White refuses a rematch.';
+    }
+
+    #main.rematch-BlackRejected:not(.player-black) > #win > #next-game > #next-game-text::before {
+        content: 'Black refuses a rematch.';
     }
 
     #main > #waiting > #send-this-link::before {
@@ -867,8 +1048,16 @@
         content: 'White wins';
     }
 
+    #main.state-Won.state-White.end-of-match > #win > .win::before {
+        content: 'White is victorious';
+    }
+
     #main.state-Won.state-Black > #win > .win::before {
         content: 'Black wins';
+    }
+
+    #main.state-Won.state-Black.end-of-match > #win > .win::before {
+        content: 'Black is victorious';
     }
 
     #main.state-White.state-RejectedDouble > #win > .win::after {
@@ -887,10 +1076,6 @@
         content: 'White resigned.';
     }
 
-    #main > #joinable #join::before {
-        content: 'Join game';
-    }
-
     #main > #infobar {
         height: 6vw;
         left: 2vw;
@@ -899,7 +1084,7 @@
     }
 
         #main > #infobar > .infobox {
-            background: hsl(31.85, 50%, 70%);
+            background: hsl(32, 50%, 70%);
             position: absolute;
             top: 0;
             height: 6vw;
@@ -910,25 +1095,15 @@
                 top: .5vw;
             }
 
-            #main > #infobar > .infobox#info-player {
-                left: 0;
-                width: 19vw;
+            #main > #infobar > .infobox#info-player > .piece, #main > #infobar > .infobox#info-state > .piece {
+                left: .9vw;
             }
-
-            #main > #infobar > .infobox#info-state {
-                left: 21vw;
-                width: 19vw;
-            }
-
-                #main > #infobar > .infobox#info-player > .piece, #main > #infobar > .infobox#info-state > .piece {
-                    left: .9vw;
-                }
 
             #main > #infobar > .infobox > .infobox-inner {
                 position: absolute;
                 top: 0;
                 bottom: 0;
-                width: 11vw;
+                width: 15vw;
                 overflow: hidden;
             }
 
@@ -952,45 +1127,38 @@
                 #main > #infobar > #info-state::before, #main > #infobar > #info-state::after,
                 #main > #infobar > .infobox > .infobox-inner > .number {
                     position: absolute;
-                    color: hsl(31.85, 50%, 30%);
+                    color: hsl(32, 50%, 30%);
                     font-family: "Impact";
                     text-transform: uppercase;
-                    line-height: 1em;
                     white-space: pre;
                 }
-
-            #main > #infobar > .infobox#info-pips {
-                left: 42vw;
-                width: 22vw;
-            }
-
-            #main > #infobar > .infobox#info-match {
-                left: 66vw;
-                width: 22vw;
-            }
 
         #main > #infobar > #info-player::before {
             left: 7vw;
             top: .5vw;
             font-size: 1.3vw;
+            line-height: 1.3vw;
         }
 
         #main > #infobar > #info-player::after {
             left: 7vw;
             bottom: .5vw;
             font-size: 3.4vw;
+            line-height: 3.4vw;
         }
 
         #main > #infobar > #info-state::before {
             left: 7vw;
             top: .5vw;
             font-size: 3.4vw;
+            line-height: 3.4vw;
         }
 
         #main > #infobar > #info-state::after {
             left: 7vw;
             bottom: .5vw;
             font-size: 1.3vw;
+            line-height: 1.3vw;
         }
 
         #main > #infobar > .infobox > .infobox-inner > .number {
@@ -1001,6 +1169,7 @@
             -webkit-transform: translateY(-50%);
             transform: translateY(-50%);
             font-size: 4vw;
+            line-height: 4vw;
             text-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
@@ -1018,7 +1187,7 @@
             -o-transform: translateX(50%) translateY(-50%);
             -webkit-transform: translateX(50%) translateY(-50%);
             transform: translateX(50%) translateY(-50%);
-            color: hsl(31.85, 50%, 10%);
+            color: hsl(32, 50%, 10%);
         }
 
         #main > #infobar > .infobox > .infobox-black::after {
@@ -1028,22 +1197,67 @@
             -o-transform: translateX(-50%) translateY(-50%);
             -webkit-transform: translateX(-50%) translateY(-50%);
             transform: translateX(-50%) translateY(-50%);
-            color: hsl(31.85, 50%, 95%);
+            color: hsl(32, 50%, 95%);
         }
 
         #main > #infobar > .infobox > .infobox-white > .number {
             right: 3.5vw;
-            color: hsl(31.85, 50%, 95%);
+            color: hsl(32, 50%, 95%);
         }
 
         #main > #infobar > .infobox > .infobox-black > .number {
             left: 3.5vw;
-            color: hsl(31.85, 50%, 10%);
+            color: hsl(32, 50%, 10%);
         }
+
+        #main > #infobar > .infobox#info-player {
+            left: 0;
+            width: 27vw;
+        }
+
+        #main > #infobar > .infobox#info-state {
+            left: 29vw;
+            width: 27vw;
+        }
+
+        #main > #infobar > .infobox#info-pips {
+            left: 58vw;
+            width: 30vw;
+        }
+
+        #main > #infobar > .infobox#info-match {
+            left: 90vw;
+            width: 30vw;
+        }
+
+    #main.in-match > #infobar > .infobox#info-player {
+        left: 0;
+        width: 19vw;
+    }
+
+    #main.in-match > #infobar > .infobox#info-state {
+        left: 21vw;
+        width: 19vw;
+    }
+
+    #main.in-match > #infobar > .infobox#info-pips {
+        left: 42vw;
+        width: 22vw;
+    }
+
+    #main.in-match > #infobar > .infobox#info-match {
+        left: 66vw;
+        width: 22vw;
+    }
+
+    #main.in-match > #infobar > .infobox > .infobox-inner {
+        width: 11vw;
+    }
 
     #main.spectating > #infobar > #info-player::before, #main.spectating > #infobar > #info-player::after {
         font-size: 2.4vw;
-        left: 8.25vw;
+        line-height: 2.4vw;
+        left: 50%;
         -moz-transform: translateX(-50%);
         -ms-transform: translateX(-50%);
         -o-transform: translateX(-50%);
@@ -1103,7 +1317,7 @@
         content: 'wins';
     }
 
-    #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before {
+    #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before, #newgame > .row > label::before {
         opacity: 0;
         pointer-events: none;
         -moz-transition: opacity .1s ease-in-out;
@@ -1111,14 +1325,15 @@
         -webkit-transition: opacity .1s ease-in-out;
         transition: opacity .1s ease-in-out;
         position: absolute;
-        background: hsl(31.85, 50%, 80%);
+        background: hsl(32, 50%, 80%);
         padding: .2vw 1vw;
         font-size: 1.1vw;
-        color: hsl(31.85, 50%, 20%);
-        border: .2vw solid hsl(31.85, 50%, 20%);
+        color: hsl(32, 50%, 20%);
+        border: .2vw solid hsl(32, 50%, 20%);
         border-radius: .5vw;
         box-shadow: .1vw .1vw .2vw rgba(0, 0, 0, .5);
         text-align: center;
+        z-index: 1;
     }
 
     #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before {
@@ -1139,7 +1354,7 @@
         right: -1.25vw;
     }
 
-    #main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before {
+    #main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before, #newgame > .row > label:hover::before {
         opacity: 1;
     }
 
@@ -1257,7 +1472,32 @@
         opacity: .2;
     }
 
+    #main.with-sidebar {
+        width: 130vw;
+    }
+
+        #main.with-sidebar > .dialog {
+            right: 45vw;
+        }
+
+        #main.with-sidebar > #sidebar {
+            left: 100vw;
+            top: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+            #main.with-sidebar > #sidebar > #sidebar-chat {
+                left: 0vw;
+                right: 2vw;
+                top: 2vw;
+                bottom: 2vw;
+                background: hsl(32, 50%, 90%);
+                box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+            }
+
 button {
+    position: relative;
     background-color: hsl(32, 52%, 34.3%);
     background-image: linear-gradient(hsl(32, 52%, 44%), hsl(32, 52%, 22%));
     border: .15vw solid;
@@ -1282,7 +1522,6 @@ button {
         box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 58%) inset;
         color: white;
         font: inherit;
-        padding: .2em 1em;
         text-align: center;
         text-shadow: -.1vw -.1vw 0 hsl(32, 52%, 34.3%);
         text-transform: uppercase;

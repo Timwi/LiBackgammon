@@ -101,7 +101,7 @@ namespace LiBackgammon
                         .Data("moves", game.Moves)
                         .Data("initial", game.InitialPosition)
                         .Data("player", player)
-                        .Data("socket-url", Regex.Replace(req.Url.WithParent("socket/" + publicId + playerToken).ToFull(), @"^http", "ws"))
+                        .Data("socket-url", Regex.Replace(req.Url.WithParent("socket/play/" + publicId + playerToken).ToFull(), @"^http", "ws"))
                         .Data("next-game", nextGame.NullOr(ng => req.Url.WithParent("play/" + ng.PublicID + (player == Player.White ? ng.WhiteToken : player == Player.Black ? ng.BlackToken : null)).ToFull()))
                         ._(
                             new DIV { id = "board" }._(

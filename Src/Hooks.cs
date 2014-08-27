@@ -18,7 +18,7 @@ namespace LiBackgammon
 
 #if DEBUG
                 //
-                new UrlMapping(path: "/jquery", specificPath: true, handler: req => HttpResponse.File(@"D:\c\users\timwi\KIA\Files\jquery.min.js", "text/javascript")),
+                new UrlMapping(path: "/jquery", specificPath: true, handler: req => HttpResponse.JavaScript(Resources.JQuery)),
 #endif
                 //
                 new UrlMapping(path: "/", specificPath: true, handler: mainPage),
@@ -27,7 +27,7 @@ namespace LiBackgammon
                 new UrlMapping(path: "/join", handler: join),
                 new UrlMapping(path: "/css", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.css", "text/css", HttpResponse.Css(Resources.MainCss))),
                 new UrlMapping(path: "/js", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.MainJs).ToUtf8()))),
-                new UrlMapping(path: "/socket", handler: socket)
+                new UrlMapping(path: "/socket/play", handler: playSocket)
             );
         }
 

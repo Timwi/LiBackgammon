@@ -997,4 +997,5 @@ $(function ()
         if (e.keyCode === 18)  // ALT key
             $(document.body).removeClass('show-shortcuts');
     });
+    window.onblur = function () { $(document.body).removeClass('show-shortcuts'); };
 });

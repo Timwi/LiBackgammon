@@ -1,24 +1,67 @@
-﻿body {
+﻿@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Montserrat-Regular'), url(http://fonts.gstatic.com/s/montserrat/v5/zhcz-_WihjSQC0oHJ9TCYBsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
+}
+
+body {
     font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
     margin: 0;
     padding: 0;
     background: hsl(27, 35%, 50%);
+    cursor: default;
 }
 
     body * {
-        cursor: default;
+        cursor: inherit;
     }
 
-#newgame {
+    body#main-page::before {
+        content: 'Backgammon';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 10vw;
+        color: hsl(32, 50%, 20%);
+        text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
+        font-weight: bold;
+        z-index: 1;
+    }
+
+#newgame, #waiting-games {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    width: 100vw;
     border: 1vw solid hsl(32, 50%, 30%);
     background: hsl(32, 50%, 70%);
-    box-shadow: .6vw .6vw 1vw rgba(0,0,0,.5);
-    padding: 2vw 4vw;
+    box-shadow: .4vw .4vw .5vw rgba(0,0,0,.3);
+    position: absolute;
+    top: 10vw;
 }
+
+    #newgame::after, #waiting-games::after {
+        position: absolute;
+        left: 0;
+        top: -5.25vw;
+        font-size: 5vw;
+        color: hsl(32, 50%, 80%);
+        text-shadow: .2vw .2vw .5vw rgba(0, 0, 0, .2);
+        font-weight: bold;
+    }
+
+#newgame {
+    width: 58%;
+    border-top-width: 7vw;
+    padding: 2vw 4vw;
+    left: 1%;
+}
+
+    #newgame::after {
+        content: 'New game';
+    }
 
     #newgame > .row {
         text-align: center;
@@ -39,27 +82,43 @@
             padding: 1vw;
             margin-right: 1vw;
             border-radius: 1vw;
-            border: .2vw solid transparent;
+            box-shadow: 0.1vw 0.1vw 0.1vw rgba(255, 255, 255, .3) inset, -0.1vw -0.1vw 0.1vw rgba(0, 0, 0, .2) inset;
         }
 
-    #newgame > #newgame-playas > label::after {
-        display: block;
-        content: '';
+    #newgame > #newgame-playas > label {
+        vertical-align: top;
     }
 
-    #newgame > #newgame-playas > label.white::before {
-        content: 'Play as white.';
-    }
+        #newgame > #newgame-playas > label::after {
+            display: block;
+            content: '';
+        }
 
-    #newgame > #newgame-playas > label.black::before {
-        content: 'Play as black.';
-    }
+        #newgame > #newgame-playas > label.random::after {
+            content: '?';
+            font-size: 4vw;
+            font-family: "Montserrat";
+            color: hsl(32, 50%, 90%);
+            text-shadow: .2vw .2vw 0 hsl(32, 50%, 20%);
+        }
+
+        #newgame > #newgame-playas > label.random::before {
+            content: 'Play as white or black at random.';
+            width: 11vw;
+        }
+
+        #newgame > #newgame-playas > label.white::before {
+            content: 'Play as white.';
+        }
+
+        #newgame > #newgame-playas > label.black::before {
+            content: 'Play as black.';
+        }
 
     #newgame > .row > input:checked + label {
         background-image: linear-gradient(180deg, hsl(32, 50%, 45%), hsl(32, 50%, 55%));
         border-color: hsl(32, 50%, 80%);
-        border-left-color: hsl(32, 50%, 40%);
-        border-top-color: hsl(32, 50%, 30%);
+        box-shadow: 0.1vw 0.1vw 0.1vw rgba(0, 0, 0, .5) inset, -0.1vw -0.1vw 0.1vw rgba(255, 255, 255, .7) inset;
     }
 
     #newgame > #newgame-playto > label {
@@ -103,14 +162,36 @@
         content: 'Crawford rule: Use the doubling cube in all games except the first game in which either player has one less than the winning number of points.';
     }
 
-    #newgame > .row > label::before {
+    #newgame > #newgame-visibility > label {
+        padding: .2em .75em;
+        font-size: 1.5vw;
+        border-radius: .7vw;
+    }
+
+    #newgame > #newgame-visibility > #newgame-visibility-label-Public::after {
+        content: 'Public';
+    }
+
+    #newgame > #newgame-visibility > #newgame-visibility-label-Public::before {
+        content: 'Anyone can join the game.';
+    }
+
+    #newgame > #newgame-visibility > #newgame-visibility-label-InviteOnly::after {
+        content: 'Invite only';
+    }
+
+    #newgame > #newgame-visibility > #newgame-visibility-label-InviteOnly::before {
+        content: 'Only people you explicitly send the link to can join the game. Public users can only spectate.';
+    }
+
+    #newgame > .row > label::before, #waiting-games > li > .doubling-cube::before {
         width: 15vw;
         top: 100%;
         left: -.2vw;
         margin-top: .2vw;
     }
 
-    #newgame > .row#newgame-playas > label::before {
+    #newgame > #newgame-playas > label::before {
         width: 7vw;
     }
 
@@ -120,6 +201,115 @@
 
         #newgame > #newgame-submit > #newgame-submit-btn::before {
             content: 'Start a new game';
+        }
+
+#waiting-games {
+    width: 39%;
+    border-top-width: 7vw;
+    margin: 0;
+    padding: 0;
+    right: 1%;
+}
+
+    #waiting-games::after {
+        content: 'Join a game';
+    }
+
+    #waiting-games:empty::before {
+        color: hsl(32, 50%, 30%);
+        content: "No games waiting!\A Start a game of your own :)";
+        display: block;
+        font-size: 2vw;
+        padding: 2vw 3vw;
+        text-align: center;
+        white-space: pre-wrap;
+    }
+
+    #waiting-games > li {
+        list-style: none;
+        padding: .5vw 1vw;
+        cursor: pointer;
+    }
+
+        #waiting-games > li:hover {
+            background: hsl(32, 70%, 80%);
+        }
+
+        #waiting-games > li > .piece {
+            float: left;
+            position: relative;
+        }
+
+            #waiting-games > li > .piece::before {
+                top: 100%;
+                left: -.2vw;
+                margin-top: .5vw;
+                white-space: nowrap;
+            }
+
+        #waiting-games > li > .playto {
+            float: right;
+            font-family: "Roboto Light", "Calibri";
+            font-size: 3.5vw;
+            position: relative;
+        }
+
+        #waiting-games > li > .doubling-cube {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            font-size: 2vw;
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+            #waiting-games > li > .doubling-cube.None::after {
+                content: 'no doubling cube';
+            }
+
+            #waiting-games > li > .doubling-cube.None::before {
+                content: 'This match will be played without the doubling cube.';
+            }
+
+            #waiting-games > li > .doubling-cube.Standard::after {
+                content: 'standard doubling cube';
+            }
+
+            #waiting-games > li > .doubling-cube.Standard::before {
+                content: 'Every game of this match will be played with the doubling cube.';
+            }
+
+            #waiting-games > li > .doubling-cube.Crawford::after {
+                content: 'Crawford rule';
+            }
+
+            #waiting-games > li > .doubling-cube.Crawford::before {
+                content: 'Crawford rule: The doubling cube is used in all games except the first game in which either player has one less than the winning number of points.';
+            }
+
+        #waiting-games > li > .playto::before {
+            content: 'The number of points to play to. The first player to reach this many points wins the match.';
+            width: 15vw;
+            top: 100%;
+            right: -.2vw;
+            margin-top: -.2vw;
+        }
+
+        #waiting-games > li > .piece.white::before {
+            content: 'You will be playing white.';
+        }
+
+        #waiting-games > li > .piece.black::before {
+            content: 'You will be playing black.';
+        }
+
+        #waiting-games > li::after {
+            content: '';
+            display: block;
+            clear: both;
         }
 
 #main {
@@ -318,7 +508,8 @@
             margin-left: 4vw;
         }
 
-    #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece, #newgame > #newgame-playas > label::after {
+    #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
+    #newgame > #newgame-playas > label::after, #waiting-games > li > .piece {
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -336,7 +527,8 @@
         #main.player-white > #infobar > #info-player > .piece,
         #main.state-White > #infobar > #info-state > .piece,
         #main > #infobar > .infobox > .infobox-white > .piece,
-        #newgame > #newgame-playas > label.white::after {
+        #newgame > #newgame-playas > label.white::after,
+        #waiting-games > li > .piece.white {
             background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
             border-color: hsl(32, 50%, 100%) hsl(32, 50%, 90%) hsl(32, 50%, 90%) hsl(32, 50%, 100%);
         }
@@ -351,7 +543,8 @@
         #main.player-black > #infobar > #info-player > .piece,
         #main.state-Black > #infobar > #info-state > .piece,
         #main > #infobar > .infobox > .infobox-black > .piece,
-        #newgame > #newgame-playas > label.black::after {
+        #newgame > #newgame-playas > label.black::after,
+        #waiting-games > li > .piece.black {
             background-image: linear-gradient(135deg, hsl(32, 50%, 0%), hsl(32, 50%, 20%));
             border-color: hsl(32, 50%, 20%) hsl(32, 50%, 0%) hsl(32, 50%, 0%) hsl(32, 50%, 20%);
         }
@@ -1317,25 +1510,6 @@
         content: 'wins';
     }
 
-    #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before, #newgame > .row > label::before {
-        opacity: 0;
-        pointer-events: none;
-        -moz-transition: opacity .1s ease-in-out;
-        -o-transition: opacity .1s ease-in-out;
-        -webkit-transition: opacity .1s ease-in-out;
-        transition: opacity .1s ease-in-out;
-        position: absolute;
-        background: hsl(32, 50%, 80%);
-        padding: .2vw 1vw;
-        font-size: 1.1vw;
-        color: hsl(32, 50%, 20%);
-        border: .2vw solid hsl(32, 50%, 20%);
-        border-radius: .5vw;
-        box-shadow: .1vw .1vw .2vw rgba(0, 0, 0, .5);
-        text-align: center;
-        z-index: 1;
-    }
-
     #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before {
         width: 16vw;
         top: 6.1vw;
@@ -1348,14 +1522,9 @@
     }
 
     #main > #infobar > .mini-button::before {
-        width: auto;
         white-space: nowrap;
         top: 1.5vw;
         right: -1.25vw;
-    }
-
-    #main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before, #newgame > .row > label:hover::before {
-        opacity: 1;
     }
 
     #main > #infobar > #info-pips::before {
@@ -1553,6 +1722,32 @@ button {
 }
 
 body.show-shortcuts .shortcut {
+    opacity: 1;
+}
+
+/* Tooltips */
+#main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before,
+#newgame > .row > label::before, #waiting-games > li > .doubling-cube::before, #waiting-games > li > .playto::before, #waiting-games > li > .piece::before {
+    opacity: 0;
+    pointer-events: none;
+    -moz-transition: opacity .1s ease-in-out;
+    -o-transition: opacity .1s ease-in-out;
+    -webkit-transition: opacity .1s ease-in-out;
+    transition: opacity .1s ease-in-out;
+    position: absolute;
+    background: hsl(32, 50%, 80%);
+    padding: .2vw 1vw;
+    font-size: 1.1vw;
+    color: hsl(32, 50%, 20%);
+    border: .2vw solid hsl(32, 50%, 20%);
+    border-radius: .5vw;
+    box-shadow: .1vw .1vw .2vw rgba(0, 0, 0, .5);
+    text-align: center;
+    z-index: 1;
+}
+
+#main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before,
+#newgame > .row > label:hover::before, #waiting-games > li > .doubling-cube:hover::before, #waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before {
     opacity: 1;
 }
 

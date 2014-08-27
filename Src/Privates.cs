@@ -8,6 +8,6 @@ namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        internal readonly Dictionary<string, List<BgWebSocket>> ActiveSockets = new Dictionary<string, List<BgWebSocket>>();
+        internal readonly Dictionary<string, List<PlayWebSocket>> ActiveSockets = new Dictionary<string, List<PlayWebSocket>>();
     }
 }

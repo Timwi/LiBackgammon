@@ -48,7 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BgWebSocket.cs" />
+    <Compile Include="PlayWebSocket.cs" />
     <Compile Include="CreateNewGameOption.cs" />
     <Compile Include="CreateNewGameResult.cs" />
     <Compile Include="Db.cs" />
@@ -84,8 +84,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Socket.cs" />
+    <Compile Include="PlaySocket.cs" />
     <Compile Include="Tongue.cs" />
+    <Compile Include="Visibility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\RT.Servers\Src\RT.Servers.csproj">
@@ -119,6 +120,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\JQuery.js" />
     <Content Include="Resources\Main.js" />
     <Content Include="Resources\Main.css" />
   </ItemGroup>

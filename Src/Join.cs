@@ -51,7 +51,7 @@ namespace LiBackgammon
                 tr.Complete();
 
                 // Notify all the existing WebSockets
-                List<BgWebSocket> sockets;
+                List<PlayWebSocket> sockets;
                 lock (ActiveSockets)
                     if (ActiveSockets.TryGetValue(publicId, out sockets))
                     {

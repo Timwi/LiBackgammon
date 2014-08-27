@@ -10,14 +10,14 @@ using RT.Util.Serialization;
 
 namespace LiBackgammon
 {
-    sealed class BgWebSocket : WebSocket
+    sealed class PlayWebSocket : WebSocket
     {
         private string _gameId;
         private Player _player;
         private LiBackgammonPropellerModule _server;
         private IHttpUrl _url;
 
-        public BgWebSocket(LiBackgammonPropellerModule server, string gameId, Player player, IHttpUrl url)
+        public PlayWebSocket(LiBackgammonPropellerModule server, string gameId, Player player, IHttpUrl url)
         {
             _server = server;
             _gameId = gameId;
@@ -48,7 +48,7 @@ namespace LiBackgammon
             if (_player == Player.Spectator && !json.ContainsKey("resync"))
                 return;
 
-            var createMsg = Ut.Lambda((JsonValue value, Func<BgWebSocket, bool> predicate) => new { Value = value, Predicate = predicate });
+            var createMsg = Ut.Lambda((JsonValue value, Func<PlayWebSocket, bool> predicate) => new { Value = value, Predicate = predicate });
             var toSend = new[] { createMsg(null, null) }.ToList();
             toSend.Clear();
 
@@ -114,7 +114,7 @@ namespace LiBackgammon
                                 doublingCube = db.Games.Any(g => g.Match == game.Match && g.IsCrawfordGame);
                                 isCrawford = !doublingCube;
                             }
-                            var result = db.CreateNewGame(CreateNewGameOption.RollAlready, doublingCube, isCrawford, game.Match, game.GameInMatch + 1);
+                            var result = db.CreateNewGame(CreateNewGameOption.RollAlready, doublingCube, game.Visibility, isCrawford, game.Match, game.GameInMatch + 1);
                             game.NextGame = result.PublicID;
                             sendNextUrl(result.PublicID, result.WhiteToken, result.BlackToken);
                         }
@@ -166,8 +166,8 @@ namespace LiBackgammon
                     game.RematchOffer = RematchOffer.Accepted;
                     var match = game.Match.NullOr(mid => db.Matches.FirstOrDefault(m => m.ID == mid));
                     var result = match == null
-                        ? db.CreateNewGame(CreateNewGameOption.RollAlready, pos.GameValue != null)
-                        : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules);
+                        ? db.CreateNewGame(CreateNewGameOption.RollAlready, pos.GameValue != null, game.Visibility)
+                        : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules, game.Visibility);
                     game.NextGame = result.PublicID;
                     sendNextUrl(result.PublicID, result.WhiteToken, result.BlackToken);
                     toSend.Add(createMsg(new JsonDict { { "rematch", game.RematchOffer.ToString() } }, null));
@@ -283,7 +283,7 @@ namespace LiBackgammon
 
             // Send all the WebSocket messages
             // (We do this at the end so that we don’t send /any/ messages if any part of the above code throws an exception)
-            List<BgWebSocket> sockets;
+            List<PlayWebSocket> sockets;
             lock (_server.ActiveSockets)
                 if (toSend.Count > 0 && _server.ActiveSockets.TryGetValue(_gameId, out sockets))
                     foreach (var socket in sockets)

@@ -63,6 +63,16 @@ namespace LiBackgammon {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] JQuery {
+            get {
+                object obj = ResourceManager.GetObject("JQuery", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] MainCss {
             get {
                 object obj = ResourceManager.GetObject("MainCss", resourceCulture);
@@ -73,30 +83,22 @@ namespace LiBackgammon {
         /// <summary>
         ///   Looks up a localized string similar to $(function ()
         ///{
-        ///    // Game states
-        ///    var State = {
-        ///        WhiteWaiting: 0,
-        ///        BlackWaiting: 1,
-        ///        WhiteToRoll: 2,
-        ///        BlackToRoll: 3,
-        ///        WhiteToConfirmDouble: 4,
-        ///        BlackToConfirmDouble: 5,
-        ///        WhiteToMove: 6,
-        ///        BlackToMove: 7,
-        ///        WhiteWon: 8,
-        ///        BlackWon: 9
-        ///    };
+        ///    function initGame()
+        ///    {
+        ///        function makeArrow(source, dest)
+        ///        {
+        ///            var pieceSize = 5; // vw
         ///
-        ///    // Special tongues
-        ///    var Tongue = {
-        ///        WhitePrison: 24,
-        ///        BlackPrison: 25,
-        ///        WhiteHome: 26,
-        ///        BlackHome: 27,
-        ///        NumTongues: 28
-        ///    };
+        ///            function midPoint(elem)
+        ///            {
+        ///                var tongue = +elem.data(&apos;tongue&apos;);
+        ///                return {
+        ///                    left: leftFromTongue(tongue) + pieceSize / 2,
+        ///                    top: topFromTongue(tongue, +elem.data(&apos;index&apos;), +elem.data(&apos;num&apos;)) + pieceSize / 2
+        ///                };
+        ///            }
         ///
-        ///     [rest of string was truncated]&quot;;.
+        ///            var srcPos = midPoi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string MainJs {
             get {

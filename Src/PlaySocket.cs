@@ -12,7 +12,7 @@ namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private HttpResponse socket(HttpRequest req)
+        private HttpResponse playSocket(HttpRequest req)
         {
             if (req.Url.Path.Length < 9)
                 throw new HttpException(HttpStatusCode._400_BadRequest);
@@ -31,7 +31,7 @@ namespace LiBackgammon
                     return HttpResponse.Redirect(req.Url.WithParent("play/" + game.PublicID));
                 var player = playerToken == game.WhiteToken ? Player.White : playerToken == game.BlackToken ? Player.Black : Player.Spectator;
 
-                return new BgWebSocket(this, publicId, player, req.Url);
+                return new PlayWebSocket(this, publicId, player, req.Url);
             }
         }
     }

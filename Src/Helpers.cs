@@ -23,7 +23,7 @@ namespace LiBackgammon
             return json.GetList().Select(v => v.GetInt()).ToArray();
         }
 
-        public static CreateNewGameResult CreateNewGame(this Db db, CreateNewGameOption option, bool doublingCube, bool isCrawford = false, int? match = null, int? gameInMatch = null)
+        public static CreateNewGameResult CreateNewGame(this Db db, CreateNewGameOption option, bool doublingCube, Visibility visibility, bool isCrawford = false, int? match = null, int? gameInMatch = null)
         {
             string publicId;
             do
@@ -63,13 +63,14 @@ namespace LiBackgammon
                 RematchOffer = RematchOffer.None,
                 Match = match,
                 GameInMatch = gameInMatch,
-                IsCrawfordGame = isCrawford
+                IsCrawfordGame = isCrawford,
+                Visibility = visibility
             });
 
             return result;
         }
 
-        public static CreateNewGameResult CreateNewMatch(this Db db, CreateNewGameOption option, int playTo, DoublingCubeRules cubeRules)
+        public static CreateNewGameResult CreateNewMatch(this Db db, CreateNewGameOption option, int playTo, DoublingCubeRules cubeRules, Visibility visibility)
         {
             Match match = null;
             if (playTo > 1)
@@ -84,7 +85,8 @@ namespace LiBackgammon
                 doublingCube: cubeRules == DoublingCubeRules.Standard || (cubeRules == DoublingCubeRules.Crawford && playTo > 1),
                 isCrawford: false,
                 match: match.NullOr(m => m.ID),
-                gameInMatch: match.NullOr(m => 1));
+                gameInMatch: match.NullOr(m => 1),
+                visibility: visibility);
 
             if (match != null)
                 match.FirstGame = result.PublicID;

@@ -215,14 +215,22 @@ body {
         content: 'Join a game';
     }
 
+    #waiting-games.connecting::after {
+        content: 'Connecting...';
+    }
+
     #waiting-games:empty::before {
         color: hsl(32, 50%, 30%);
-        content: "No games waiting!\A Start a game of your own :)";
+        content: 'No games waiting!\A Start a game of your own :)';
         display: block;
         font-size: 2vw;
         padding: 2vw 3vw;
         text-align: center;
         white-space: pre-wrap;
+    }
+
+    #waiting-games.loading:empty::before {
+        content: 'Loading...';
     }
 
     #waiting-games > li {
@@ -291,6 +299,7 @@ body {
             }
 
         #waiting-games > li > .playto::before {
+            font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
             content: 'The number of points to play to. The first player to reach this many points wins the match.';
             width: 15vw;
             top: 100%;
@@ -1189,6 +1198,7 @@ body {
     #main.rematch-White.player-black > #win > #next-game > button#cancel-rematch,
     #main.rematch-Black.player-white > #win > #next-game > button#cancel-rematch,
     #main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
+    #main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
     #main.rematch-WhiteRejected.player-white > #win > #next-game > button#offer-rematch,
     #main.rematch-BlackRejected.player-black > #win > #next-game > button#offer-rematch {
         display: inline;

@@ -17,7 +17,7 @@ namespace LiBackgammon
         public int BlackScore { get; set; }
         public RematchOffer RematchOffer { get; set; }
         public string NextGame { get; set; }
-        public bool IsCrawfordGame { get; set; }
+        public bool HasDoublingCube { get; set; }
         public Visibility Visibility { get; set; }
     }
 }

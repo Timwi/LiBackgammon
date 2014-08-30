@@ -23,7 +23,7 @@ namespace LiBackgammon
             return json.GetList().Select(v => v.GetInt()).ToArray();
         }
 
-        public static CreateNewGameResult CreateNewGame(this Db db, CreateNewGameOption option, bool doublingCube, Visibility visibility, bool isCrawford = false, int? match = null, int? gameInMatch = null)
+        public static Game CreateNewGame(this Db db, CreateNewGameOption option, bool doublingCube, Visibility visibility, int? match = null, int? gameInMatch = null)
         {
             string publicId;
             do
@@ -32,10 +32,8 @@ namespace LiBackgammon
             }
             while (db.Games.Any(g => g.PublicID == publicId));
 
-            var result = new CreateNewGameResult(
-                publicId,
-                option == CreateNewGameOption.BlackWaits ? null : Rnd.GenerateString(4),
-                option == CreateNewGameOption.WhiteWaits ? null : Rnd.GenerateString(4));
+            var whiteToken = option == CreateNewGameOption.BlackWaits ? null : Rnd.GenerateString(4);
+            var blackToken = option == CreateNewGameOption.WhiteWaits ? null : Rnd.GenerateString(4);
 
             var moves = "[]";
             var state = option == CreateNewGameOption.WhiteWaits ? GameState.White_Waiting : GameState.Black_Waiting;
@@ -50,7 +48,7 @@ namespace LiBackgammon
                 state = initialDice1 > initialDice2 ? GameState.White_ToMove : GameState.Black_ToMove;
             }
 
-            db.Games.Add(new Game
+            var game = new Game
             {
                 PublicID = publicId,
                 InitialPosition = ClassifyJson.Serialize(doublingCube ? Position.StandardInitialPosition : Position.NoCubeInitialPosition).ToString(),
@@ -58,19 +56,19 @@ namespace LiBackgammon
                 State = state,
                 WhiteScore = 0,
                 BlackScore = 0,
-                WhiteToken = result.WhiteToken,
-                BlackToken = result.BlackToken,
+                WhiteToken = whiteToken,
+                BlackToken = blackToken,
                 RematchOffer = RematchOffer.None,
                 Match = match,
                 GameInMatch = gameInMatch,
-                IsCrawfordGame = isCrawford,
+                HasDoublingCube = doublingCube,
                 Visibility = visibility
-            });
-
-            return result;
+            };
+            db.Games.Add(game);
+            return game;
         }
 
-        public static CreateNewGameResult CreateNewMatch(this Db db, CreateNewGameOption option, int playTo, DoublingCubeRules cubeRules, Visibility visibility)
+        public static CreateNewMatchResult CreateNewMatch(this Db db, CreateNewGameOption option, int playTo, DoublingCubeRules cubeRules, Visibility visibility)
         {
             Match match = null;
             if (playTo > 1)
@@ -80,18 +78,17 @@ namespace LiBackgammon
                 db.SaveChanges();
             }
 
-            var result = db.CreateNewGame(
+            var game = db.CreateNewGame(
                 option: option,
                 doublingCube: cubeRules == DoublingCubeRules.Standard || (cubeRules == DoublingCubeRules.Crawford && playTo > 1),
-                isCrawford: false,
                 match: match.NullOr(m => m.ID),
                 gameInMatch: match.NullOr(m => 1),
                 visibility: visibility);
 
             if (match != null)
-                match.FirstGame = result.PublicID;
+                match.FirstGame = game.PublicID;
 
-            return result;
+            return new CreateNewMatchResult(game, match);
         }
     }
 }

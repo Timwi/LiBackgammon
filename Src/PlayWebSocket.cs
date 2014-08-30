@@ -27,14 +27,14 @@ namespace LiBackgammon
 
         public override void OnBeginConnection()
         {
-            lock (_server.ActiveSockets)
-                _server.ActiveSockets.AddSafe(_gameId, this);
+            lock (_server.ActivePlaySockets)
+                _server.ActivePlaySockets.AddSafe(_gameId, this);
         }
 
         public override void OnEndConnection()
         {
-            lock (_server.ActiveSockets)
-                _server.ActiveSockets.RemoveSafe(_gameId, this);
+            lock (_server.ActivePlaySockets)
+                _server.ActivePlaySockets.RemoveSafe(_gameId, this);
         }
 
         private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject", "resign", "resync", "rematch", "acceptRematch", "cancelRematch" };
@@ -107,14 +107,12 @@ namespace LiBackgammon
                         else
                         {
                             bool doublingCube = match.DoublingCubeRules != DoublingCubeRules.None;
-                            bool isCrawford = false;
                             if (match.DoublingCubeRules == DoublingCubeRules.Crawford && whiteMatchScore == match.MaxScore - 1 || blackMatchScore == match.MaxScore - 1)
                             {
                                 // Check if there has already been a Crawford game
-                                doublingCube = db.Games.Any(g => g.Match == game.Match && g.IsCrawfordGame);
-                                isCrawford = !doublingCube;
+                                doublingCube = db.Games.Any(g => g.Match == game.Match && !g.HasDoublingCube);
                             }
-                            var result = db.CreateNewGame(CreateNewGameOption.RollAlready, doublingCube, game.Visibility, isCrawford, game.Match, game.GameInMatch + 1);
+                            var result = db.CreateNewGame(CreateNewGameOption.RollAlready, doublingCube, game.Visibility, game.Match, game.GameInMatch + 1);
                             game.NextGame = result.PublicID;
                             sendNextUrl(result.PublicID, result.WhiteToken, result.BlackToken);
                         }
@@ -165,11 +163,11 @@ namespace LiBackgammon
                         return;
                     game.RematchOffer = RematchOffer.Accepted;
                     var match = game.Match.NullOr(mid => db.Matches.FirstOrDefault(m => m.ID == mid));
-                    var result = match == null
-                        ? db.CreateNewGame(CreateNewGameOption.RollAlready, pos.GameValue != null, game.Visibility)
-                        : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules, game.Visibility);
-                    game.NextGame = result.PublicID;
-                    sendNextUrl(result.PublicID, result.WhiteToken, result.BlackToken);
+                    var newGame = match == null
+                        ? db.CreateNewGame(CreateNewGameOption.RollAlready, game.HasDoublingCube, game.Visibility)
+                        : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules, game.Visibility).Game;
+                    game.NextGame = newGame.PublicID;
+                    sendNextUrl(newGame.PublicID, newGame.WhiteToken, newGame.BlackToken);
                     toSend.Add(createMsg(new JsonDict { { "rematch", game.RematchOffer.ToString() } }, null));
                 }
                 else if (json.ContainsKey("cancelRematch"))
@@ -284,8 +282,8 @@ namespace LiBackgammon
             // Send all the WebSocket messages
             // (We do this at the end so that we don’t send /any/ messages if any part of the above code throws an exception)
             List<PlayWebSocket> sockets;
-            lock (_server.ActiveSockets)
-                if (toSend.Count > 0 && _server.ActiveSockets.TryGetValue(_gameId, out sockets))
+            lock (_server.ActivePlaySockets)
+                if (toSend.Count > 0 && _server.ActivePlaySockets.TryGetValue(_gameId, out sockets))
                     foreach (var socket in sockets)
                         foreach (var sendMsg in toSend)
                             if (sendMsg.Predicate == null || sendMsg.Predicate(socket))

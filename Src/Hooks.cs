@@ -22,12 +22,15 @@ namespace LiBackgammon
 #endif
                 //
                 new UrlMapping(path: "/", specificPath: true, handler: mainPage),
+                new UrlMapping(path: "/socket/main", handler: mainSocket),
                 new UrlMapping(path: "/new", handler: newGame),
                 new UrlMapping(path: "/play", handler: play),
+                new UrlMapping(path: "/socket/play", handler: playSocket),
                 new UrlMapping(path: "/join", handler: join),
-                new UrlMapping(path: "/css", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.css", "text/css", HttpResponse.Css(Resources.MainCss))),
-                new UrlMapping(path: "/js", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.MainJs).ToUtf8()))),
-                new UrlMapping(path: "/socket/play", handler: playSocket)
+                new UrlMapping(path: "/css", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.css", "text/css", HttpResponse.Css(Resources.Css))),
+                new UrlMapping(path: "/js", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.Js).ToUtf8()))),
+                new UrlMapping(path: "/js/play", specificPath: true, handler: getFileResourceHandler(@"Resources\Play.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.JsPlay).ToUtf8()))),
+                new UrlMapping(path: "/js/main", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.JsMain).ToUtf8())))
             );
         }
 

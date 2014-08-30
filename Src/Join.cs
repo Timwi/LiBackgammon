@@ -52,8 +52,8 @@ namespace LiBackgammon
 
                 // Notify all the existing WebSockets
                 List<PlayWebSocket> sockets;
-                lock (ActiveSockets)
-                    if (ActiveSockets.TryGetValue(publicId, out sockets))
+                lock (ActivePlaySockets)
+                    if (ActivePlaySockets.TryGetValue(publicId, out sockets))
                     {
                         var send = new JsonList
                         {
@@ -63,6 +63,9 @@ namespace LiBackgammon
                         foreach (var socket in sockets)
                             socket.SendMessage(1, send);
                     }
+                lock (ActiveMainSockets)
+                    foreach (var socket in ActiveMainSockets)
+                        socket.RemoveGame(game.PublicID);
 
                 return HttpResponse.Redirect(req.Url.WithParent("play/" + publicId + newToken));
             }

@@ -12,7 +12,7 @@ namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private HttpResponse page(HttpRequest req, object bodyContent, string[] jsPaths = null, string[] cssPaths = null)
+        private HttpResponse page(HttpRequest req, Tag body, params string[] jsPaths)
         {
 #if DEBUG
             var jquery = req.Url.WithParent("jquery").ToHref();
@@ -33,9 +33,8 @@ namespace LiBackgammon
                         new SCRIPT { src = req.Url.WithParent("js").ToHref() },
 
                         new META { name = "viewport", content = "width=device-width, user-scalable=no" },
-                        jsPaths.NullOr(jsp => jsp.Select(p => new SCRIPT { src = req.Url.WithParent(p).ToHref() })),
-                        cssPaths.NullOr(cp => cp.Select(p => new LINK { rel = "stylesheet", href = req.Url.WithParent(p).ToHref() }))),
-                    new BODY(bodyContent)));
+                        jsPaths.NullOr(jsp => jsp.Select(p => new SCRIPT { src = req.Url.WithParent(p).ToHref() }))),
+                    body));
         }
     }
 }

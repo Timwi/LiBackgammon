@@ -21,6 +21,7 @@ namespace LiBackgammon
         White_Won_RejectedDouble = 10,
         Black_Won_RejectedDouble = 11,
         White_Won_Resignation = 12,
-        Black_Won_Resignation = 13
+        Black_Won_Resignation = 13,
+        Random_Waiting = 14
     }
 }

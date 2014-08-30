@@ -63,6 +63,16 @@ namespace LiBackgammon {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Css {
+            get {
+                object obj = ResourceManager.GetObject("Css", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] JQuery {
             get {
                 object obj = ResourceManager.GetObject("JQuery", resourceCulture);
@@ -71,38 +81,74 @@ namespace LiBackgammon {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to $(function ()
+        ///{
+        ///    // Keyboard shortcut handling
+        ///    $(&apos;*[accesskey]&apos;).each(function ()
+        ///    {
+        ///        $(this).append($(&apos;&lt;span&gt;&apos;).addClass(&apos;shortcut&apos;).text($(this).attr(&apos;accesskey&apos;)));
+        ///    });
+        ///
+        ///    $(document).keydown(function (e)
+        ///    {
+        ///        if (e.keyCode === 18)  // ALT key
+        ///            $(document.body).addClass(&apos;show-shortcuts&apos;);
+        ///    });
+        ///
+        ///    $(document).keyup(function (e)
+        ///    {
+        ///        if (e.keyCode === 18)  // ALT key
+        ///            $(document.body).removeClass(&apos;show-shortcuts&apos;);
+        ///    }) [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] MainCss {
+        internal static string Js {
             get {
-                object obj = ResourceManager.GetObject("MainCss", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("Js", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to $(function ()
         ///{
-        ///    function initGame()
+        ///    $(&apos;#newgame-playto&gt;input&apos;).click(function ()
         ///    {
-        ///        function makeArrow(source, dest)
+        ///        var curVal = +$(&apos;#newgame-playto&gt;input:checked&apos;).val();
+        ///        var newVals = curVal &lt; 3 ? [1, 2, 3, 4, 5] : [Math.max(1, Math.floor(curVal / 2)), curVal - 1, curVal, curVal + 1, curVal * 2];
+        ///        for (var i = 0; i &lt; 5; i++)
         ///        {
-        ///            var pieceSize = 5; // vw
-        ///
-        ///            function midPoint(elem)
-        ///            {
-        ///                var tongue = +elem.data(&apos;tongue&apos;);
-        ///                return {
-        ///                    left: leftFromTongue(tongue) + pieceSize / 2,
-        ///                    top: topFromTongue(tongue, +elem.data(&apos;index&apos;), +elem.data(&apos;num&apos;)) + pieceSize / 2
-        ///                };
-        ///            }
-        ///
-        ///            var srcPos = midPoi [rest of string was truncated]&quot;;.
+        ///            $(&apos;#newgame-playto-&apos; + i).val(newVals[i]);
+        ///            $(&apos;#newgame-playto-label-&apos; + i + &apos; .text&apos;).text(newVals[i]);
+        ///        }
+        ///        $(&apos;#newgame-playto-&apos; + newVals.indexOf [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string MainJs {
+        internal static string JsMain {
             get {
-                return ResourceManager.GetString("MainJs", resourceCulture);
+                return ResourceManager.GetString("JsMain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to $(function ()
+        ///{
+        ///    function makeArrow(source, dest)
+        ///    {
+        ///        var pieceSize = 5; // vw
+        ///
+        ///        function midPoint(elem)
+        ///        {
+        ///            var tongue = +elem.data(&apos;tongue&apos;);
+        ///            return {
+        ///                left: leftFromTongue(tongue) + pieceSize / 2,
+        ///                top: topFromTongue(tongue, +elem.data(&apos;index&apos;), +elem.data(&apos;num&apos;)) + pieceSize / 2
+        ///            };
+        ///        }
+        ///
+        ///        var srcPos = midPoint($(source)), dstPos = midPoint($(dest));
+        ///        var dx = dstPos.left - srcPo [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string JsPlay {
+            get {
+                return ResourceManager.GetString("JsPlay", resourceCulture);
             }
         }
     }

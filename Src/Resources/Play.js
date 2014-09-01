@@ -497,21 +497,25 @@ $(function ()
                 {
                     var targetTongue = allValidRestMoves[i].TargetTongues[k];
                     acc.push(targetTongue);
-                    var indexTo = (targetTongue in targetMoves) ? k + 1 : allValidRestMoves[i].SourceTongues.length;
-                    var m = {
+                    if (targetTongue in targetMoves && targetMoves[targetTongue].Index < k)
+                        continue;
+
+                    var piecesTaken = allValidRestMoves[i].EndPosition.NumPiecesPerTongue[getPrison(!playerIsWhite)];
+                    if (targetTongue in targetMoves && targetMoves[targetTongue].Index == k && targetMoves[targetTongue].SourceTongues.length === k + 1 && targetMoves[targetTongue].PiecesTaken > piecesTaken)
+                        continue;
+
+                    var indexTo = (targetTongue in targetMoves && targetMoves[targetTongue].Index == k) ? k + 1 : allValidRestMoves[i].SourceTongues.length;
+                    if (targetTongue in targetMoves && targetMoves[targetTongue].Index <= k && targetMoves[targetTongue].SourceTongues.length < indexTo)
+                        continue;
+
+                    targetMoves[targetTongue] = {
                         SourceTongues: allValidRestMoves[i].SourceTongues.slice(0, indexTo),
                         TargetTongues: allValidRestMoves[i].TargetTongues.slice(0, indexTo),
                         OpponentPieceTaken: allValidRestMoves[i].OpponentPieceTaken.slice(0, indexTo),
                         DiceSequence: allValidRestMoves[i].DiceSequence.slice(0, indexTo),
-                        Priority: allValidRestMoves[i].EndPosition.NumPiecesPerTongue[getPrison(!playerIsWhite)]
+                        PiecesTaken: piecesTaken,
+                        Index: k
                     };
-                    if (!(targetTongue in targetMoves) || (
-                        m.SourceTongues.length <= targetMoves[targetTongue].SourceTongues.length && (
-                            m.Priority > targetMoves[targetTongue].Priority ||
-                            (m.SourceTongues.length < targetMoves[targetTongue].SourceTongues.length)
-                        )
-                    ))
-                        targetMoves[targetTongue] = m;
                 }
         }
 
@@ -654,6 +658,11 @@ $(function ()
             window.location.reload();
             return;
         }
+        else if ('player' in json)
+        {
+            playerIsWhite = json.player === 'White';
+            main.removeClass('player-random').addClass(playerIsWhite ? 'player-white' : 'player-black');
+        }
         else if ('move' in json)
         {
             if ('auto' in json)
@@ -738,7 +747,7 @@ $(function ()
             for (var i = 0; i < sendQueue.length; i++)
                 socket.send(JSON.stringify(sendQueue[i]));
             sendQueue = [];
-            socket.send(JSON.stringify({ resync: { moves: moves.length, lastmovedone: 'SourceTongues' in lastMove } }));
+            socket.send(JSON.stringify({ resync: { moves: moves.length, lastmovedone: lastMove && 'SourceTongues' in lastMove } }));
         };
         socket.onclose = function ()
         {
@@ -887,7 +896,9 @@ $(function ()
             };
         }
 
-        $('#commit').click(getGeneralisedButtonClick(function () { return { move: { SourceTongues: moveSoFar.SourceTongues, TargetTongues: moveSoFar.TargetTongues } }; }));
+        $('#commit').click(getGeneralisedButtonClick(
+            function () { return { move: { SourceTongues: moveSoFar.SourceTongues, TargetTongues: moveSoFar.TargetTongues } }; },
+            function () { return $('#main.committable').length > 0; }));
         $('#roll').click(getGeneralisedButtonClick({ roll: 1 }));
         $('#double').click(getGeneralisedButtonClick({ double: 1 }));
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));

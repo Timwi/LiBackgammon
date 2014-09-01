@@ -31,7 +31,9 @@ namespace LiBackgammon
             using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             using (var db = new Db())
             {
-                var result = db.CreateNewMatch(black ? CreateNewGameOption.BlackWaits : CreateNewGameOption.WhiteWaits, playTo, cubeRules, visibility);
+                var result = db.CreateNewMatch(
+                    black ? CreateNewGameOption.BlackWaits : CreateNewGameOption.WhiteWaits,
+                    playTo, cubeRules, visibility, req.Post["playas"].Value == "random");
 
                 lock (ActiveMainSockets)
                     foreach (var socket in ActiveMainSockets)

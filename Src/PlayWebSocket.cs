@@ -17,6 +17,8 @@ namespace LiBackgammon
         private LiBackgammonPropellerModule _server;
         private IHttpUrl _url;
 
+        public Player Player { get { return _player; } }
+
         public PlayWebSocket(LiBackgammonPropellerModule server, string gameId, Player player, IHttpUrl url)
         {
             _server = server;
@@ -63,7 +65,9 @@ namespace LiBackgammon
 
                 if (json.ContainsKey("resync"))
                 {
-                    if (json["resync"]["moves"].GetInt() != moves.Count || json["resync"]["lastmovedone"].GetBool() != (moves.Last().SourceTongues != null))
+                    if (json["resync"]["moves"].GetInt() != moves.Count ||
+                        (json["resync"].ContainsKey("lastmovedone") && moves.Count == 0) ||
+                        (json["resync"].ContainsKey("lastmovedone") && json["resync"]["lastmovedone"].GetBool() != (moves.Last().SourceTongues != null)))
                         SendMessage(new JsonDict { { "resync", 1 } });
                     return;
                 }

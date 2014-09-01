@@ -18,7 +18,7 @@ namespace LiBackgammon
 
 #if DEBUG
                 //
-                new UrlMapping(path: "/jquery", specificPath: true, handler: req => HttpResponse.JavaScript(Resources.JQuery)),
+                new UrlMapping(path: "/jquery", specificPath: true, handler: getFileResourceHandler(@"Resources\JQuery.js", "text/javascript", HttpResponse.Redirect(@"https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"))),
 #endif
                 //
                 new UrlMapping(path: "/", specificPath: true, handler: mainPage),

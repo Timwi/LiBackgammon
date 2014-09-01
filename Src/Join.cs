@@ -52,6 +52,11 @@ namespace LiBackgammon
 
                 // Notify all the existing WebSockets
                 List<PlayWebSocket> sockets;
+
+                lock (ActiveMainSockets)
+                    foreach (var socket in ActiveMainSockets)
+                        socket.RemoveGame(game.PublicID);
+
                 lock (ActivePlaySockets)
                     if (ActivePlaySockets.TryGetValue(publicId, out sockets))
                     {
@@ -61,11 +66,12 @@ namespace LiBackgammon
                             new JsonDict { { "state", game.State.ToString() } }
                         }.ToString().ToUtf8();
                         foreach (var socket in sockets)
+                        {
+                            if (socket.Player != Player.Spectator)
+                                socket.SendMessage(new JsonDict { { "player", socket.Player.ToString() } });
                             socket.SendMessage(1, send);
+                        }
                     }
-                lock (ActiveMainSockets)
-                    foreach (var socket in ActiveMainSockets)
-                        socket.RemoveGame(game.PublicID);
 
                 return HttpResponse.Redirect(req.Url.WithParent("play/" + publicId + newToken));
             }

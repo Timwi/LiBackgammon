@@ -71,16 +71,6 @@ namespace LiBackgammon {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] JQuery {
-            get {
-                object obj = ResourceManager.GetObject("JQuery", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to $(function ()
         ///{
         ///    // Keyboard shortcut handling

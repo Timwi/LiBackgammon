@@ -10,6 +10,7 @@ namespace LiBackgammon
     {
         WhiteWaits,
         BlackWaits,
+        RandomWaits,
         RollAlready
     }
 }

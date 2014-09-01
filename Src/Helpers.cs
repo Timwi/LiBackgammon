@@ -23,7 +23,7 @@ namespace LiBackgammon
             return json.GetList().Select(v => v.GetInt()).ToArray();
         }
 
-        public static Game CreateNewGame(this Db db, CreateNewGameOption option, bool doublingCube, Visibility visibility, int? match = null, int? gameInMatch = null)
+        public static Game CreateNewGame(this Db db, CreateNewGameOption option, bool doublingCube, Visibility visibility, int? match = null, int? gameInMatch = null, bool isRandom = false)
         {
             string publicId;
             do
@@ -36,7 +36,7 @@ namespace LiBackgammon
             var blackToken = option == CreateNewGameOption.WhiteWaits ? null : Rnd.GenerateString(4);
 
             var moves = "[]";
-            var state = option == CreateNewGameOption.WhiteWaits ? GameState.White_Waiting : GameState.Black_Waiting;
+            var state = isRandom ? GameState.Random_Waiting : option == CreateNewGameOption.WhiteWaits ? GameState.White_Waiting : GameState.Black_Waiting;
 
             if (option == CreateNewGameOption.RollAlready)
             {
@@ -68,7 +68,7 @@ namespace LiBackgammon
             return game;
         }
 
-        public static CreateNewMatchResult CreateNewMatch(this Db db, CreateNewGameOption option, int playTo, DoublingCubeRules cubeRules, Visibility visibility)
+        public static CreateNewMatchResult CreateNewMatch(this Db db, CreateNewGameOption option, int playTo, DoublingCubeRules cubeRules, Visibility visibility, bool isRandom = false)
         {
             Match match = null;
             if (playTo > 1)
@@ -83,7 +83,8 @@ namespace LiBackgammon
                 doublingCube: cubeRules == DoublingCubeRules.Standard || (cubeRules == DoublingCubeRules.Crawford && playTo > 1),
                 match: match.NullOr(m => m.ID),
                 gameInMatch: match.NullOr(m => 1),
-                visibility: visibility);
+                visibility: visibility,
+                isRandom: isRandom);
 
             if (match != null)
                 match.FirstGame = game.PublicID;

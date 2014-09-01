@@ -1,11 +1,4 @@
-﻿@font-face {
-    font-family: 'Montserrat';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Montserrat-Regular'), url(http://fonts.gstatic.com/s/montserrat/v5/zhcz-_WihjSQC0oHJ9TCYBsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
-}
-
-body {
+﻿body {
     font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
     margin: 0;
     padding: 0;
@@ -92,14 +85,6 @@ body {
         #newgame > #newgame-playas > label::after {
             display: block;
             content: '';
-        }
-
-        #newgame > #newgame-playas > label.random::after {
-            content: '?';
-            font-size: 4vw;
-            font-family: "Montserrat";
-            color: hsl(32, 50%, 90%);
-            text-shadow: .2vw .2vw 0 hsl(32, 50%, 20%);
         }
 
         #newgame > #newgame-playas > label.random::before {
@@ -237,6 +222,7 @@ body {
         list-style: none;
         padding: .5vw 1vw;
         cursor: pointer;
+        position: relative;
     }
 
         #waiting-games > li:hover {
@@ -313,6 +299,10 @@ body {
 
         #waiting-games > li > .piece.black::before {
             content: 'You will be playing black.';
+        }
+
+        #waiting-games > li > .piece.random::before {
+            content: 'You will play white or black at random.';
         }
 
         #waiting-games > li::after {
@@ -517,7 +507,8 @@ body {
             margin-left: 4vw;
         }
 
-    #main > #board > .piece, #main > #win > .piece, #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
+    #main > #board > .piece, #main > #win > .piece, #main > #joinable > form > #join::before,
+    #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
     #newgame > #newgame-playas > label::after, #waiting-games > li > .piece {
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
@@ -525,13 +516,11 @@ body {
         width: 5vw;
         height: 5vw;
         border-radius: 100%;
-        border: .3vw solid transparent;
-        border-top: .2vw solid transparent;
-        border-left: .2vw solid transparent;
         box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
     }
 
         #main > #board > .piece.white,
+        #main.state-Black.state-Waiting > #joinable > form > #join::before,
         #main.state-White.state-Won > #win > .piece,
         #main.player-white > #infobar > #info-player > .piece,
         #main.state-White > #infobar > #info-state > .piece,
@@ -539,36 +528,49 @@ body {
         #newgame > #newgame-playas > label.white::after,
         #waiting-games > li > .piece.white {
             background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
-            border-color: hsl(32, 50%, 100%) hsl(32, 50%, 90%) hsl(32, 50%, 90%) hsl(32, 50%, 100%);
+            box-shadow: 0.2vw 0.2vw 0.1vw hsl(32, 50%, 100%) inset, -0.2vw -0.2vw 0.1vw hsl(32, 50%, 90%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
             #main > #board > .piece.white.selected {
                 background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
-                border-color: hsl(0, 100%, 90%) hsl(0, 100%, 85%) hsl(0, 100%, 85%) hsl(0, 100%, 90%);
+                box-shadow: 0.2vw 0.2vw 0.1vw hsl(0, 100%, 90%) inset, -0.2vw -0.2vw 0.1vw hsl(0, 100%, 85%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
             }
 
         #main > #board > .piece.black,
+        #main.state-White.state-Waiting > #joinable > form > #join::before,
         #main.state-Black.state-Won > #win > .piece,
         #main.player-black > #infobar > #info-player > .piece,
         #main.state-Black > #infobar > #info-state > .piece,
         #main > #infobar > .infobox > .infobox-black > .piece,
         #newgame > #newgame-playas > label.black::after,
         #waiting-games > li > .piece.black {
-            background-image: linear-gradient(135deg, hsl(32, 50%, 0%), hsl(32, 50%, 20%));
-            border-color: hsl(32, 50%, 20%) hsl(32, 50%, 0%) hsl(32, 50%, 0%) hsl(32, 50%, 20%);
+            background-image: linear-gradient(135deg, hsl(32, 50%, 5%), hsl(32, 50%, 15%));
+            box-shadow: 0.2vw 0.2vw 0.1vw hsl(32, 50%, 15%) inset, -0.2vw -0.2vw 0.1vw hsl(32, 50%, 5%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
             #main > #board > .piece.black.selected {
                 background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
-                border-color: hsl(0, 100%, 30%) hsl(0, 100%, 20%) hsl(0, 100%, 20%) hsl(0, 100%, 30%);
+                box-shadow: 0.2vw 0.2vw 0.1vw hsl(0, 100%, 30%) inset, -0.2vw -0.2vw 0.1vw hsl(0, 100%, 20%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
             }
+
+        #main.state-Random > #joinable > form > #join::before,
+        #main.player-random > #infobar > #info-player > .piece,
+        #main.state-Random.state-Waiting > #infobar > #info-state > .piece,
+        #newgame > #newgame-playas > label.random::after,
+        #waiting-games > li > .piece.random {
+            box-shadow: 0.2vw 0.2vw 0.1vw hsl(32, 50%, 70%) inset, -0.2vw -0.2vw 0.1vw hsl(32, 50%, 60%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="583" height="1000"><path style="fill:hsl(32, 50%, 10%)" d="M 303 34 C 300 34 297 34 294 34 L 294 169 C 295 169 296 169 298 169 331 169 358 180 379 201 399 222 410 249 410 281 410 313 400 340 380 361 L 294 448 294 680 366 680 366 621 C 366 587 373 560 389 541 395 534 403 525 413 515 423 505 435 494 449 480 464 467 475 456 484 447 492 438 505 424 521 403 550 368 564 325 564 273 564 198 540 139 491 97 443 55 380 34 303 34 z M 294 776 294 968 C 294 968 294 968 295 968 322 968 345 958 365 939 384 920 394 898 394 871 394 845 384 822 364 804 344 785 321 776 294 776 z"/><path style="fill:hsl(32, 50%, 90%)" d="M 294 34 C 221 36 160 58 110 100 59 143 29 204 20 281 L 177 281 C 181 247 193 220 215 200 237 180 263 170 294 169 L 294 34 z M 294 448 285 456 C 257 484 239 506 231 523 223 540 219 566 219 600 L 219 680 294 680 294 448 z M 293 776 C 266 776 243 785 223 804 204 823 194 846 194 873 194 899 204 921 224 940 244 958 267 968 294 968 L 294 776 C 294 776 293 776 293 776 z"/></svg>'),linear-gradient(135deg, hsl(32, 50%, 60%), hsl(32, 50%, 70%));
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+            background-size: contain;
+        }
 
         #main > #board > .piece.selectable::before {
             position: absolute;
-            left: -.2vw;
-            top: -.2vw;
-            right: -.3vw;
-            bottom: -.3vw;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
             background: hsl(110, 50%, 50%);
             border-radius: 100%;
             content: '';
@@ -1176,11 +1178,35 @@ body {
         }
 
     #main > #joinable > form > #join::before {
-        content: 'Join game';
+        position: absolute;
+        content: '';
+        top: 50%;
+        -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    #main > #joinable > form > #join::after {
+        padding-left: 6vw;
+    }
+
+    #main.state-Black > #joinable > form > #join::after {
+        content: 'Join as White';
+    }
+
+    #main.state-White > #joinable > form > #join::after {
+        content: 'Join as Black';
+    }
+
+    #main.state-Random > #joinable > form > #join::after {
+        content: 'Join (random color)';
     }
 
     #main.state-White.state-Waiting.player-white > #waiting,
     #main.state-Black.state-Waiting.player-black > #waiting,
+    #main.state-Random.state-Waiting.player-random > #waiting,
     #main.state-Waiting.spectating > #joinable,
     #main.state-Won > #win {
         opacity: 1;
@@ -1468,7 +1494,7 @@ body {
         transform: translateX(-50%);
     }
 
-    #main.player-white > #infobar > #info-player::before, #main.player-black > #infobar > #info-player::before {
+    #main:not(.spectating) > #infobar > #info-player::before {
         content: 'You are playing';
     }
 
@@ -1478,6 +1504,10 @@ body {
 
     #main.player-black > #infobar > #info-player::after {
         content: 'black';
+    }
+
+    #main.player-random > #infobar > #info-player::after {
+        content: '?';
     }
 
     #main.spectating > #infobar > #info-player > .piece {
@@ -1498,6 +1528,10 @@ body {
 
     #main.state-Black > #infobar > #info-state::before {
         content: 'Black';
+    }
+
+    #main.state-Random > #infobar > #info-state::before {
+        content: '?';
     }
 
     #main.state-Waiting > #infobar > #info-state::after {

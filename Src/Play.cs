@@ -94,7 +94,7 @@ namespace LiBackgammon
                                             + (lastMove.Dice1 == lastMove.Dice2 ? " dice-4" : " dice-2")
                                         : "")
                                 + (pos.GameValue == null ? " no-cube" : pos.WhiteOwnsCube == null ? "" : pos.WhiteOwnsCube.Value ? " cube-white" : " cube-black")
-                                + (player == Player.White ? " player-white" : player == Player.Black ? " player-black" : " spectating")
+                                + (game.State == GameState.Random_Waiting && player != Player.Spectator ? " player-random" : player == Player.White ? " player-white" : player == Player.Black ? " player-black" : " spectating")
                                 + match.NullOr(m => " in-match" + (whiteMatchScore >= match.MaxScore || blackMatchScore >= match.MaxScore ? " end-of-match" : null))
                                 + nextGame.NullOr(ng => " has-next-game")
                                 + (game.RematchOffer != RematchOffer.None ? " rematch-" + game.RematchOffer : null)

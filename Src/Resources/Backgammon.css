@@ -1,4 +1,11 @@
-﻿body {
+﻿@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 900;
+    src: local('Lato Black'), local('Lato-Black'), url(http://fonts.gstatic.com/s/lato/v10/BVtM30trf7q_jfqYeHfjtA.woff) format('woff');
+}
+
+body {
     font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
     margin: 0;
     padding: 0;
@@ -605,7 +612,7 @@
         width: 6vw;
         height: 6vw;
         top: 25vw;
-        font-family: "Impact";
+        font-family: 'Lato';
         text-align: right;
         text-transform: uppercase;
         white-space: nowrap;
@@ -1357,7 +1364,7 @@
                 #main > #infobar > .infobox > .infobox-inner > .number {
                     position: absolute;
                     color: hsl(32, 50%, 30%);
-                    font-family: "Impact";
+                    font-family: 'Lato';
                     text-transform: uppercase;
                     white-space: pre;
                 }
@@ -1406,7 +1413,7 @@
             text-transform: uppercase;
             position: absolute;
             top: 3vw;
-            font-family: "Impact";
+            font-family: 'Lato';
         }
 
         #main > #infobar > .infobox > .infobox-white::after {
@@ -1586,7 +1593,7 @@
 
     #main > #infobar > #info-match > .infobox-inner::after {
         content: 'match';
-        font-size: 1.5vw;
+        font-size: 1.3vw;
     }
 
     #main > #infobar > .mini-button {

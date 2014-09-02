@@ -81,10 +81,24 @@ namespace LiBackgammon
 
                 var sendNextUrl = Ut.Lambda((string publicId, string whiteToken, string blackToken) =>
                 {
-                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + whiteToken).ToFull() } }, s => s._player == Player.White));
-                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + blackToken).ToFull() } }, s => s._player == Player.Black));
-                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId).ToFull() } }, s => s._player == Player.Spectator));
+                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + whiteToken).ToFull() } }, s => s.Player == Player.White));
+                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + blackToken).ToFull() } }, s => s.Player == Player.Black));
+                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId).ToFull() } }, s => s.Player == Player.Spectator));
                 });
+
+                var isMatchOver = Ut.Lambda((Game gm) =>
+                    (
+                        gm.State == GameState.Black_Won_Finished ||
+                        gm.State == GameState.Black_Won_RejectedDouble ||
+                        gm.State == GameState.Black_Won_Resignation ||
+                        gm.State == GameState.White_Won_Finished ||
+                        gm.State == GameState.White_Won_RejectedDouble ||
+                        gm.State == GameState.White_Won_Resignation
+                    ) && (
+                        gm.Match == null ||
+                        db.Matches.Where(m => m.ID == gm.Match && (
+                            db.Games.Where(g => g.Match == m.ID && g.GameInMatch < gm.GameInMatch).Select(g => g.WhiteScore).Sum() + gm.WhiteScore >= m.MaxScore ||
+                            db.Games.Where(g => g.Match == m.ID && g.GameInMatch < gm.GameInMatch).Select(g => g.BlackScore).Sum() + gm.BlackScore >= m.MaxScore)).Any()));
 
                 var gameOver = Ut.Lambda((bool whiteWins, bool useMultiplier) =>
                 {
@@ -111,7 +125,7 @@ namespace LiBackgammon
                         else
                         {
                             bool doublingCube = match.DoublingCubeRules != DoublingCubeRules.None;
-                            if (match.DoublingCubeRules == DoublingCubeRules.Crawford && whiteMatchScore == match.MaxScore - 1 || blackMatchScore == match.MaxScore - 1)
+                            if (match.DoublingCubeRules == DoublingCubeRules.Crawford && (whiteMatchScore == match.MaxScore - 1 || blackMatchScore == match.MaxScore - 1))
                             {
                                 // Check if there has already been a Crawford game
                                 doublingCube = db.Games.Any(g => g.Match == game.Match && !g.HasDoublingCube);
@@ -152,10 +166,11 @@ namespace LiBackgammon
                 }
                 else if (json.ContainsKey("rematch"))
                 {
-                    if (
-                        game.RematchOffer != RematchOffer.None &&
+                    if (game.RematchOffer != RematchOffer.None &&
                         !(game.RematchOffer == RematchOffer.WhiteRejected && _player == Player.White) &&
                         !(game.RematchOffer == RematchOffer.BlackRejected && _player == Player.Black))
+                        return;
+                    if (!isMatchOver(game))
                         return;
                     game.RematchOffer = _player == Player.White ? RematchOffer.White : RematchOffer.Black;
                     toSend.Add(createMsg(new JsonDict { { "rematch", game.RematchOffer.ToString() } }, null));

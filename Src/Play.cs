@@ -56,11 +56,11 @@ namespace LiBackgammon
                 // Keyboard Shortcuts
                 // ────────────
                 // A = Accept double
-                // B
+                // B = Accept rematch
                 // C = Commit
                 // D = Double
-                // E = Reject Double
-                // F
+                // E = Reject double
+                // F = Reject rematch
                 // G = Resign
                 // H = Help
                 // I
@@ -69,7 +69,7 @@ namespace LiBackgammon
                 // L
                 // M
                 // N = Resign cancel
-                // O
+                // O = Offer a rematch
                 // P
                 // Q
                 // R = Roll
@@ -78,7 +78,7 @@ namespace LiBackgammon
                 // U = Undo
                 // V
                 // W
-                // X
+                // X = Go to next game
                 // Y = Resign confirm
                 // Z
 
@@ -153,10 +153,10 @@ namespace LiBackgammon
                                     new P { class_ = "win" },
                                     new P { id = "next-game" }._(
                                         new SPAN { id = "next-game-text" },
-                                        new BUTTON { id = "offer-rematch" },
-                                        new BUTTON { id = "accept-rematch" },
-                                        new BUTTON { id = "cancel-rematch" },
-                                        new BUTTON { id = "goto-next-game" })),
+                                        new BUTTON { id = "offer-rematch", accesskey = "o" },
+                                        new BUTTON { id = "accept-rematch", accesskey = "b" },
+                                        new BUTTON { id = "cancel-rematch", accesskey = "f" },
+                                        new BUTTON { id = "goto-next-game", accesskey = "x" })),
                                 new DIV { id = "waiting", class_ = "dialog" }._(
                                     new P { id = "send-this-link" },
                                     new P { class_ = "link" }._(req.Url.WithPathOnly("/" + publicId).ToFull()),

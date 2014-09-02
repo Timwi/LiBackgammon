@@ -883,14 +883,15 @@ $(function ()
             return false;
         });
 
-        function getGeneralisedButtonClick(msgToSend, condition)
+        function getGeneralisedButtonClick(msgToSend, condition, removeClasses)
         {
             return function ()
             {
                 if (!main.hasClass('spectating') && (!condition || condition()))
                 {
                     socketSend(typeof msgToSend === 'function' ? msgToSend() : msgToSend);
-                    main.removeClass('undoable committable resigning roll-or-double confirm-double');
+                    if (removeClasses)
+                        main.removeClass(removeClasses);
                 }
                 return false;
             };
@@ -898,18 +899,30 @@ $(function ()
 
         $('#commit').click(getGeneralisedButtonClick(
             function () { return { move: { SourceTongues: moveSoFar.SourceTongues, TargetTongues: moveSoFar.TargetTongues } }; },
-            function () { return $('#main.committable').length > 0; }));
-        $('#roll').click(getGeneralisedButtonClick({ roll: 1 }));
+            function () { return $('#main.committable').length > 0; },
+            'undoable committable'));
+        $('#roll').click(getGeneralisedButtonClick({ roll: 1 }, function () { return $('#main.state-ToRoll').length > 0; }));
         $('#double').click(getGeneralisedButtonClick({ double: 1 }));
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
         $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
-        $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function () { return $('#main.resigning:not(.state-Won)').length > 0; }));
+        $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function () { return $('#main.resigning:not(.state-Won)').length > 0; }, 'resigning'));
         $('#resign-cancel').click(function () { main.removeClass('resigning'); return false; });
         $('#chat').click(function () { sidebar('chat'); return false; });
-        $('#resign').click(function () { if (!$('#main.state-Won').length) main.addClass('resigning'); return false; });
-        $('#offer-rematch').click(getGeneralisedButtonClick({ rematch: 1 }));
-        $('#accept-rematch').click(getGeneralisedButtonClick({ acceptRematch: 1 }));
-        $('#cancel-rematch').click(getGeneralisedButtonClick({ cancelRematch: 1 }));
+        $('#resign').click(function () { if (!$('#main.state-Won,#main.state-Waiting').length) main.addClass('resigning'); return false; });
+
+        $('#offer-rematch').click(getGeneralisedButtonClick(
+            { rematch: 1 },
+            function ()
+            {
+                return $(
+                    '#main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating),' +
+                    '#main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating),' +
+                    '#main.rematch-WhiteRejected.player-white,' +
+                    '#main.rematch-BlackRejected.player-black').length > 0;
+            }));
+        var rematchAcceptable = function () { return $('#main.rematch-White.player-black, #main.rematch-Black.player-white').length > 0; };
+        $('#accept-rematch').click(getGeneralisedButtonClick({ acceptRematch: 1 }, rematchAcceptable));
+        $('#cancel-rematch').click(getGeneralisedButtonClick({ cancelRematch: 1 }, rematchAcceptable));
     }
 
     $('#join').click(function () { return main.hasClass('state-Waiting') && main.hasClass('spectating'); });

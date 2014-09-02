@@ -791,7 +791,9 @@ $(function ()
             sendQueue.push(msg);
     };
 
-    if (!main.hasClass('spectating'))
+    if (main.hasClass('spectating'))
+        $('#undo,#commit,#roll,#double,#accept,#reject,#resign,#resign-confirm,#resign-cancel,#offer-rematch,#accept-rematch,#cancel-rematch').click(function () { return false; });
+    else
     {
         deselectPiece();
         $('#board>.piece').click(function ()
@@ -907,7 +909,6 @@ $(function ()
         $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
         $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function () { return $('#main.resigning:not(.state-Won)').length > 0; }, 'resigning'));
         $('#resign-cancel').click(function () { main.removeClass('resigning'); return false; });
-        $('#chat').click(function () { sidebar('chat'); return false; });
         $('#resign').click(function () { if (!$('#main.state-Won,#main.state-Waiting').length) main.addClass('resigning'); return false; });
 
         $('#offer-rematch').click(getGeneralisedButtonClick(
@@ -925,8 +926,9 @@ $(function ()
         $('#cancel-rematch').click(getGeneralisedButtonClick({ cancelRematch: 1 }, rematchAcceptable));
     }
 
+    $('#chat').click(function () { sidebar('chat'); return false; });
     $('#join').click(function () { return main.hasClass('state-Waiting') && main.hasClass('spectating'); });
-    $('#goto-next-game').click(function () { window.location.href = main.data('next-game'); return false; });
+    $('#goto-next-game').click(function () { if (main.data('next-game')) window.location.href = main.data('next-game'); return false; });
 
     // Add extra CSS
     var cssWithSidebar = [];                    // CSS for when the sidebar is visible

@@ -1680,7 +1680,7 @@ body {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
         }
 
-    #main:not(.state-Won) > #infobar > .mini-button#resign::before {
+    #main:not(.state-Won):not(.state-Waiting):not(.spectating) > #infobar > .mini-button#resign::before {
         content: 'Resign this game';
     }
 
@@ -1688,7 +1688,9 @@ body {
         background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
     }
 
-    #main.state-Won > #infobar > .mini-button#resign {
+    #main.state-Waiting > #infobar > .mini-button#resign,
+    #main.state-Won > #infobar > .mini-button#resign,
+    #main.spectating > #infobar > .mini-button#resign {
         opacity: .2;
     }
 

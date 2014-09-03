@@ -30,13 +30,34 @@ namespace LiBackgammon
         public override void OnBeginConnection()
         {
             lock (_server.ActivePlaySockets)
+            {
                 _server.ActivePlaySockets.AddSafe(_gameId, this);
+                foreach (var socket in _server.ActivePlaySockets[_gameId])
+                {
+                    if (_player != Player.Spectator)
+                        socket.SendMessage(new JsonDict { { "on", _player.ToString() } });
+                    if (socket.Player != Player.Spectator)
+                        SendMessage(new JsonDict { { "on", socket.Player.ToString() } });
+                }
+            }
         }
 
         public override void OnEndConnection()
         {
             lock (_server.ActivePlaySockets)
+            {
                 _server.ActivePlaySockets.RemoveSafe(_gameId, this);
+                if (_player != Player.Spectator)
+                {
+                    List<PlayWebSocket> sockets;
+                    if (_server.ActivePlaySockets.TryGetValue(_gameId, out sockets) && !sockets.Any(s => s.Player == _player))
+                    {
+                        var info = new JsonDict { { "off", _player.ToString() } }.ToString().ToUtf8();
+                        foreach (var socket in sockets)
+                            socket.SendMessage(1, info);
+                    }
+                }
+            }
         }
 
         private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject", "resign", "resync", "rematch", "acceptRematch", "cancelRematch" };

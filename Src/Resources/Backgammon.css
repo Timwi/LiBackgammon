@@ -82,7 +82,7 @@ body {
             padding: 1vw;
             margin-right: 1vw;
             border-radius: 1vw;
-            box-shadow: 0.1vw 0.1vw 0.1vw rgba(255, 255, 255, .3) inset, -0.1vw -0.1vw 0.1vw rgba(0, 0, 0, .2) inset;
+            box-shadow: .1vw .1vw .1vw rgba(255, 255, 255, .3) inset, -.1vw -.1vw .1vw rgba(0, 0, 0, .2) inset;
         }
 
     #newgame > #newgame-playas > label {
@@ -110,7 +110,7 @@ body {
     #newgame > .row > input:checked + label {
         background-image: linear-gradient(180deg, hsl(32, 50%, 45%), hsl(32, 50%, 55%));
         border-color: hsl(32, 50%, 80%);
-        box-shadow: 0.1vw 0.1vw 0.1vw rgba(0, 0, 0, .5) inset, -0.1vw -0.1vw 0.1vw rgba(255, 255, 255, .7) inset;
+        box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
     }
 
     #newgame > #newgame-playto > label {
@@ -517,13 +517,9 @@ body {
     #main > #board > .piece, #main > #win > .piece, #main > #joinable > form > #join::before,
     #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
     #newgame > #newgame-playas > label::after, #waiting-games > li > .piece {
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
         width: 5vw;
         height: 5vw;
         border-radius: 100%;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
     }
 
         #main > #board > .piece.white,
@@ -535,12 +531,12 @@ body {
         #newgame > #newgame-playas > label.white::after,
         #waiting-games > li > .piece.white {
             background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
-            box-shadow: 0.2vw 0.2vw 0.1vw hsl(32, 50%, 100%) inset, -0.2vw -0.2vw 0.1vw hsl(32, 50%, 90%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+            box-shadow: .2vw .2vw .1vw hsl(32, 50%, 100%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 90%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
             #main > #board > .piece.white.selected {
                 background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
-                box-shadow: 0.2vw 0.2vw 0.1vw hsl(0, 100%, 90%) inset, -0.2vw -0.2vw 0.1vw hsl(0, 100%, 85%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+                box-shadow: .2vw .2vw .1vw hsl(0, 100%, 90%) inset, -.2vw -.2vw .1vw hsl(0, 100%, 85%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
             }
 
         #main > #board > .piece.black,
@@ -552,12 +548,12 @@ body {
         #newgame > #newgame-playas > label.black::after,
         #waiting-games > li > .piece.black {
             background-image: linear-gradient(135deg, hsl(32, 50%, 5%), hsl(32, 50%, 15%));
-            box-shadow: 0.2vw 0.2vw 0.1vw hsl(32, 50%, 15%) inset, -0.2vw -0.2vw 0.1vw hsl(32, 50%, 5%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+            box-shadow: .2vw .2vw .1vw hsl(32, 50%, 15%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 5%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
             #main > #board > .piece.black.selected {
                 background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
-                box-shadow: 0.2vw 0.2vw 0.1vw hsl(0, 100%, 30%) inset, -0.2vw -0.2vw 0.1vw hsl(0, 100%, 20%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+                box-shadow: .2vw .2vw .1vw hsl(0, 100%, 30%) inset, -.2vw -.2vw .1vw hsl(0, 100%, 20%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
             }
 
         #main.state-Random > #joinable > form > #join::before,
@@ -565,7 +561,7 @@ body {
         #main.state-Random.state-Waiting > #infobar > #info-state > .piece,
         #newgame > #newgame-playas > label.random::after,
         #waiting-games > li > .piece.random {
-            box-shadow: 0.2vw 0.2vw 0.1vw hsl(32, 50%, 70%) inset, -0.2vw -0.2vw 0.1vw hsl(32, 50%, 60%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+            box-shadow: .2vw .2vw .1vw hsl(32, 50%, 70%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 60%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="583" height="1000"><path style="fill:hsl(32, 50%, 10%)" d="M 303 34 C 300 34 297 34 294 34 L 294 169 C 295 169 296 169 298 169 331 169 358 180 379 201 399 222 410 249 410 281 410 313 400 340 380 361 L 294 448 294 680 366 680 366 621 C 366 587 373 560 389 541 395 534 403 525 413 515 423 505 435 494 449 480 464 467 475 456 484 447 492 438 505 424 521 403 550 368 564 325 564 273 564 198 540 139 491 97 443 55 380 34 303 34 z M 294 776 294 968 C 294 968 294 968 295 968 322 968 345 958 365 939 384 920 394 898 394 871 394 845 384 822 364 804 344 785 321 776 294 776 z"/><path style="fill:hsl(32, 50%, 90%)" d="M 294 34 C 221 36 160 58 110 100 59 143 29 204 20 281 L 177 281 C 181 247 193 220 215 200 237 180 263 170 294 169 L 294 34 z M 294 448 285 456 C 257 484 239 506 231 523 223 540 219 566 219 600 L 219 680 294 680 294 448 z M 293 776 C 266 776 243 785 223 804 204 823 194 846 194 873 194 899 204 921 224 940 244 958 267 968 294 968 L 294 776 C 294 776 293 776 293 776 z"/></svg>'),linear-gradient(135deg, hsl(32, 50%, 60%), hsl(32, 50%, 70%));
             background-repeat: no-repeat;
             background-position: 50% 50%;
@@ -841,13 +837,10 @@ body {
 
     #main > #board > #cube {
         background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
-        border: .3vw solid white;
         border-radius: .5vw;
-        border-bottom-color: #ccc;
-        border-right-color: #ccc;
-        width: 4.2vw;
-        height: 4.2vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        width: 4.8vw;
+        height: 4.8vw;
+        box-shadow: .2vw .2vw .05vw white inset, -.2vw -.2vw .05vw #ccc inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
         left: 41.6vw;
         top: 25.6vw;
     }
@@ -1082,7 +1075,7 @@ body {
         border: .7vw solid hsl(32, 50%, 20%);
         background: hsl(32, 50%, 70%);
         padding: 0 3vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, 0.3);
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
         color: hsl(32, 50%, 30%);
         -moz-transform: translateY(-50%) scale(.5);
         -ms-transform: translateY(-50%) scale(.5);
@@ -1556,6 +1549,20 @@ body {
     #main.state-ToMove > #infobar > #info-state::after {
         content: 'to play';
     }
+
+    #main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state,
+    #main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state,
+    #main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state,
+    #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state {
+        opacity: .5;
+    }
+
+        #main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state::after,
+        #main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state::after,
+        #main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state::after,
+        #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state::after {
+            content: 'is offline';
+        }
 
     #main.state-Won > #infobar > #info-state::after {
         content: 'wins';

@@ -734,6 +734,10 @@ $(function ()
             main.removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, "rematch-".length) === "rematch-"; }).join(' '); });
             main.addClass('rematch-' + json.rematch);
         }
+        else if ('on' in json)
+            main.addClass('online-' + json.on);
+        else if ('off' in json)
+            main.removeClass('online-' + json.off);
 
         processSocketQueue();
     };
@@ -743,7 +747,7 @@ $(function ()
         socket = new WebSocket(main.data('socket-url'));
         socket.onopen = function ()
         {
-            main.removeClass('connecting');
+            main.removeClass('connecting online-White online-Black');
             for (var i = 0; i < sendQueue.length; i++)
                 socket.send(JSON.stringify(sendQueue[i]));
             sendQueue = [];

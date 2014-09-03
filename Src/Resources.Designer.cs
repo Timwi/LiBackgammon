@@ -61,12 +61,31 @@ namespace LiBackgammon {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to @font-face {
+        ///    font-family: &apos;Lato&apos;;
+        ///    font-style: normal;
+        ///    font-weight: 900;
+        ///    src: local(&apos;Lato Black&apos;), local(&apos;Lato-Black&apos;), url(http://fonts.gstatic.com/s/lato/v10/BVtM30trf7q_jfqYeHfjtA.woff) format(&apos;woff&apos;);
+        ///}
+        ///
+        ///body {
+        ///    font-family: &quot;Candara&quot;, &quot;Calibri&quot;, &quot;Tahoma&quot;, &quot;Verdana&quot;, &quot;Arial&quot;, sans-serif;
+        ///    margin: 0;
+        ///    padding: 0;
+        ///    background: hsl(27, 35%, 50%);
+        ///    cursor: default;
+        ///}
+        ///
+        ///    body * {
+        ///        cursor: inherit;
+        ///    }
+        ///
+        ///    body#main-page::before {
+        ///        content:  [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] Css {
+        internal static string Css {
             get {
-                object obj = ResourceManager.GetObject("Css", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("Css", resourceCulture);
             }
         }
         

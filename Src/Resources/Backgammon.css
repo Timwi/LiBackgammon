@@ -1552,15 +1552,19 @@ body {
 
     #main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state,
     #main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state,
+    #main.state-White.state-ToConfirmDouble:not(.online-White) > #infobar > #info-state,
     #main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state,
-    #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state {
+    #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state,
+    #main.state-Black.state-ToConfirmDouble:not(.online-Black) > #infobar > #info-state {
         opacity: .5;
     }
 
         #main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state::after,
         #main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state::after,
+        #main.state-White.state-ToConfirmDouble:not(.online-White) > #infobar > #info-state::after,
         #main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state::after,
-        #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state::after {
+        #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state::after,
+        #main.state-Black.state-ToConfirmDouble:not(.online-Black) > #infobar > #info-state::after {
             content: 'is offline';
         }
 

@@ -53,6 +53,8 @@ namespace LiBackgammon
 
                 var nextGame = game.NextGame.NullOr(ng => db.Games.FirstOrDefault(g => g.PublicID == ng));
 
+                var history = match.NullOr(m => db.Games.Where(g => g.Match == m.ID).OrderBy(g => g.GameInMatch).ToList());
+
                 // Keyboard Shortcuts
                 // ────────────
                 // A = Accept double
@@ -62,8 +64,8 @@ namespace LiBackgammon
                 // E = Reject double
                 // F = Reject rematch
                 // G = Resign
-                // H = Help
-                // I
+                // H
+                // I = Match info, rules and help
                 // J = Join game
                 // K
                 // L
@@ -142,12 +144,12 @@ namespace LiBackgammon
                                             new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-white" }._(pipsWhite)),
                                             new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-black" }._(pipsBlack))),
                                         game.Match == null ? null : new DIV { class_ = "infobox", id = "info-match" }._(
-                                            new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-white" }._(whiteMatchScore)),
-                                            new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-black" }._(blackMatchScore))),
-                                        new A { href = "#", class_ = "mini-button", accesskey = "g", id = "resign" },
-                                        new A { href = "#", class_ = "mini-button", accesskey = "s", id = "settings" },
-                                        new A { href = "#", class_ = "mini-button", accesskey = "h", id = "help" },
-                                        new A { href = "#", class_ = "mini-button", accesskey = "t", id = "chat" }),
+                                            new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number matchscore-white", id = "matchscore-white" }._(whiteMatchScore)),
+                                            new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number matchscore-black", id = "matchscore-black" }._(blackMatchScore))),
+                                        new A { href = "#", class_ = "mini-button", accesskey = "g", id = "btn-resign" },
+                                        new A { href = "#", class_ = "mini-button", accesskey = "s", id = "btn-settings" },
+                                        new A { href = "#", class_ = "mini-button", accesskey = "i", id = "btn-info" },
+                                        new A { href = "#", class_ = "mini-button", accesskey = "t", id = "btn-chat" }),
                                     new DIV { id = "win", class_ = "dialog" }._(
                                         new DIV { class_ = "piece" },
                                         new DIV { class_ = "points" + (points == 1 ? " singular" : " plural") }._(
@@ -170,7 +172,23 @@ namespace LiBackgammon
                                             new BUTTON { type = btype.submit, id = "join", accesskey = "j" })),
                                     new DIV { id = "connecting" },
                                     new DIV { id = "sidebar" }._(
-                                        new DIV { id = "sidebar-chat" }))),
+                                        new DIV { id = "chat", class_ = "sidebar-tab" }._(
+                                            new DIV { id = "chat-msgs-outer" }._(new DIV { id = "chat-msgs" }),
+                                            new LABEL { for_ = "chat-msg", accesskey = "," },
+                                            new INPUT { id = "chat-msg", type = itype.text }),
+                                        new DIV { id = "info", class_ = "sidebar-tab" }._(
+                                            new DIV { class_ = "info-tab", id = "info-match" }._(
+                                                new DIV { id = "info-match-playto", class_ = "section" }._(new DIV { class_ = "content" }._(match.NullOr(m => m.MaxScore))),
+                                                new DIV { id = "info-match-cube", class_ = "section" + match.NullOr(m => " " + m.DoublingCubeRules) }._(new DIV { class_ = "content" }),
+                                                new DIV { id = "info-match-history", class_ = "section" }._(
+                                                    history.NullOr(h => Ut.NewArray<object>(
+                                                        h.Select(g => new A { href = g.PublicID == publicId ? null : req.Url.WithParent("play/" + g.PublicID + (player == Player.White ? g.WhiteToken : player == Player.Black ? g.BlackToken : null)).ToFull(), class_ = "game " + (g.HasDoublingCube ? "cube" : "no-cube") }._(
+                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(g.WhiteScore.Apply(s => s == 0 ? null : s.ToString()))),
+                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(g.BlackScore.Apply(s => s == 0 ? null : s.ToString()))))),
+                                                        new HR(),
+                                                        new DIV { class_ = "game totals" }._(
+                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(history.Sum(g => g.WhiteScore).Apply(s => s == 0 ? null : s.ToString()))),
+                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(history.Sum(g => g.BlackScore).Apply(s => s == 0 ? null : s.ToString())))))))))))),
                         "js/play");
             }
         }

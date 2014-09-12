@@ -69,7 +69,7 @@ $(function ()
 
     main.on('click', 'li', function ()
     {
-        window.location.href = main.data('play-url') + '/' + $(this).data('id');
+        window.location.href = main.data('play-url') + '/' + $(this).data('id') + window.location.hash;
         return false;
     });
 });

@@ -39,6 +39,19 @@ namespace LiBackgammon
                     if (socket.Player != Player.Spectator)
                         SendMessage(new JsonDict { { "on", socket.Player.ToString() } });
                 }
+
+                using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                using (var db = new Db())
+                {
+                    var chatList = db.ChatMessages
+                        .Where(cm => cm.GameID == _gameId)
+                        .OrderBy(cm => cm.Time)
+                        .AsEnumerable()
+                        .Select(chatMessageJson)
+                        .ToJsonList();
+                    if (chatList.Count > 0)
+                        SendMessage(new JsonDict { { "chat", chatList } });
+                }
             }
         }
 
@@ -60,7 +73,7 @@ namespace LiBackgammon
             }
         }
 
-        private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject", "resign", "resync", "rematch", "acceptRematch", "cancelRematch" };
+        private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject", "resign", "resync", "rematch", "acceptRematch", "cancelRematch", "chat" };
 
         public override void OnTextMessageReceived(string msg)
         {
@@ -81,6 +94,29 @@ namespace LiBackgammon
                 var game = db.Games.FirstOrDefault(g => g.PublicID == _gameId);
                 if (game == null)
                     return;
+
+                if (json.ContainsKey("chat") && _player != Player.Spectator)
+                {
+                    var chatMsg = json["chat"]["msg"].GetString().Trim();
+                    if (chatMsg.Length > 0)
+                    {
+                        var chatMsgObj = new ChatMessage { GameID = _gameId, Player = _player, Time = DateTime.UtcNow, Message = chatMsg };
+                        db.ChatMessages.Add(chatMsgObj);
+                        db.SaveChanges();
+                        SendMessage(new JsonDict { { "chatid", new JsonDict { { "token", json["chat"]["token"] }, { "id", chatMsgObj.ID } } } });
+                        var dict = new JsonDict { { "chat", chatMessageJson(chatMsgObj) } }.ToString().ToUtf8();
+                        lock (_server.ActivePlaySockets)
+                        {
+                            List<PlayWebSocket> sockets;
+                            if (_server.ActivePlaySockets.TryGetValue(_gameId, out sockets))
+                                foreach (var socket in sockets)
+                                    socket.SendMessage(1, dict);
+                        }
+                        tr.Complete();
+                    }
+                    return;
+                }
+
                 var pos = game.InitialPosition.ToPosition();
                 var moves = game.Moves.ToMoves();
 
@@ -321,13 +357,26 @@ namespace LiBackgammon
 
             // Send all the WebSocket messages
             // (We do this at the end so that we don’t send /any/ messages if any part of the above code throws an exception)
-            List<PlayWebSocket> sockets;
             lock (_server.ActivePlaySockets)
+            {
+                List<PlayWebSocket> sockets;
                 if (toSend.Count > 0 && _server.ActivePlaySockets.TryGetValue(_gameId, out sockets))
                     foreach (var socket in sockets)
                         foreach (var sendMsg in toSend)
                             if (sendMsg.Predicate == null || sendMsg.Predicate(socket))
                                 socket.SendMessage(sendMsg.Value);
+            }
+        }
+
+        private JsonDict chatMessageJson(ChatMessage msg)
+        {
+            return new JsonDict 
+            {
+                { "id", msg.ID },
+                { "msg", msg.Message },
+                { "player", msg.Player.ToString() },
+                { "time", msg.Time.ToIsoString(format: IsoDateFormat.Iso8601) + "Z" }
+            };
         }
     }
 }

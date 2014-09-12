@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LiBackgammon
 {
-    enum Player
+    public enum Player
     {
         Spectator,
         White,

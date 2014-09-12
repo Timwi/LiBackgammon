@@ -338,12 +338,12 @@ $(function ()
 
     function isPlayerToMove()
     {
-        return !!$('#main.player-white.state-White.state-ToMove,#main.player-black.state-Black.state-ToMove').length;
+        return $('#main.player-white.state-White.state-ToMove,#main.player-black.state-Black.state-ToMove').length > 0;
     }
 
     function isSidebarOn()
     {
-        return !!$('#main.with-sidebar').length;
+        return $('body.hash-sidebar').length > 0;
     }
 
     function setState(newState, skipHighlight)
@@ -562,6 +562,15 @@ $(function ()
                     deselectPiece();
             }
         }
+
+        preventCmoScrollEventUntil = Date.now() + 100;
+        var cmo = $('#chat-msgs-outer');
+        if ($('#chat-msgs').height() > cmo.height())
+            $('#chat-msgs').removeClass('few').addClass('many');
+        else
+            $('#chat-msgs').removeClass('many').addClass('few');
+        if (chatLastScrolledBottom)
+            cmo[0].scrollTop = cmo[0].scrollHeight;
     }
 
     function recomputeValidRestMoves()
@@ -588,11 +597,46 @@ $(function ()
 
     function sidebar(id)
     {
-        if ($('#main.with-sidebar.sidebar-' + id).length)
-            main.removeClass('with-sidebar sidebar-' + id);
+        var hash = getHash();
+        if (hash.indexOf('sidebar') !== -1 && hash.indexOf(id) !== -1)
+            hashRemove(['sidebar', id]);
         else
-            main.addClass('with-sidebar sidebar-' + id);
-        onResize(true);
+        {
+            hashRemove(['chat', 'info']);
+            hashAdd(['sidebar', id]);
+        }
+        // We have to delay this because the hashchange event needs to happen first
+        setTimeout(function () { onResize(true); }, 1);
+    }
+
+    function getHash()
+    {
+        var hash = window.location.hash.replace(/^#/, '').split('/');
+        if (hash[0] === '')
+            hash.splice(0, 1);
+        return hash;
+    }
+
+    function hashAdd(x)
+    {
+        if (!(x instanceof Array))
+            return hashAdd([x]);
+        var hash = getHash();
+        for (var i = 0; i < x.length; i++)
+            if (hash.indexOf(x[i]) === -1)
+                hash.push(x[i]);
+        window.location.hash = hash.join('/');
+    }
+
+    function hashRemove(x)
+    {
+        if (!(x instanceof Array))
+            return hashRemove([x]);
+        var hash = getHash();
+        for (var i = 0; i < x.length; i++)
+            while (hash.indexOf(x[i]) !== -1)
+                hash.splice(hash.indexOf(x[i]), 1);
+        window.location.hash = hash.join('/');
     }
 
     var main = $('#main');
@@ -613,6 +657,9 @@ $(function ()
     var boardHeight = 68;   // vw
     var sidebarWidth = 30;  // vw
     var lastWide = null;
+    var chatLastScrolledBottom = true;
+    var preventCmoScrollEventUntil = null;
+    var lastCmoScrollPos = null;
 
     var position = main.data('initial');
     if (moves.length > 0)
@@ -722,9 +769,9 @@ $(function ()
                 $('#win>.points').removeClass('singular plural').addClass(json.win === 1 ? "singular" : "plural");
 
                 if ('whiteMatchScore' in json)
-                    $('#matchscore-white').text(json.whiteMatchScore);
+                    $('.matchscore-white').text(json.whiteMatchScore);
                 if ('blackMatchScore' in json)
-                    $('#matchscore-black').text(json.blackMatchScore);
+                    $('.matchscore-black').text(json.blackMatchScore);
                 if ('matchOver' in json)
                     main.addClass('end-of-match');
             }
@@ -738,6 +785,25 @@ $(function ()
             main.addClass('online-' + json.on);
         else if ('off' in json)
             main.removeClass('online-' + json.off);
+        else if ('chat' in json)
+        {
+            var chatList = json.chat instanceof Array ? json.chat : [json.chat];
+            for (var i = 0; i < chatList.length; i++)
+            {
+                var msg = chatList[i];
+                var obj = $('#chat-' + msg.id);
+                if (!obj.length)
+                    obj = $('<div><div class="time"></div><div class="msg"></div></div>').attr('id', 'chat-' + msg.id).addClass('chat-msg').appendTo('#chat-msgs');
+                obj.removeClass('Black White').addClass(msg.player);
+                var d = new Date(msg.time);
+                obj.find('.time').text(d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes())
+                    .attr('title', d.toLocaleFormat ? d.toLocaleFormat('%a %d %b %Y, %H:%M:%S') : msg.time);
+                obj.find('.msg').text(msg.msg);
+            }
+            onResize();
+        }
+        else if ('chatid' in json)
+            $('#chat-token-' + json.chatid.token).attr('id', 'chat-' + json.chatid.id);
 
         processSocketQueue();
     };
@@ -796,7 +862,7 @@ $(function ()
     };
 
     if (main.hasClass('spectating'))
-        $('#undo,#commit,#roll,#double,#accept,#reject,#resign,#resign-confirm,#resign-cancel,#offer-rematch,#accept-rematch,#cancel-rematch').click(function () { return false; });
+        $('#undo,#commit,#roll,#double,#accept,#reject,#btn-resign,#resign-confirm,#resign-cancel,#offer-rematch,#accept-rematch,#cancel-rematch').click(function () { return false; });
     else
     {
         deselectPiece();
@@ -913,7 +979,7 @@ $(function ()
         $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
         $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function () { return $('#main.resigning:not(.state-Won)').length > 0; }, 'resigning'));
         $('#resign-cancel').click(function () { main.removeClass('resigning'); return false; });
-        $('#resign').click(function () { if (!$('#main.state-Won,#main.state-Waiting').length) main.addClass('resigning'); return false; });
+        $('#btn-resign').click(function () { if (!$('#main.state-Won,#main.state-Waiting').length) main.addClass('resigning'); return false; });
 
         $('#offer-rematch').click(getGeneralisedButtonClick(
             { rematch: 1 },
@@ -930,9 +996,29 @@ $(function ()
         $('#cancel-rematch').click(getGeneralisedButtonClick({ cancelRematch: 1 }, rematchAcceptable));
     }
 
-    $('#chat').click(function () { sidebar('chat'); return false; });
+    $('#btn-chat').click(function () { sidebar('chat'); return false; });
+    $('#btn-info').click(function () { sidebar('info'); return false; });
     $('#join').click(function () { return main.hasClass('state-Waiting') && main.hasClass('spectating'); });
-    $('#goto-next-game').click(function () { if (main.data('next-game')) window.location.href = main.data('next-game'); return false; });
+    $('#goto-next-game').click(function () { if (main.data('next-game')) window.location.href = main.data('next-game') + window.location.hash; return false; });
+
+    var chatToken = 0;
+    $('#chat-msg').keypress(function (e)
+    {
+        if (e.keyCode === 13)   // Enter
+        {
+            var msg = $('#chat-msg').val().trim();
+            if (msg.length)
+            {
+                var tk = chatToken++;
+                var obj = $('<div><div class="time"></div><div class="msg"></div></div>')
+                    .attr('id', 'chat-token-' + tk).addClass('chat-msg').addClass(playerIsWhite ? 'White' : 'Black').appendTo('#chat-msgs');
+                obj.find('.time').text('Sending...');
+                obj.find('.msg').text(msg);
+                socketSend({ chat: { msg: msg, token: tk } });
+            }
+            $('#chat-msg').val('');
+        }
+    });
 
     // Add extra CSS
     var cssWithSidebar = [];                    // CSS for when the sidebar is visible
@@ -950,10 +1036,8 @@ $(function ()
             var newSelectors = [];
             for (var i = 0; i < oldSelectors.length; i++)
             {
-                var result = oldSelectors[i].match(/^\s*#main\b(?!-)/);
-                if (!result)
-                    continue;
-                newSelectors.push("#main.with-sidebar" + oldSelectors[i].substr(result[0].length));
+                var result = oldSelectors[i].match(/^\s*body\b(?!-)/);
+                newSelectors.push(result ? 'body.hash-sidebar' + oldSelectors[i].substr(result[0].length) : 'body.hash-sidebar ' + oldSelectors[i]);
             }
 
             var props = rules[ruleix].style;
@@ -982,10 +1066,28 @@ $(function ()
         }
     }
     var cssText =
-        cssWithSidebar.join('') +
-        '@media screen and (min-aspect-ratio: 100/' + boardHeight + ') {' + cssInMedia.join('') + '}' +
-        '@media screen and (min-aspect-ratio: ' + (100 + sidebarWidth) + '/' + boardHeight + ') {' + cssInMediaWithSidebar.join('') + '}';
+        cssWithSidebar.join('\n') +
+        '\n\n@media screen and (min-aspect-ratio: 100/' + boardHeight + ') {\n    ' + cssInMedia.join('\n    ') + '}' +
+        '\n\n@media screen and (min-aspect-ratio: ' + (100 + sidebarWidth) + '/' + boardHeight + ') {\n    ' + cssInMediaWithSidebar.join('\n    ') + '}';
     $('#converted-css').text(cssText);
+
+    $('#chat-msgs-outer').scroll(function ()
+    {
+        var elem = this;
+        // In case this scrolling is triggered by a window resize, we need the window resize handled first.
+        setTimeout(function ()
+        {
+            if (preventCmoScrollEventUntil > Date.now())
+                return;
+            if (elem.scrollTop === lastCmoScrollPos)
+                return;
+
+            lastCmoScrollPos = elem.scrollTop;
+            elem.scrollTop = elem.scrollHeight;
+            chatLastScrolledBottom = elem.scrollTop === lastCmoScrollPos || elem.scrollTop === lastCmoScrollPos + 1;
+            elem.scrollTop = lastCmoScrollPos;
+        }, 1);
+    });
 
     $(window).resize(onResize);
     onResize();

@@ -76,17 +76,16 @@ body {
             display: none;
         }
 
-        #newgame > .row > label {
+        #newgame > .row > label, #main > #sidebar > #info > #info-match > #info-match-playto > .content, #main > #sidebar > #info > #info-match > #info-match-cube > .content {
             position: relative;
             display: inline-block;
-            padding: 1vw;
-            margin-right: 1vw;
             border-radius: 1vw;
             box-shadow: .1vw .1vw .1vw rgba(255, 255, 255, .3) inset, -.1vw -.1vw .1vw rgba(0, 0, 0, .2) inset;
         }
 
     #newgame > #newgame-playas > label {
         vertical-align: top;
+        padding: 1vw;
     }
 
         #newgame > #newgame-playas > label::after {
@@ -107,26 +106,29 @@ body {
             content: 'Play as black.';
         }
 
-    #newgame > .row > input:checked + label {
+    #newgame > .row > input:checked + label, #main > #sidebar > #info > #info-match > #info-match-playto > .content, #main > #sidebar > #info > #info-match > #info-match-cube > .content {
         background-image: linear-gradient(180deg, hsl(32, 50%, 45%), hsl(32, 50%, 55%));
         border-color: hsl(32, 50%, 80%);
         box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
     }
 
-    #newgame > #newgame-playto > label {
-        font-family: "Roboto Light", "Calibri";
+    #newgame > #newgame-playto > label, #main > #sidebar > #info > #info-match > #info-match-playto > .content {
+        font-family: "Roboto", "Calibri";
         font-size: 3.5vw;
-        padding: .2em .5em;
+        padding: .7vw 1.75vw;
+    }
+
+    #newgame > .row > label {
         margin-right: 1vw;
     }
 
-        #newgame > #newgame-playto > label::before {
-            content: 'Decide how many points to play to. The first player to reach this many points wins the match.';
-            line-height: 1.2em;
-        }
+    #newgame > #newgame-playto > label::before {
+        content: 'Decide how many points to play to. The first player to reach this many points wins the match.';
+        line-height: 1.2em;
+    }
 
-    #newgame > #newgame-cube > label {
-        padding: .2em .75em;
+    #newgame > #newgame-cube > label, #main > #sidebar > #info > #info-match > .section > .content {
+        padding: .4vw 1.5vw;
         font-size: 2vw;
     }
 
@@ -155,7 +157,7 @@ body {
     }
 
     #newgame > #newgame-visibility > label {
-        padding: .2em .75em;
+        padding: .3vw 1.1vw;
         font-size: 1.5vw;
         border-radius: .7vw;
     }
@@ -250,7 +252,7 @@ body {
 
         #waiting-games > li > .playto {
             float: right;
-            font-family: "Roboto Light", "Calibri";
+            font-family: "Roboto", "Calibri";
             font-size: 3.5vw;
             position: relative;
         }
@@ -267,27 +269,27 @@ body {
             transform: translate(-50%, -50%);
         }
 
-            #waiting-games > li > .doubling-cube.None::after {
+            #waiting-games > li > .doubling-cube.None::after, #main > #sidebar > #info > #info-match > .section.None > .content::after {
                 content: 'no doubling cube';
             }
 
-            #waiting-games > li > .doubling-cube.None::before {
-                content: 'This match will be played without the doubling cube.';
+            #waiting-games > li > .doubling-cube.None::before, #main > #sidebar > #info > #info-match > .section.None > .content::before {
+                content: 'This match is played without the doubling cube.';
             }
 
-            #waiting-games > li > .doubling-cube.Standard::after {
+            #waiting-games > li > .doubling-cube.Standard::after, #main > #sidebar > #info > #info-match > .section.Standard > .content::after {
                 content: 'standard doubling cube';
             }
 
-            #waiting-games > li > .doubling-cube.Standard::before {
-                content: 'Every game of this match will be played with the doubling cube.';
+            #waiting-games > li > .doubling-cube.Standard::before, #main > #sidebar > #info > #info-match > .section.Standard > .content::before {
+                content: 'Every game of this match is played with the doubling cube.';
             }
 
-            #waiting-games > li > .doubling-cube.Crawford::after {
+            #waiting-games > li > .doubling-cube.Crawford::after, #main > #sidebar > #info > #info-match > .section.Crawford > .content::after {
                 content: 'Crawford rule';
             }
 
-            #waiting-games > li > .doubling-cube.Crawford::before {
+            #waiting-games > li > .doubling-cube.Crawford::before, #main > #sidebar > #info > #info-match > .section.Crawford > .content::before {
                 content: 'Crawford rule: The doubling cube is used in all games except the first game in which either player has one less than the winning number of points.';
             }
 
@@ -514,8 +516,11 @@ body {
             margin-left: 4vw;
         }
 
+    /* Pieces */
     #main > #board > .piece, #main > #win > .piece, #main > #joinable > form > #join::before,
     #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
+    #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg::before,
+    #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece,
     #newgame > #newgame-playas > label::after, #waiting-games > li > .piece {
         width: 5vw;
         height: 5vw;
@@ -528,6 +533,8 @@ body {
         #main.player-white > #infobar > #info-player > .piece,
         #main.state-White > #infobar > #info-state > .piece,
         #main > #infobar > .infobox > .infobox-white > .piece,
+        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.White::before,
+        #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.white,
         #newgame > #newgame-playas > label.white::after,
         #waiting-games > li > .piece.white {
             background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
@@ -545,6 +552,8 @@ body {
         #main.player-black > #infobar > #info-player > .piece,
         #main.state-Black > #infobar > #info-state > .piece,
         #main > #infobar > .infobox > .infobox-black > .piece,
+        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.Black::before,
+        #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.black,
         #newgame > #newgame-playas > label.black::after,
         #waiting-games > li > .piece.black {
             background-image: linear-gradient(135deg, hsl(32, 50%, 5%), hsl(32, 50%, 15%));
@@ -849,7 +858,7 @@ body {
             position: absolute;
             left: 50%;
             top: 50%;
-            font-family: "Roboto Light", "Calibri";
+            font-family: "Roboto", "Calibri";
             font-size: 3.5vw;
             line-height: 3.75vw;
             height: 4vw;
@@ -1136,7 +1145,7 @@ body {
     }
 
         #main > #win > .points > .number {
-            font-family: "Roboto Light", "Calibri";
+            font-family: "Roboto", "Calibri";
             font-size: 4vw;
             line-height: 4vw;
             margin: 0;
@@ -1363,17 +1372,11 @@ body {
                 }
 
         #main > #infobar > #info-player::before {
-            left: 7vw;
             top: .5vw;
-            font-size: 1.3vw;
-            line-height: 1.3vw;
         }
 
         #main > #infobar > #info-player::after {
-            left: 7vw;
             bottom: .5vw;
-            font-size: 3.4vw;
-            line-height: 3.4vw;
         }
 
         #main > #infobar > #info-state::before {
@@ -1496,6 +1499,15 @@ body {
 
     #main:not(.spectating) > #infobar > #info-player::before {
         content: 'You are playing';
+        left: 7vw;
+        font-size: 1.3vw;
+        line-height: 1.3vw;
+    }
+
+    #main:not(.spectating) > #infobar > #info-player::after {
+        left: 7vw;
+        font-size: 3.4vw;
+        line-height: 3.4vw;
     }
 
     #main.player-white > #infobar > #info-player::after {
@@ -1616,7 +1628,7 @@ body {
         border-radius: 100%;
     }
 
-        #main:not(.state-Won) > #infobar > .mini-button:hover:not(:active):not(:focus), #main > #infobar > .mini-button:not(#resign):hover:not(:active):not(:focus) {
+        #main:not(.state-Won) > #infobar > .mini-button:hover:not(:active):not(:focus), #main > #infobar > .mini-button:not(#btn-resign):hover:not(:active):not(:focus) {
             box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
         }
 
@@ -1643,92 +1655,376 @@ body {
             background-repeat: no-repeat;
         }
 
-        #main > #infobar > .mini-button#chat, #main > #infobar > .mini-button#settings {
+        #main > #infobar > .mini-button#btn-chat, #main > #infobar > .mini-button#btn-settings {
             left: 94.75vw;
         }
 
-        #main > #infobar > .mini-button#resign, #main > #infobar > .mini-button#settings {
+        #main > #infobar > .mini-button#btn-resign, #main > #infobar > .mini-button#btn-settings {
             top: 4.75vw;
         }
 
-        #main > #infobar > .mini-button#help::after {
+        #main > #infobar > .mini-button#btn-info::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
         }
 
-        #main > #infobar > .mini-button#chat::after {
+        #main > #infobar > .mini-button#btn-chat::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
         }
 
-        #main > #infobar > .mini-button#resign::after {
+        #main > #infobar > .mini-button#btn-resign::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
         }
 
-        #main > #infobar > .mini-button#settings::after {
+        #main > #infobar > .mini-button#btn-settings::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
         }
 
-        #main > #infobar > .mini-button#help::before {
-            content: 'Rules and help';
+        #main > #infobar > .mini-button#btn-info::before {
+            content: 'Match info, rules and help';
         }
 
-        #main > #infobar > .mini-button#help:hover::after, #main > #infobar > .mini-button#help:active::after, #main > #infobar > .mini-button#help:focus::after {
+        #main > #infobar > .mini-button#btn-info:hover::after, #main > #infobar > .mini-button#btn-info:active::after, #main > #infobar > .mini-button#btn-info:focus::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
         }
 
-        #main > #infobar > .mini-button#chat::before {
+        #main > #infobar > .mini-button#btn-chat::before {
             content: 'Chat';
         }
 
-        #main > #infobar > .mini-button#chat:hover::after, #main > #infobar > .mini-button#chat:active::after, #main > #infobar > .mini-button#chat:focus::after {
+        #main > #infobar > .mini-button#btn-chat:hover::after, #main > #infobar > .mini-button#btn-chat:active::after, #main > #infobar > .mini-button#btn-chat:focus::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
         }
 
-        #main > #infobar > .mini-button#settings::before {
+        #main > #infobar > .mini-button#btn-settings::before {
             content: 'Settings';
         }
 
-        #main > #infobar > .mini-button#settings:hover::after, #main > #infobar > .mini-button#settings:active::after, #main > #infobar > .mini-button#settings:focus::after {
+        #main > #infobar > .mini-button#btn-settings:hover::after, #main > #infobar > .mini-button#btn-settings:active::after, #main > #infobar > .mini-button#btn-settings:focus::after {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
         }
 
-    #main:not(.state-Won):not(.state-Waiting):not(.spectating) > #infobar > .mini-button#resign::before {
+    #main:not(.state-Won):not(.state-Waiting):not(.spectating) > #infobar > .mini-button#btn-resign::before {
         content: 'Resign this game';
     }
 
-    #main:not(.state-Won) > #infobar > .mini-button#resign:hover::after, #main:not(.state-Won) > #infobar > .mini-button#resign:active::after, #main:not(.state-Won) > #infobar > .mini-button#resign:focus::after {
+    #main:not(.state-Won) > #infobar > .mini-button#btn-resign:hover::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:active::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:focus::after {
         background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
     }
 
-    #main.state-Waiting > #infobar > .mini-button#resign,
-    #main.state-Won > #infobar > .mini-button#resign,
-    #main.spectating > #infobar > .mini-button#resign {
+    #main.state-Waiting > #infobar > .mini-button#btn-resign,
+    #main.state-Won > #infobar > .mini-button#btn-resign,
+    #main.spectating > #infobar > .mini-button#btn-resign {
         opacity: .2;
     }
 
-    #main.with-sidebar {
-        width: 130vw;
+/* Sidebar */
+body.hash-sidebar > #main {
+    width: 130vw;
+}
+
+    body.hash-sidebar > #main > .dialog {
+        right: 45vw;
     }
 
-        #main.with-sidebar > .dialog {
-            right: 45vw;
-        }
+#main > #sidebar {
+    left: 100vw;
+    top: 0;
+    bottom: 0;
+    right: 0;
+}
 
-        #main.with-sidebar > #sidebar {
-            left: 100vw;
-            top: 0;
+    #main > #sidebar > .sidebar-tab {
+        left: 0;
+        right: 2vw;
+        top: 5vw;
+        bottom: 2vw;
+        display: none;
+    }
+
+    #main > #sidebar::before {
+        position: absolute;
+        font-size: 5vw;
+        color: hsl(32, 50%, 75%);
+        text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
+        font-weight: bold;
+        left: 0;
+        top: 0;
+    }
+
+/* Chat */
+body.hash-chat > #main > #sidebar > #chat {
+    display: block;
+}
+
+body.hash-chat > #main > #sidebar::before {
+    content: 'Chat';
+}
+
+#main > #sidebar > #chat > #chat-msgs-outer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: hsl(32, 50%, 75%);
+    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+    overflow: auto;
+}
+
+    #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs {
+        position: absolute;
+        left: 0;
+        right: 0;
+    }
+
+        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs.few {
             bottom: 0;
-            right: 0;
         }
 
-            #main.with-sidebar > #sidebar > #sidebar-chat {
-                left: 0vw;
-                right: 2vw;
-                top: 2vw;
-                bottom: 2vw;
-                background: hsl(32, 50%, 90%);
-                box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs.many {
+            top: 0;
+        }
+
+        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg {
+            position: relative;
+            padding: .1vw .5vw;
+            overflow: auto;
+        }
+
+            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg::before {
+                content: '';
+                float: left;
+                -moz-transform: scale(.5);
+                -ms-transform: scale(.5);
+                -o-transform: scale(.5);
+                -webkit-transform: scale(.5);
+                transform: scale(.5);
+                -moz-transform-origin: 0 0;
+                -ms-transform-origin: 0 0;
+                -o-transform-origin: 0 0;
+                -webkit-transform-origin: 0 0;
+                transform-origin: 0 0;
+                margin: 0.2vw -1.5vw -2.3vw 0;
             }
 
+            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg > .time {
+                float: right;
+                color: hsl(32, 50%, 40%);
+                margin-left: .5em;
+                padding-top: .2em;
+                font-family: "Roboto", "Calibri";
+                font-size: .7em;
+            }
+
+            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg > .msg {
+                margin-left: 3.5vw;
+            }
+
+#main > #sidebar > #chat > label {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2.6vw;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#main > #sidebar > #chat > #chat-msg {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-size: 1.75vw;
+    line-height: 2vw;
+    background: hsl(32,50%,75%);
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: .3vw;
+    width: 100%;
+    border: none;
+    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+    cursor: text;
+}
+
+    #main > #sidebar > #chat > #chat-msg:focus {
+        background: hsl(32,50%,95%);
+    }
+
+#main:not(.spectating) > #sidebar > #chat > #chat-msgs-outer {
+    bottom: 3.5vw;
+}
+
+#main.spectating > #sidebar > #chat > #chat-msgs-outer {
+    bottom: 0;
+}
+
+#main.spectating > #sidebar > #chat > #chat-msg, #main.spectating > #sidebar > #chat > label {
+    display: none;
+}
+
+/* Match info, help and rules */
+body.hash-info > #main > #sidebar > #info {
+    display: block;
+}
+
+#main > #sidebar > #info {
+    background: hsl(32, 50%, 75%);
+    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+    padding: 1vw 1.5vw;
+    overflow: auto;
+}
+
+body.hash-info > #main > #sidebar::before {
+    content: 'Match info';
+}
+
+#main:not(.in-match) > #sidebar > #info > #info-match > .section {
+    display: none;
+}
+
+#main:not(.in-match) > #sidebar > #info > #info-match::after {
+    content: 'This game is not part of a match.';
+}
+
+#main > #sidebar > #info > .info-tab > .section {
+    position: relative;
+    text-align: right;
+}
+
+    #main > #sidebar > #info > .info-tab > .section::before, #main:not(.in-match) > #sidebar > #info > #info-match::after {
+        text-align: left;
+        display: block;
+        font-size: 3vw;
+        color: hsl(32, 50%, 30%);
+        text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
+        font-weight: bold;
+    }
+
+    #main > #sidebar > #info > .info-tab > .section:not(:first-child)::before {
+        margin-top: 2vw;
+    }
+
+    #main > #sidebar > #info > .info-tab > .section > .content {
+        display: inline-block;
+    }
+
+        #main > #sidebar > #info > .info-tab > .section > .content::before {
+            top: 3.3vw;
+            right: 0;
+            width: 20vw;
+        }
+
+#main > #sidebar > #info > #info-match > #info-match-playto::before {
+    content: 'Playing to';
+}
+
+#main > #sidebar > #info > #info-match > #info-match-playto > .content::before {
+    content: 'Indicates how many points the match is played to. The first player to reach this many points wins the match.';
+    top: 6.1vw;
+}
+
+#main > #sidebar > #info > #info-match > #info-match-cube::before {
+    content: 'Doubling cube';
+}
+
+#main > #sidebar > #info > #info-match > #info-match-history::before {
+    content: 'Match history';
+}
+
+#main > #sidebar > #info > #info-match > #info-match-history {
+    counter-reset: section;
+}
+
+    #main > #sidebar > #info > #info-match > #info-match-history > hr {
+        border: none;
+        border-top: 2px solid hsl(32, 50%, 30%);
+    }
+
+    #main > #sidebar > #info > #info-match > #info-match-history > a.game[href] {
+        cursor: pointer;
+    }
+
+    #main > #sidebar > #info > #info-match > #info-match-history > a.game:not([href]) {
+        background: hsl(32, 50%, 60%);
+    }
+
+    #main > #sidebar > #info > #info-match > #info-match-history > .game {
+        display: block;
+        clear: both;
+        background: hsl(32, 50%, 80%);
+        padding: .5vw 1vw;
+        margin-bottom: .5vw;
+        position: relative;
+        counter-increment: section;
+        text-align: center;
+        color: black;
+        text-decoration: none;
+        border-radius: 2vw;
+    }
+
+        #main > #sidebar > #info > #info-match > #info-match-history > .game::before, #main > #sidebar > #info > #info-match > #info-match-history > .game::after {
+            display: block;
+        }
+
+        #main > #sidebar > #info > #info-match > #info-match-history > .game::before {
+            content: 'Game ' counter(section) '';
+            font-weight: bold;
+            font-size: 1.4vw;
+        }
+
+        #main > #sidebar > #info > #info-match > #info-match-history > .game.totals::before {
+            content: 'Score';
+            font-weight: bold;
+            font-size: 2.8vw;
+        }
+
+        #main > #sidebar > #info > #info-match > #info-match-history > .game.totals::after {
+        }
+
+        #main > #sidebar > #info > #info-match > #info-match-history > .game.cube::after {
+            content: '(with cube)';
+            font-size: 1.4vw;
+        }
+
+        #main > #sidebar > #info > #info-match > #info-match-history > .game.no-cube::after {
+            content: '(no cube)';
+            font-size: 1.4vw;
+        }
+
+        #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece {
+            position: absolute;
+            top: 50%;
+            -moz-transform: translateY(-50%) scale(.7);
+            -ms-transform: translateY(-50%) scale(.7);
+            -o-transform: translateY(-50%) scale(.7);
+            -webkit-transform: translateY(-50%) scale(.7);
+            transform: translateY(-50%) scale(.7);
+        }
+
+            #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece > .number {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                -moz-transform: translate(-50%,-50%);
+                -ms-transform: translate(-50%,-50%);
+                -o-transform: translate(-50%,-50%);
+                -webkit-transform: translate(-50%,-50%);
+                transform: translate(-50%,-50%);
+                font-family: "Roboto", "Calibri";
+                font-size: 3vw;
+            }
+
+            #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.white {
+                left: 0;
+                color: black;
+            }
+
+            #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.black {
+                right: 0;
+                color: white;
+            }
+
+/* Buttons */
 button {
     position: relative;
     background-color: hsl(32, 52%, 34.3%);
@@ -1765,6 +2061,7 @@ button {
         background-image: linear-gradient(hsl(32, 52%, 32%), hsl(32, 52%, 54%));
     }
 
+/* Shortcuts */
 .shortcut {
     opacity: 0;
     pointer-events: none;
@@ -1790,7 +2087,7 @@ body.show-shortcuts .shortcut {
 }
 
 /* Tooltips */
-#main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before,
+#main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before, #main > #sidebar > #info > #info-match > .section > .content::before,
 #newgame > .row > label::before, #waiting-games > li > .doubling-cube::before, #waiting-games > li > .playto::before, #waiting-games > li > .piece::before {
     opacity: 0;
     pointer-events: none;
@@ -1810,7 +2107,7 @@ body.show-shortcuts .shortcut {
     z-index: 1;
 }
 
-#main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before,
+#main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before, #main > #sidebar > #info > #info-match > .section > .content:hover::before,
 #newgame > .row > label:hover::before, #waiting-games > li > .doubling-cube:hover::before, #waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before {
     opacity: 1;
 }

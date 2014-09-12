@@ -22,6 +22,7 @@ namespace LiBackgammon
 
         public DbSet<Game> Games { get; set; }
         public DbSet<Match> Matches { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
         public IQueryable<TElement> Query<TEntity, TElement>(TEntity entity, Expression<Func<TEntity, ICollection<TElement>>> navigationProperty)
             where TElement : class

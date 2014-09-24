@@ -5,8 +5,11 @@
     src: local('Lato Black'), local('Lato-Black'), url(http://fonts.gstatic.com/s/lato/v10/BVtM30trf7q_jfqYeHfjtA.woff) format('woff');
 }
 
+body, select, input, textarea {
+    font-family: 'Candara', 'Calibri', 'Tahoma', 'Verdana', 'Arial', sans-serif;
+}
+
 body {
-    font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
     margin: 0;
     padding: 0;
     background: hsl(27, 35%, 50%);
@@ -113,7 +116,7 @@ body {
     }
 
     #newgame > #newgame-playto > label, #main > #sidebar > #info > #info-match > #info-match-playto > .content {
-        font-family: "Roboto", "Calibri";
+        font-family: 'Roboto', 'Calibri';
         font-size: 3.5vw;
         padding: .7vw 1.75vw;
     }
@@ -252,7 +255,7 @@ body {
 
         #waiting-games > li > .playto {
             float: right;
-            font-family: "Roboto", "Calibri";
+            font-family: 'Roboto', 'Calibri';
             font-size: 3.5vw;
             position: relative;
         }
@@ -294,7 +297,7 @@ body {
             }
 
         #waiting-games > li > .playto::before {
-            font-family: "Candara", "Calibri", "Tahoma", "Verdana", "Arial", sans-serif;
+            font-family: 'Candara', 'Calibri', 'Tahoma', 'Verdana', 'Arial', sans-serif;
             content: 'The number of points to play to. The first player to reach this many points wins the match.';
             width: 15vw;
             top: 100%;
@@ -858,7 +861,7 @@ body {
             position: absolute;
             left: 50%;
             top: 50%;
-            font-family: "Roboto", "Calibri";
+            font-family: 'Roboto', 'Calibri';
             font-size: 3.5vw;
             line-height: 3.75vw;
             height: 4vw;
@@ -905,7 +908,7 @@ body {
         height: 4vw;
         top: 26vw;
         width: 11vw;
-        pointer-events: none;
+        visibility: hidden;
         opacity: 0;
         -moz-transition: opacity ease-in-out .2s;
         -o-transition: opacity ease-in-out .2s;
@@ -985,6 +988,8 @@ body {
     #main.state-ToConfirmDouble:not(.resigning) > #board > #accept,
     #main.state-ToConfirmDouble:not(.resigning) > #board > #reject {
         opacity: .5;
+        visibility: visible;
+        pointer-events: none;
     }
 
     #main.undoable:not(.resigning) > #board > #undo,
@@ -999,11 +1004,12 @@ body {
     #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning) > #board > #reject,
     #main.resigning > #board > #resign-confirm,
     #main.resigning > #board > #resign-cancel {
-        pointer-events: all;
         opacity: 1;
+        visibility: visible;
+        pointer-events: all;
     }
 
-    #main > #board > #info {
+    #main > #board > #info-line {
         pointer-events: none;
         opacity: 0;
         -moz-transition: opacity ease-in-out .5s, transform linear 2s;
@@ -1027,7 +1033,7 @@ body {
         text-shadow: .1vw .1vw .1vw hsl(32, 50%, 80%);
     }
 
-    #main.auto-0 > #board > #info, #main.auto-1 > #board > #info, #main.resigning > #board > #info {
+    #main.auto-0 > #board > #info-line, #main.auto-1 > #board > #info-line, #main.resigning > #board > #info-line {
         opacity: 1;
         -moz-transform: translateY(-50%) scale(1.5);
         -ms-transform: translateY(-50%) scale(1.5);
@@ -1036,24 +1042,24 @@ body {
         transform: translateY(-50%) scale(1.5);
     }
 
-        #main.auto-0 > #board > #info::before {
+        #main.auto-0 > #board > #info-line::before {
             content: 'No moves';
         }
 
-        #main.auto-1 > #board > #info::before {
+        #main.auto-1 > #board > #info-line::before {
             content: 'Forced move';
         }
 
-        #main.resigning > #board > #info::before {
+        #main.resigning > #board > #info-line::before {
             content: 'Resign?';
         }
 
-    #main.state-ToConfirmDouble > #board > #info {
+    #main.state-ToConfirmDouble > #board > #info-line {
         left: 47vw;
         opacity: 1;
     }
 
-        #main.state-ToConfirmDouble > #board > #info::before {
+        #main.state-ToConfirmDouble > #board > #info-line::before {
             content: 'Double?';
         }
 
@@ -1077,7 +1083,7 @@ body {
 
     #main > .dialog {
         opacity: 0;
-        pointer-events: none;
+        visibility: hidden;
         top: 36vw;
         left: 15vw;
         right: 15vw;
@@ -1145,7 +1151,7 @@ body {
     }
 
         #main > #win > .points > .number {
-            font-family: "Roboto", "Calibri";
+            font-family: 'Roboto', 'Calibri';
             font-size: 4vw;
             line-height: 4vw;
             margin: 0;
@@ -1219,7 +1225,7 @@ body {
     #main.state-Waiting.spectating > #joinable,
     #main.state-Won > #win {
         opacity: 1;
-        pointer-events: all;
+        visibility: visible;
         -moz-transform: translateY(-50%);
         -ms-transform: translateY(-50%);
         -o-transform: translateY(-50%);
@@ -1457,7 +1463,7 @@ body {
             width: 30vw;
         }
 
-        #main > #infobar > .infobox#info-match {
+        #main > #infobar > .infobox#info-match-score {
             left: 90vw;
             width: 30vw;
         }
@@ -1477,7 +1483,7 @@ body {
         width: 22vw;
     }
 
-    #main.in-match > #infobar > .infobox#info-match {
+    #main.in-match > #infobar > .infobox#info-match-score {
         left: 66vw;
         width: 22vw;
     }
@@ -1584,7 +1590,7 @@ body {
         content: 'wins';
     }
 
-    #main > #infobar > #info-pips::before, #main > #infobar > #info-match::before {
+    #main > #infobar > #info-pips::before, #main > #infobar > #info-match-score::before {
         width: 16vw;
         top: 6.1vw;
         left: 50%;
@@ -1605,7 +1611,7 @@ body {
         content: 'Shows the sum of how many steps all of your pieces are away from home.';
     }
 
-    #main > #infobar > #info-match::before {
+    #main > #infobar > #info-match-score::before {
         content: 'Shows your score within the current match.';
     }
 
@@ -1614,7 +1620,7 @@ body {
         font-size: 2vw;
     }
 
-    #main > #infobar > #info-match > .infobox-inner::after {
+    #main > #infobar > #info-match-score > .infobox-inner::after {
         content: 'match';
         font-size: 1.3vw;
     }
@@ -1738,10 +1744,15 @@ body.hash-sidebar > #main {
         right: 2vw;
         top: 5vw;
         bottom: 2vw;
+        position: absolute;
+        background: hsl(32, 50%, 75%);
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+        overflow: auto;
+        padding: 1vw 1.5vw;
         display: none;
     }
 
-    #main > #sidebar::before {
+    #main > #sidebar::after {
         position: absolute;
         font-size: 5vw;
         color: hsl(32, 50%, 75%);
@@ -1751,104 +1762,139 @@ body.hash-sidebar > #main {
         top: 0;
     }
 
-/* Chat */
-body.hash-chat > #main > #sidebar > #chat {
+    #main > #sidebar > .sidebar-tab > .section, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section {
+        position: relative;
+    }
+
+        #main > #sidebar > .sidebar-tab > .section::before, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section::before, #main:not(.in-match) > #sidebar > #info > #info-match::after {
+            text-align: left;
+            display: block;
+            font-size: 2.5vw;
+            color: hsl(32, 50%, 30%);
+            text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
+            font-weight: bold;
+        }
+
+        #main > #sidebar > .sidebar-tab > .section:not(:first-child)::before, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section:not(:first-child)::before {
+            margin-top: 2vw;
+        }
+
+        #main > #sidebar > .sidebar-tab > .section > select, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section > select {
+            width: 22vw;
+            vertical-align: middle;
+        }
+
+body.hash-nohelpers #main > #board > .automove, body.hash-nohelpers #main > #board > .automove.home {
+    display: none;
+}
+
+body.hash-chat > #main > #sidebar > #chat,
+body.hash-info > #main > #sidebar > #info,
+body.hash-settings > #main > #sidebar > #settings,
+body.hash-translate > #main > #sidebar > #translate,
+body.hash-translating > #main > #sidebar > #translating {
     display: block;
 }
 
-body.hash-chat > #main > #sidebar::before {
+/* Chat */
+body.hash-chat > #main > #sidebar::after {
     content: 'Chat';
 }
 
-#main > #sidebar > #chat > #chat-msgs-outer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    background: hsl(32, 50%, 75%);
-    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
-    overflow: auto;
+#main > #sidebar > #chat {
+    background: none;
+    box-shadow: none;
 }
 
-    #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs {
+    #main > #sidebar > #chat > #chat-msgs-outer {
         position: absolute;
         left: 0;
         right: 0;
+        top: 0;
+        background: hsl(32, 50%, 75%);
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+        overflow: auto;
     }
 
-        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs.few {
-            bottom: 0;
+        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs {
+            position: absolute;
+            left: 0;
+            right: 0;
         }
 
-        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs.many {
-            top: 0;
-        }
-
-        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg {
-            position: relative;
-            padding: .1vw .5vw;
-            overflow: auto;
-        }
-
-            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg::before {
-                content: '';
-                float: left;
-                -moz-transform: scale(.5);
-                -ms-transform: scale(.5);
-                -o-transform: scale(.5);
-                -webkit-transform: scale(.5);
-                transform: scale(.5);
-                -moz-transform-origin: 0 0;
-                -ms-transform-origin: 0 0;
-                -o-transform-origin: 0 0;
-                -webkit-transform-origin: 0 0;
-                transform-origin: 0 0;
-                margin: 0.2vw -1.5vw -2.3vw 0;
+            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs.few {
+                bottom: 0;
             }
 
-            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg > .time {
-                float: right;
-                color: hsl(32, 50%, 40%);
-                margin-left: .5em;
-                padding-top: .2em;
-                font-family: "Roboto", "Calibri";
-                font-size: .7em;
+            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs.many {
+                top: 0;
             }
 
-            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg > .msg {
-                margin-left: 3.5vw;
+            #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg {
+                position: relative;
+                padding: .1vw .5vw;
+                overflow: auto;
             }
 
-#main > #sidebar > #chat > label {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 2.6vw;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
+                #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg::before {
+                    content: '';
+                    float: left;
+                    -moz-transform: scale(.5);
+                    -ms-transform: scale(.5);
+                    -o-transform: scale(.5);
+                    -webkit-transform: scale(.5);
+                    transform: scale(.5);
+                    -moz-transform-origin: 0 0;
+                    -ms-transform-origin: 0 0;
+                    -o-transform-origin: 0 0;
+                    -webkit-transform-origin: 0 0;
+                    transform-origin: 0 0;
+                    margin: 0.2vw -1.5vw -2.3vw 0;
+                }
 
-#main > #sidebar > #chat > #chat-msg {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    font-size: 1.75vw;
-    line-height: 2vw;
-    background: hsl(32,50%,75%);
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: .3vw;
-    width: 100%;
-    border: none;
-    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
-    cursor: text;
-}
+                #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg > .time {
+                    float: right;
+                    color: hsl(32, 50%, 40%);
+                    margin-left: .5em;
+                    padding-top: .2em;
+                    font-family: 'Roboto', 'Calibri';
+                    font-size: .7em;
+                }
 
-    #main > #sidebar > #chat > #chat-msg:focus {
-        background: hsl(32,50%,95%);
+                #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg > .msg {
+                    margin-left: 3.5vw;
+                }
+
+    #main > #sidebar > #chat > label {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 2.6vw;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
     }
+
+    #main > #sidebar > #chat > #chat-msg {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        font-size: 1.75vw;
+        line-height: 2vw;
+        background: hsl(32,50%,75%);
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        padding: .3vw;
+        width: 100%;
+        border: none;
+        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+        cursor: text;
+    }
+
+        #main > #sidebar > #chat > #chat-msg:focus {
+            background: hsl(32,50%,95%);
+        }
 
 #main:not(.spectating) > #sidebar > #chat > #chat-msgs-outer {
     bottom: 3.5vw;
@@ -1863,18 +1909,7 @@ body.hash-chat > #main > #sidebar::before {
 }
 
 /* Match info, help and rules */
-body.hash-info > #main > #sidebar > #info {
-    display: block;
-}
-
-#main > #sidebar > #info {
-    background: hsl(32, 50%, 75%);
-    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
-    padding: 1vw 1.5vw;
-    overflow: auto;
-}
-
-body.hash-info > #main > #sidebar::before {
+body.hash-info > #main > #sidebar::after {
     content: 'Match info';
 }
 
@@ -1886,29 +1921,15 @@ body.hash-info > #main > #sidebar::before {
     content: 'This game is not part of a match.';
 }
 
-#main > #sidebar > #info > .info-tab > .section {
-    position: relative;
+#main > #sidebar > #info > .sidebar-inner-tab > .section {
     text-align: right;
 }
 
-    #main > #sidebar > #info > .info-tab > .section::before, #main:not(.in-match) > #sidebar > #info > #info-match::after {
-        text-align: left;
-        display: block;
-        font-size: 3vw;
-        color: hsl(32, 50%, 30%);
-        text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
-        font-weight: bold;
-    }
-
-    #main > #sidebar > #info > .info-tab > .section:not(:first-child)::before {
-        margin-top: 2vw;
-    }
-
-    #main > #sidebar > #info > .info-tab > .section > .content {
+    #main > #sidebar > #info > .sidebar-inner-tab > .section > .content {
         display: inline-block;
     }
 
-        #main > #sidebar > #info > .info-tab > .section > .content::before {
+        #main > #sidebar > #info > .sidebar-inner-tab > .section > .content::before {
             top: 3.3vw;
             right: 0;
             width: 20vw;
@@ -1967,28 +1988,25 @@ body.hash-info > #main > #sidebar::before {
         }
 
         #main > #sidebar > #info > #info-match > #info-match-history > .game::before {
-            content: 'Game ' counter(section) '';
+            content: '{"text":"Game {n}","n":"counter(section)"}';
             font-weight: bold;
-            font-size: 1.4vw;
+            font-size: 1.7vw;
         }
 
         #main > #sidebar > #info > #info-match > #info-match-history > .game.totals::before {
             content: 'Score';
             font-weight: bold;
-            font-size: 2.8vw;
-        }
-
-        #main > #sidebar > #info > #info-match > #info-match-history > .game.totals::after {
+            font-size: 2.9vw;
         }
 
         #main > #sidebar > #info > #info-match > #info-match-history > .game.cube::after {
             content: '(with cube)';
-            font-size: 1.4vw;
+            font-size: 1.2vw;
         }
 
         #main > #sidebar > #info > #info-match > #info-match-history > .game.no-cube::after {
             content: '(no cube)';
-            font-size: 1.4vw;
+            font-size: 1.2vw;
         }
 
         #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece {
@@ -2010,7 +2028,7 @@ body.hash-info > #main > #sidebar::before {
                 -o-transform: translate(-50%,-50%);
                 -webkit-transform: translate(-50%,-50%);
                 transform: translate(-50%,-50%);
-                font-family: "Roboto", "Calibri";
+                font-family: 'Roboto', 'Calibri';
                 font-size: 3vw;
             }
 
@@ -2024,7 +2042,141 @@ body.hash-info > #main > #sidebar::before {
                 color: white;
             }
 
-/* Buttons */
+/* Settings */
+body.hash-settings > #main > #sidebar::after {
+    content: 'Settings';
+}
+
+#main > #sidebar > #settings > #settings-style::before {
+    content: 'Style';
+}
+
+#main > #sidebar > #settings > #settings-language::before {
+    content: 'Language';
+}
+
+#main > #sidebar > #settings > #settings-helpers::before {
+    content: 'Helpers';
+}
+
+#main > #sidebar > #settings > .section > label {
+    position: relative;
+}
+
+#main > #sidebar > #settings > #settings-helpers > input {
+    display: none;
+}
+
+#main > #sidebar > #settings > #settings-helpers > label::before {
+    content: '';
+    display: inline-block;
+    background: hsl(32, 50%, 90%);
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    margin-right: .5em;
+    box-shadow: .1vw .1vw .1vw rgba(255, 255, 255, .7) inset, -.1vw -.1vw .1vw rgba(0, 0, 0, .5) inset;
+}
+
+#main > #sidebar > #settings > #settings-helpers > label::after {
+    content: 'Show multi-move helpers';
+    vertical-align: middle;
+}
+
+#main > #sidebar > #settings > #settings-helpers > input:checked + label::before {
+    content: '✓';
+    background: hsl(32,50%,50%);
+    line-height: 1em;
+    box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
+}
+
+#main > #sidebar > #settings > .section > button {
+    width: 2vw;
+    height: 2vw;
+    display: inline-block;
+    padding: 0;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align: middle;
+    margin-left: 1vw;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="3" height="3"><path style="fill:hsl(32, 50%, 90%)" d="M 1 0 2 0 2 1 3 1 3 2 2 2 2 3 1 3 1 2 0 2 0 1 1 1 z"/></svg>'), linear-gradient(hsl(32, 52%, 44%), hsl(32, 52%, 22%));
+    background-size: 70% 70%, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+    #main > #sidebar > #settings > .section > button::before {
+        content: 'Become a translator!';
+        right: 0;
+        top: 2.2vw;
+    }
+
+/* Translate */
+body.hash-translate > #main > #sidebar::after, body.hash-translating > #main > #sidebar::after {
+    content: 'Translate';
+}
+
+#main > #sidebar > #translate > #translate-existing::before {
+    content: 'Edit a translation';
+}
+
+#main > #sidebar > #translate > .section > button {
+    width: 2vw;
+    height: 2vw;
+    display: inline-block;
+    padding: 0;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align: middle;
+    margin-left: 1vw;
+    position: relative;
+}
+
+    #main > #sidebar > #translate > .section > button::before {
+        content: '';
+        display: block;
+        position: absolute;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="3" height="4"><path style="fill:hsl(32, 50%, 90%)" d="M 0 0 3 2 0 4 z"/></svg>');
+        width: 54%;
+        height: 72%;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        left: 30%;
+        top: 14%;
+    }
+
+    #main > #sidebar > #translate > .section > button#translate-create {
+        display: block;
+        margin: .5em 0 0 auto;
+    }
+
+#main > #sidebar > #translate > #translate-new::before {
+    content: 'Start a new translation';
+}
+
+#main > #sidebar > #translate > #translate-new > label {
+    display: block;
+    margin-top: .5em;
+}
+
+#main > #sidebar > #translate > #translate-new > #translate-code-label::before {
+    content: 'ISO language code (e.g.\a0 fr):';
+}
+
+#main > #sidebar > #translate > #translate-new > #translate-name-label::before {
+    content: 'Native language name (e.g.\a0 Français):';
+}
+
+#main > #sidebar > #translate > #translate-new > input {
+    width: 25vw;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Buttons and other UI elements */
 button {
     position: relative;
     background-color: hsl(32, 52%, 34.3%);
@@ -2045,26 +2197,30 @@ button {
     button:hover, button:active, button:focus {
         background-color: hsl(32, 52%, 44.3%);
         background-image: linear-gradient(hsl(32, 52%, 54%), hsl(32, 52%, 32%));
-        border: .15vw solid;
         border-color: hsl(32, 52%, 40%) hsl(32, 52%, 30%) hsl(32, 52%, 30%) hsl(32, 52%, 40%);
-        border-radius: .6vw;
         box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 58%) inset;
         color: white;
-        font: inherit;
-        text-align: center;
         text-shadow: -.1vw -.1vw 0 hsl(32, 52%, 34.3%);
-        text-transform: uppercase;
-        white-space: nowrap;
     }
 
     button:active {
         background-image: linear-gradient(hsl(32, 52%, 32%), hsl(32, 52%, 54%));
     }
 
+select, input {
+    background: hsl(32, 50%, 90%);
+    border: none;
+    padding: .3vw .7vw;
+}
+
+input {
+    cursor: text;
+}
+
 /* Shortcuts */
 .shortcut {
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
     -moz-transition: opacity .5s ease-in-out;
     -o-transition: opacity .5s ease-in-out;
     -webkit-transition: opacity .5s ease-in-out;
@@ -2084,13 +2240,17 @@ button {
 
 body.show-shortcuts .shortcut {
     opacity: 1;
+    visibility: visible;
 }
 
 /* Tooltips */
-#main > #infobar > #info-pips::before, #main > #infobar > #info-match::before, #main > #infobar > .mini-button::before, #main > #sidebar > #info > #info-match > .section > .content::before,
-#newgame > .row > label::before, #waiting-games > li > .doubling-cube::before, #waiting-games > li > .playto::before, #waiting-games > li > .piece::before {
+#main > #infobar > #info-pips::before, #main > #infobar > #info-match-score::before,
+#main > #infobar > .mini-button::before, #main > #sidebar > #info > #info-match > .section > .content::before,
+#main > #sidebar > #settings > .section > button::before,
+#newgame > .row > label::before, #waiting-games > li > .doubling-cube::before,
+#waiting-games > li > .playto::before, #waiting-games > li > .piece::before {
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
     -moz-transition: opacity .1s ease-in-out;
     -o-transition: opacity .1s ease-in-out;
     -webkit-transition: opacity .1s ease-in-out;
@@ -2104,12 +2264,18 @@ body.show-shortcuts .shortcut {
     border-radius: .5vw;
     box-shadow: .1vw .1vw .2vw rgba(0, 0, 0, .5);
     text-align: center;
+    text-shadow: none;
+    text-transform: none;
     z-index: 1;
 }
 
-#main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match:hover::before, #main > #infobar > .mini-button:hover::before, #main > #sidebar > #info > #info-match > .section > .content:hover::before,
-#newgame > .row > label:hover::before, #waiting-games > li > .doubling-cube:hover::before, #waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before {
+#main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match-score:hover::before,
+#main > #infobar > .mini-button:hover::before, #main > #sidebar > #info > #info-match > .section > .content:hover::before,
+#main > #sidebar > #settings > .section > button:hover::before,
+#newgame > .row > label:hover::before, #waiting-games > li > .doubling-cube:hover::before,
+#waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before {
     opacity: 1;
+    visibility: visible;
 }
 
 @keyframes hypo-blink {

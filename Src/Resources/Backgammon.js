@@ -1,4 +1,4 @@
-$(function ()
+﻿$(function ()
 {
     var body = $(document.body);
 
@@ -55,5 +55,58 @@ $(function ()
     $(window)
         .on('blur', function () { body.removeClass('show-shortcuts'); })
         .on('hashchange', hashChange);
+
     hashChange();
+
+    // Add extra CSS
+    var contentCss = [];                            // User-visible text (“content” property)
+    for (var ss = 0; ss < document.styleSheets.length; ss++)
+    {
+        var rules = document.styleSheets[ss].cssRules || document.styleSheets[ss].rules;
+        for (var ruleix = 0; ruleix < rules.length; ruleix++)
+        {
+            if (!rules[ruleix].selectorText)
+                continue;
+            var props = rules[ruleix].style;
+            for (var propix = 0; propix < props.length; propix++)
+            {
+                var propName = props[propix].replace(/-value$/, '');
+                var val = props.getPropertyValue(propName);
+                if (propName === 'content')
+                {
+                    if (val[0] === "'" || val[0] === '"')
+                        val = val.substr(1, val.length - 2).replace(/\\([0-9a-f]{1,6} ?|[\\'"])/g, function (_, m) { return m.length === 1 ? m : String.fromCharCode(parseInt(m.substr(1, m.length - 2), 16)); });
+                    if (val[0] === '{')
+                    {
+                        var json = JSON.parse(val), text = json.text, str = '', pos;
+                        while ((pos = text.indexOf("{")) !== -1)
+                        {
+                            str += " '" + text.substr(0, pos).replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'";
+                            if (text[pos + 1] === '{')
+                            {
+                                str += " '{'";
+                                pos++;
+                            }
+                            else if (text[pos + 1] === '}')
+                            {
+                                str += " '}'";
+                                pos++;
+                            }
+                            else
+                            {
+                                var pos2 = text.indexOf("}");
+                                if (pos2 === -1 || pos2 < pos)
+                                    break;
+                                str += ' ' + json[text.substr(pos + 1, pos2 - pos - 1)];
+                                pos = pos2;
+                            }
+                            text = text.substr(pos + 1);
+                        }
+                        contentCss.push(rules[ruleix].selectorText + '{content:' + str + " '" + text.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'}");
+                    }
+                }
+            }
+        }
+    }
+    $('#converted-content').text(contentCss.join('\n'));
 });

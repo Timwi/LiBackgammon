@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Transactions;
 using RT.Servers;
 using RT.Util;
@@ -73,299 +74,442 @@ namespace LiBackgammon
             }
         }
 
-        private static string[] ValidKeys = new[] { "move", "roll", "double", "accept", "reject", "resign", "resync", "rematch", "acceptRematch", "cancelRematch", "chat" };
+        [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+        sealed class SocketMethodAttribute : Attribute
+        {
+            public bool SpectatorAllowed { get; private set; }
+            public SocketMethodAttribute(bool spectatorAllowed = false)
+            {
+                SpectatorAllowed = spectatorAllowed;
+            }
+        }
+
+        private sealed class MessageInfo
+        {
+            public JsonDict Message { get; private set; }
+            public Func<PlayWebSocket, bool> Predicate { get; private set; }
+            public MessageInfo(JsonDict message, Func<PlayWebSocket, bool> predicate = null)
+            {
+                Message = message;
+                Predicate = predicate;
+            }
+        }
+
+        [SocketMethod]
+        private MessageInfo[] move(int[] sourceTongues, int[] targetTongues)
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                // Make sure it is actually this player’s turn
+                if (whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToMove : GameState.Black_ToMove))
+                    return null;
+
+                // Find all valid moves and see if the provided move is one of them
+                var lastMove = moves.Last();
+                var validMoves = pos.GetAllValidMoves(whiteToPlay, lastMove.Dice1, lastMove.Dice2);
+                var validMove = validMoves.FirstOrDefault(vm => vm.SourceTongues.SequenceEqual(sourceTongues) && vm.TargetTongues.SequenceEqual(targetTongues));
+                if (validMove == null)
+                    return null;
+
+                // The move is valid. 
+                lastMove.SourceTongues = sourceTongues;
+                lastMove.TargetTongues = targetTongues;
+                return new MessageInfo(new JsonDict { { "move", new JsonDict { { "sourceTongues", sourceTongues }, { "targetTongues", targetTongues } } } }, s => s != this)
+                    .Concat(continueGame(db, pos.ProcessMove(whiteToPlay, lastMove), game, whiteToPlay, moves))
+                    .ToArray();
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] roll()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                // Make sure it is actually this player’s turn, and the game is played with a doubling cube (otherwise the players do not manually roll)
+                // Note “whiteToPlay” is currently off because the dice roll doesn’t have an entry in “moves” yet — hence the not
+                if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
+                    return null;
+
+                // The actual dice rolling happens inside of continueGame.
+                return continueGame(db, pos, game, whiteToPlay, moves, rolled: true).ToArray();
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] @double()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                // Make sure it’s this player’s turn to choose whether to double or roll, and the game is played with a doubling cube
+                // Note “whiteToPlay” is currently off because the double doesn’t have an entry in “moves” yet — hence the not
+                if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
+                    return null;
+                game.State = _player == Player.White ? GameState.Black_ToConfirmDouble : GameState.White_ToConfirmDouble;
+                return new[] { new MessageInfo(new JsonDict { { "state", game.State.ToString() } }) };
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] accept()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                // Make sure it’s this player’s turn to respond to a double
+                if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
+                    return null;
+
+                pos.GameValue = pos.GameValue.Value * 2;
+
+                // The game continues with a dice roll, which happens inside of continueGame.
+                return new MessageInfo(new JsonDict { { "cube", new JsonDict { { "gameValue", pos.GameValue.Value }, { "whiteOwnsCube", _player == Player.White } } } })
+                    .Concat(continueGame(db, pos, game, whiteToPlay, moves, acceptedDouble: true))
+                    .ToArray();
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] reject()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                // Make sure it’s this player’s turn to respond to a double, and the game is played with a doubling cube
+                if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
+                    return null;
+                game.State = _player == Player.White ? GameState.Black_Won_RejectedDouble : GameState.White_Won_RejectedDouble;
+                return gameOver(db, game, pos, game.State == GameState.White_Won_RejectedDouble, useMultiplier: false).ToArray();
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] resign()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                // You can’t resign if the game is already over
+                if (game.State == GameState.Black_Won_Finished || game.State == GameState.Black_Won_RejectedDouble || game.State == GameState.Black_Won_Resignation ||
+                    game.State == GameState.White_Won_Finished || game.State == GameState.White_Won_RejectedDouble || game.State == GameState.White_Won_Resignation)
+                    return null;
+                game.State = _player == Player.White ? GameState.Black_Won_Resignation : GameState.White_Won_Resignation;
+                return gameOver(db, game, pos, game.State == GameState.White_Won_Resignation, useMultiplier: true).ToArray();
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] rematch()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                if (game.RematchOffer != RematchOffer.None &&
+                    !(game.RematchOffer == RematchOffer.WhiteRejected && _player == Player.White) &&
+                    !(game.RematchOffer == RematchOffer.BlackRejected && _player == Player.Black))
+                    return null;
+
+                var isMatchOver = (
+                        game.State == GameState.Black_Won_Finished ||
+                        game.State == GameState.Black_Won_RejectedDouble ||
+                        game.State == GameState.Black_Won_Resignation ||
+                        game.State == GameState.White_Won_Finished ||
+                        game.State == GameState.White_Won_RejectedDouble ||
+                        game.State == GameState.White_Won_Resignation
+                    ) && (
+                        game.Match == null ||
+                        db.Matches.Where(m => m.ID == game.Match && (
+                            db.Games.Where(g => g.Match == m.ID && g.GameInMatch < game.GameInMatch).Select(g => g.WhiteScore).DefaultIfEmpty().Sum() + game.WhiteScore >= m.MaxScore ||
+                            db.Games.Where(g => g.Match == m.ID && g.GameInMatch < game.GameInMatch).Select(g => g.BlackScore).DefaultIfEmpty().Sum() + game.BlackScore >= m.MaxScore)).Any());
+                if (!isMatchOver)
+                    return null;
+
+                game.RematchOffer = _player == Player.White ? RematchOffer.White : RematchOffer.Black;
+                return new[] { new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }) };
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] acceptRematch()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                if ((_player == Player.White && game.RematchOffer != RematchOffer.Black) ||
+                    (_player == Player.Black && game.RematchOffer != RematchOffer.White))
+                    return null;
+                game.RematchOffer = RematchOffer.Accepted;
+                var match = game.Match.NullOr(mid => db.Matches.FirstOrDefault(m => m.ID == mid));
+                var newGame = match == null
+                    ? db.CreateNewGame(CreateNewGameOption.RollAlready, game.HasDoublingCube, game.Visibility)
+                    : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules, game.Visibility).Game;
+                game.NextGame = newGame.PublicID;
+                return sendNextUrl(newGame.PublicID, newGame.WhiteToken, newGame.BlackToken)
+                    .Concat(new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }))
+                    .ToArray();
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] cancelRematch()
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                if ((_player == Player.White && game.RematchOffer != RematchOffer.Black) ||
+                    (_player == Player.Black && game.RematchOffer != RematchOffer.White))
+                    return null;
+                game.RematchOffer = _player == Player.White ? RematchOffer.WhiteRejected : RematchOffer.BlackRejected;
+                return new[] { new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }) };
+            });
+        }
+
+        [SocketMethod]
+        private MessageInfo[] chat(string msg, JsonValue token)
+        {
+            msg = msg.Trim();
+            if (msg.Length == 0)
+                return null;
+
+            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var db = new Db())
+            {
+                var chatMsgObj = new ChatMessage { GameID = _gameId, Player = _player, Time = DateTime.UtcNow, Message = msg };
+                db.ChatMessages.Add(chatMsgObj);
+                db.SaveChanges();
+                tr.Complete();
+                SendMessage(new JsonDict { { "chatid", new JsonDict { { "token", token }, { "id", chatMsgObj.ID } } } });
+                return new[] { new MessageInfo(new JsonDict { { "chat", chatMessageJson(chatMsgObj) } }) };
+            }
+        }
+
+        [SocketMethod(spectatorAllowed: true)]
+        private MessageInfo[] settings()
+        {
+            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var db = new Db())
+            {
+                var styles = db.Styles
+                    .Where(s => s.Approved)
+                    .Select(s => new { s.Name, s.HashName })
+                    .ToJsonDict(s => s.HashName, s => s.Name);
+                var languages = db.Languages
+                    .Where(s => s.Approved)
+                    .Select(s => new { s.Name, s.HashName })
+                    .ToJsonDict(s => s.HashName, s => s.Name);
+                SendMessage(new JsonDict { { "settings", new JsonDict { { "style", styles }, { "language", languages } } } });
+                return null;
+            }
+        }
+
+        [SocketMethod(spectatorAllowed: true)]
+        private MessageInfo[] resync(int moveCount, bool? lastMoveDone = null)
+        {
+            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            {
+                SendMessage(new JsonDict { { "resync", 
+                    moveCount != moves.Count ||
+                    (lastMoveDone != null && moves.Count == 0) ||
+                    (lastMoveDone != null && lastMoveDone.Value != (moves.Last().SourceTongues != null)) ? 1 : 0 } });
+                return (MessageInfo[]) null;
+            });
+        }
+
+        [SocketMethod(spectatorAllowed: true)]
+        private MessageInfo[] createLanguage(string name, string hashName)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "error", "empty-name" } } } });
+                return null;
+            }
+            if (string.IsNullOrWhiteSpace(hashName))
+            {
+                SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "error", "empty-hash" } } } });
+                return null;
+            }
+            name = name.Trim();
+            hashName = hashName.Trim();
+
+            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var db = new Db())
+            {
+                var already = db.Languages.Where(l => l.Name == name).FirstOrDefault();
+                if (already != null)
+                {
+                    SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "status", "already-name" }, { "hash", already.HashName }, { "name", already.Name } } } });
+                    return null;
+                }
+                already = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
+                if (already != null)
+                {
+                    SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "status", "already-hash" }, { "hash", already.HashName }, { "name", already.Name } } } });
+                    return null;
+                }
+
+                var newLang = new Language { Approved = false, HashName = hashName, Name = name };
+                SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "status", "ok" }, { "hash", already.HashName }, { "name", already.Name } } } });
+                return null;
+            }
+        }
 
         public override void OnTextMessageReceived(string msg)
         {
             var json = JsonValue.Parse(msg);
-            if (!(json is JsonDict) || json.Count != 1 || json.Keys.Any(key => !ValidKeys.Contains(key)))
+            if (!(json is JsonDict) || json.Count != 1)
                 return;
 
-            if (_player == Player.Spectator && !json.ContainsKey("resync"))
+            var key = json.Keys.First();
+            var method = typeof(PlayWebSocket).GetMethod(key, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (method == null)
                 return;
 
-            var createMsg = Ut.Lambda((JsonValue value, Func<PlayWebSocket, bool> predicate) => new { Value = value, Predicate = predicate });
-            var toSend = new[] { createMsg(null, null) }.ToList();
-            toSend.Clear();
+            var attr = method.GetCustomAttribute<SocketMethodAttribute>();
+            if (attr == null || (_player == Player.Spectator && !attr.SpectatorAllowed))
+                return;
 
+            var arguments = json.Values.First();
+            var toSend = (MessageInfo[]) method.Invoke(this, method.GetParameters().Select(p =>
+            {
+                JsonValue arg;
+                var has = arguments.TryGetValue(p.Name, out arg);
+                if (!p.IsOptional && !has)
+                    throw new InvalidOperationException("Expected parameter {0} missing.".Fmt(p.Name));
+                return has ? ClassifyJson.Deserialize(p.ParameterType, arg) : p.DefaultValue;
+            }).ToArray());
+
+            // Send all the WebSocket messages
+            // (We do this at the end so that we don’t send /any/ messages if any part of the above code throws an exception)
+            List<PlayWebSocket> sockets;
+            if (toSend != null && toSend.Length > 0)
+                lock (_server.ActivePlaySockets)
+                    if (_server.ActivePlaySockets.TryGetValue(_gameId, out sockets))
+                        foreach (var socket in sockets)
+                            foreach (var sendMsg in toSend)
+                                if (sendMsg.Predicate == null || sendMsg.Predicate(socket))
+                                    socket.SendMessage(sendMsg.Message);
+        }
+
+        private T processGameState<T>(Func<Db, Game, Position, bool, List<Move>, T> func)
+        {
             using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             using (var db = new Db())
             {
                 var game = db.Games.FirstOrDefault(g => g.PublicID == _gameId);
                 if (game == null)
-                    return;
-
-                if (json.ContainsKey("chat") && _player != Player.Spectator)
-                {
-                    var chatMsg = json["chat"]["msg"].GetString().Trim();
-                    if (chatMsg.Length > 0)
-                    {
-                        var chatMsgObj = new ChatMessage { GameID = _gameId, Player = _player, Time = DateTime.UtcNow, Message = chatMsg };
-                        db.ChatMessages.Add(chatMsgObj);
-                        db.SaveChanges();
-                        SendMessage(new JsonDict { { "chatid", new JsonDict { { "token", json["chat"]["token"] }, { "id", chatMsgObj.ID } } } });
-                        var dict = new JsonDict { { "chat", chatMessageJson(chatMsgObj) } }.ToString().ToUtf8();
-                        lock (_server.ActivePlaySockets)
-                        {
-                            List<PlayWebSocket> sockets;
-                            if (_server.ActivePlaySockets.TryGetValue(_gameId, out sockets))
-                                foreach (var socket in sockets)
-                                    socket.SendMessage(1, dict);
-                        }
-                        tr.Complete();
-                    }
-                    return;
-                }
+                    throw new InvalidOperationException("game is null");
 
                 var pos = game.InitialPosition.ToPosition();
                 var moves = game.Moves.ToMoves();
-
-                if (json.ContainsKey("resync"))
-                {
-                    if (json["resync"]["moves"].GetInt() != moves.Count ||
-                        (json["resync"].ContainsKey("lastmovedone") && moves.Count == 0) ||
-                        (json["resync"].ContainsKey("lastmovedone") && json["resync"]["lastmovedone"].GetBool() != (moves.Last().SourceTongues != null)))
-                        SendMessage(new JsonDict { { "resync", 1 } });
-                    return;
-                }
 
                 // Determine what the current game position is
                 var whiteStarts = moves.Count > 0 && moves[0].Dice1 > moves[0].Dice2;
                 for (int i = 0; i < moves.Count; i++)
                     pos = pos.ProcessMove(whiteStarts ? (i % 2 == 0) : (i % 2 != 0), moves[i]);
-                var lastMove = moves.Last();
                 var whiteToPlay = whiteStarts ? (moves.Count % 2 != 0) : (moves.Count % 2 == 0);
 
-                var sendNextUrl = Ut.Lambda((string publicId, string whiteToken, string blackToken) =>
-                {
-                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + whiteToken).ToFull() } }, s => s.Player == Player.White));
-                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + blackToken).ToFull() } }, s => s.Player == Player.Black));
-                    toSend.Add(createMsg(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId).ToFull() } }, s => s.Player == Player.Spectator));
-                });
-
-                var isMatchOver = Ut.Lambda((Game gm) =>
-                    (
-                        gm.State == GameState.Black_Won_Finished ||
-                        gm.State == GameState.Black_Won_RejectedDouble ||
-                        gm.State == GameState.Black_Won_Resignation ||
-                        gm.State == GameState.White_Won_Finished ||
-                        gm.State == GameState.White_Won_RejectedDouble ||
-                        gm.State == GameState.White_Won_Resignation
-                    ) && (
-                        gm.Match == null ||
-                        db.Matches.Where(m => m.ID == gm.Match && (
-                            db.Games.Where(g => g.Match == m.ID && g.GameInMatch < gm.GameInMatch).Select(g => g.WhiteScore).Sum() + gm.WhiteScore >= m.MaxScore ||
-                            db.Games.Where(g => g.Match == m.ID && g.GameInMatch < gm.GameInMatch).Select(g => g.BlackScore).Sum() + gm.BlackScore >= m.MaxScore)).Any()));
-
-                var gameOver = Ut.Lambda((bool whiteWins, bool useMultiplier) =>
-                {
-                    var match = game.Match.NullOr(id => db.Matches.FirstOrDefault(m => m.ID == id));
-                    var winScore = (pos.GameValue ?? 1) * (useMultiplier ? pos.GetWinMultiplier(whiteWins) : 1);
-                    var dict = new JsonDict {
-                        { "state", game.State.ToString() },
-                        { "win", winScore }
-                    };
-
-                    if (whiteWins)
-                        game.WhiteScore = winScore;
-                    else
-                        game.BlackScore = winScore;
-
-                    if (game.Match != null)
-                    {
-                        var whiteMatchScore = db.Games.Where(g => g.Match == game.Match && g.GameInMatch < game.GameInMatch).Select(g => g.WhiteScore).DefaultIfEmpty().Sum() + game.WhiteScore;
-                        var blackMatchScore = db.Games.Where(g => g.Match == game.Match && g.GameInMatch < game.GameInMatch).Select(g => g.BlackScore).DefaultIfEmpty().Sum() + game.BlackScore;
-                        dict["whiteMatchScore"] = whiteMatchScore;
-                        dict["blackMatchScore"] = blackMatchScore;
-                        if (whiteMatchScore >= match.MaxScore || blackMatchScore >= match.MaxScore)
-                            dict["matchOver"] = 1;
-                        else
-                        {
-                            bool doublingCube = match.DoublingCubeRules != DoublingCubeRules.None;
-                            if (match.DoublingCubeRules == DoublingCubeRules.Crawford && (whiteMatchScore == match.MaxScore - 1 || blackMatchScore == match.MaxScore - 1))
-                            {
-                                // Check if there has already been a Crawford game
-                                doublingCube = db.Games.Any(g => g.Match == game.Match && !g.HasDoublingCube);
-                            }
-                            var result = db.CreateNewGame(CreateNewGameOption.RollAlready, doublingCube, game.Visibility, game.Match, game.GameInMatch + 1);
-                            game.NextGame = result.PublicID;
-                            sendNextUrl(result.PublicID, result.WhiteToken, result.BlackToken);
-                        }
-                    }
-                    toSend.Add(createMsg(dict, null));
-                });
-
-                if (json.ContainsKey("double"))
-                {
-                    // Make sure it’s this player’s turn to choose whether to double or roll, and the game is played with a doubling cube
-                    // Note “whiteToPlay” is currently off because the double doesn’t have an entry in “moves” yet — hence the not
-                    if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
-                        return;
-                    game.State = _player == Player.White ? GameState.Black_ToConfirmDouble : GameState.White_ToConfirmDouble;
-                    toSend.Add(createMsg(new JsonDict { { "state", game.State.ToString() } }, null));
-                }
-                else if (json.ContainsKey("reject"))
-                {
-                    // Make sure it’s this player’s turn to respond to a double, and the game is played with a doubling cube
-                    if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
-                        return;
-                    game.State = _player == Player.White ? GameState.Black_Won_RejectedDouble : GameState.White_Won_RejectedDouble;
-                    gameOver(game.State == GameState.White_Won_RejectedDouble, false);
-                }
-                else if (json.ContainsKey("resign"))
-                {
-                    // You can’t resign if the game is already over
-                    if (game.State == GameState.Black_Won_Finished || game.State == GameState.Black_Won_RejectedDouble || game.State == GameState.Black_Won_Resignation ||
-                        game.State == GameState.White_Won_Finished || game.State == GameState.White_Won_RejectedDouble || game.State == GameState.White_Won_Resignation)
-                        return;
-                    game.State = _player == Player.White ? GameState.Black_Won_Resignation : GameState.White_Won_Resignation;
-                    gameOver(game.State == GameState.White_Won_Resignation, true);
-                }
-                else if (json.ContainsKey("rematch"))
-                {
-                    if (game.RematchOffer != RematchOffer.None &&
-                        !(game.RematchOffer == RematchOffer.WhiteRejected && _player == Player.White) &&
-                        !(game.RematchOffer == RematchOffer.BlackRejected && _player == Player.Black))
-                        return;
-                    if (!isMatchOver(game))
-                        return;
-                    game.RematchOffer = _player == Player.White ? RematchOffer.White : RematchOffer.Black;
-                    toSend.Add(createMsg(new JsonDict { { "rematch", game.RematchOffer.ToString() } }, null));
-                }
-                else if (json.ContainsKey("acceptRematch"))
-                {
-                    if ((_player == Player.White && game.RematchOffer != RematchOffer.Black) ||
-                        (_player == Player.Black && game.RematchOffer != RematchOffer.White))
-                        return;
-                    game.RematchOffer = RematchOffer.Accepted;
-                    var match = game.Match.NullOr(mid => db.Matches.FirstOrDefault(m => m.ID == mid));
-                    var newGame = match == null
-                        ? db.CreateNewGame(CreateNewGameOption.RollAlready, game.HasDoublingCube, game.Visibility)
-                        : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules, game.Visibility).Game;
-                    game.NextGame = newGame.PublicID;
-                    sendNextUrl(newGame.PublicID, newGame.WhiteToken, newGame.BlackToken);
-                    toSend.Add(createMsg(new JsonDict { { "rematch", game.RematchOffer.ToString() } }, null));
-                }
-                else if (json.ContainsKey("cancelRematch"))
-                {
-                    if ((_player == Player.White && game.RematchOffer != RematchOffer.Black) ||
-                        (_player == Player.Black && game.RematchOffer != RematchOffer.White))
-                        return;
-                    game.RematchOffer = _player == Player.White ? RematchOffer.WhiteRejected : RematchOffer.BlackRejected;
-                    toSend.Add(createMsg(new JsonDict { { "rematch", game.RematchOffer.ToString() } }, null));
-                }
-                else
-                {
-                    var acceptedDouble = false;
-
-                    if (json.ContainsKey("move"))
-                    {
-                        // Make sure it is actually this player’s turn
-                        if (whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToMove : GameState.Black_ToMove))
-                            return;
-
-                        var sourceTongues = json["move"]["SourceTongues"].GetInts();
-                        var targetTongues = json["move"]["TargetTongues"].GetInts();
-
-                        // Find all valid moves and see if the provided move is one of them
-                        var validMoves = pos.GetAllValidMoves(whiteToPlay, lastMove.Dice1, lastMove.Dice2);
-                        var validMove = validMoves.FirstOrDefault(vm => vm.SourceTongues.SequenceEqual(sourceTongues) && vm.TargetTongues.SequenceEqual(targetTongues));
-                        if (validMove == null)
-                            return;
-
-                        // The move is valid. 
-                        lastMove.SourceTongues = sourceTongues;
-                        lastMove.TargetTongues = targetTongues;
-                        pos = pos.ProcessMove(whiteToPlay, lastMove);
-                        toSend.Add(createMsg(json, s => s != this));
-                    }
-                    else if (json.ContainsKey("roll"))
-                    {
-                        // Make sure it is actually this player’s turn, and the game is played with a doubling cube (otherwise the players do not manually roll)
-                        // Note “whiteToPlay” is currently off because the dice roll doesn’t have an entry in “moves” yet — hence the not
-                        if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
-                            return;
-                        // The actual dice rolling happens inside the following while loop.
-                    }
-                    else if (json.ContainsKey("accept"))
-                    {
-                        // Make sure it’s this player’s turn to respond to a double
-                        if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
-                            return;
-                        acceptedDouble = true;
-                        pos.GameValue = pos.GameValue.Value * 2;
-                        toSend.Add(createMsg(new JsonDict { { "cube", new JsonDict { { "GameValue", pos.GameValue.Value }, { "WhiteOwnsCube", _player == Player.White } } } }, null));
-                        // The game continues with a dice roll, which happens inside the following while loop.
-                    }
-
-                    // Keep generating new moves until a player has a choice
-                    var firstIteration = true;
-                    while (true)
-                    {
-                        if (pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 || pos.NumPiecesPerTongue[Tongues.BlackHome] == 15)
-                        {
-                            // The game is over.
-                            game.State = pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 ? GameState.White_Won_Finished : GameState.Black_Won_Finished;
-                            gameOver(game.State == GameState.White_Won_Finished, true);
-                            break;
-                        }
-
-                        whiteToPlay = !whiteToPlay;
-
-                        if (pos.GameValue != null && (pos.WhiteOwnsCube == null || pos.WhiteOwnsCube == whiteToPlay) &&
-                            !(firstIteration && (json.ContainsKey("roll") || json.ContainsKey("accept"))))
-                        {
-                            // The player can choose to roll or double.
-                            game.State = whiteToPlay ? GameState.White_ToRoll : GameState.Black_ToRoll;
-                            toSend.Add(createMsg(new JsonDict { { "state", game.State.ToString() } }, null));
-                            break;
-                        }
-
-                        // Roll the dice
-                        lastMove = new Move { Dice1 = Rnd.Next(1, 7), Dice2 = Rnd.Next(1, 7), Doubled = acceptedDouble && firstIteration };
-                        moves.Add(lastMove);
-                        toSend.Add(createMsg(new JsonDict { { "dice", new JsonDict {
-                            { "dice1", lastMove.Dice1 },
-                            { "dice2", lastMove.Dice2 },
-                            { "state", (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString() } } } }, null));
-                        firstIteration = false;
-
-                        // Generate all possible moves
-                        var validMoves = pos.GetAllValidMoves(whiteToPlay, lastMove.Dice1, lastMove.Dice2).GroupBy(move => move.EndPosition, new PossiblePosition.Comparer()).ToList();
-
-                        if (validMoves.Count > 1)
-                        {
-                            // Player must make a move
-                            game.State = whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove;
-                            toSend.Add(createMsg(new JsonDict { { "state", game.State.ToString() } }, null));
-                            break;
-                        }
-
-                        // Player either cannot move at all, or has only one possible move and thus no choice.
-                        // Do not use the same int[] instance for the empty array because Classify then creates JSON that the JavaScript doesn’t cope with.
-                        lastMove.SourceTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().SourceTongues;
-                        lastMove.TargetTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().TargetTongues;
-                        toSend.Add(createMsg(new JsonDict { { "move", new JsonDict { { "SourceTongues", lastMove.SourceTongues }, { "TargetTongues", lastMove.TargetTongues } } }, { "auto", validMoves.Count } }, null));
-                        pos = pos.ProcessMove(whiteToPlay, lastMove);
-                    }
-                }
-
-                game.Moves = ClassifyJson.Serialize(moves).ToString();
+                var result = func(db, game, pos, whiteToPlay, moves);
                 db.SaveChanges();
                 tr.Complete();
+                return result;
+            }
+        }
+
+        private IEnumerable<MessageInfo> sendNextUrl(string publicId, string whiteToken, string blackToken)
+        {
+            yield return new MessageInfo(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + whiteToken).ToFull() } }, s => s.Player == Player.White);
+            yield return new MessageInfo(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + blackToken).ToFull() } }, s => s.Player == Player.Black);
+            yield return new MessageInfo(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId).ToFull() } }, s => s.Player == Player.Spectator);
+        }
+
+        private IEnumerable<MessageInfo> gameOver(Db db, Game game, Position pos, bool whiteWins, bool useMultiplier)
+        {
+            var match = game.Match.NullOr(id => db.Matches.FirstOrDefault(m => m.ID == id));
+            var winScore = (pos.GameValue ?? 1) * (useMultiplier ? pos.GetWinMultiplier(whiteWins) : 1);
+            var dict = new JsonDict {
+                { "state", game.State.ToString() },
+                { "score", winScore }
+            };
+
+            if (whiteWins)
+                game.WhiteScore = winScore;
+            else
+                game.BlackScore = winScore;
+
+            if (game.Match != null)
+            {
+                var whiteMatchScore = db.Games.Where(g => g.Match == game.Match && g.GameInMatch < game.GameInMatch).Select(g => g.WhiteScore).DefaultIfEmpty().Sum() + game.WhiteScore;
+                var blackMatchScore = db.Games.Where(g => g.Match == game.Match && g.GameInMatch < game.GameInMatch).Select(g => g.BlackScore).DefaultIfEmpty().Sum() + game.BlackScore;
+                dict["whiteMatchScore"] = whiteMatchScore;
+                dict["blackMatchScore"] = blackMatchScore;
+                if (whiteMatchScore >= match.MaxScore || blackMatchScore >= match.MaxScore)
+                    dict["matchOver"] = 1;
+                else
+                {
+                    bool doublingCube = match.DoublingCubeRules != DoublingCubeRules.None;
+                    if (match.DoublingCubeRules == DoublingCubeRules.Crawford && (whiteMatchScore == match.MaxScore - 1 || blackMatchScore == match.MaxScore - 1))
+                    {
+                        // Check if there has already been a Crawford game
+                        doublingCube = db.Games.Any(g => g.Match == game.Match && !g.HasDoublingCube);
+                    }
+                    var result = db.CreateNewGame(CreateNewGameOption.RollAlready, doublingCube, game.Visibility, game.Match, game.GameInMatch + 1);
+                    game.NextGame = result.PublicID;
+                    foreach (var msg in sendNextUrl(result.PublicID, result.WhiteToken, result.BlackToken))
+                        yield return msg;
+                    dict["nextGame"] = new JsonDict { { "cube", result.HasDoublingCube } };
+                }
+            }
+            yield return new MessageInfo(new JsonDict { { "win", dict } });
+        }
+
+        private IEnumerable<MessageInfo> continueGame(Db db, Position pos, Game game, bool whiteToPlay, List<Move> moves, bool rolled = false, bool acceptedDouble = false)
+        {
+            // Keep generating new moves until a player has a choice
+            var firstIteration = true;
+            while (true)
+            {
+                if (pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 || pos.NumPiecesPerTongue[Tongues.BlackHome] == 15)
+                {
+                    // The game is over.
+                    game.State = pos.NumPiecesPerTongue[Tongues.WhiteHome] == 15 ? GameState.White_Won_Finished : GameState.Black_Won_Finished;
+                    foreach (var msg in gameOver(db, game, pos, whiteWins: game.State == GameState.White_Won_Finished, useMultiplier: true))
+                        yield return msg;
+                    break;
+                }
+
+                whiteToPlay = !whiteToPlay;
+
+                if (pos.GameValue != null && (pos.WhiteOwnsCube == null || pos.WhiteOwnsCube == whiteToPlay) &&
+                    !(firstIteration && (rolled || acceptedDouble)))
+                {
+                    // The player can choose to roll or double.
+                    game.State = whiteToPlay ? GameState.White_ToRoll : GameState.Black_ToRoll;
+                    yield return new MessageInfo(new JsonDict { { "state", game.State.ToString() } });
+                    break;
+                }
+
+                // Roll the dice
+                var newMove = new Move { Dice1 = Rnd.Next(1, 7), Dice2 = Rnd.Next(1, 7), Doubled = acceptedDouble && firstIteration };
+                moves.Add(newMove);
+                yield return new MessageInfo(new JsonDict { { "dice", new JsonDict {
+                    { "dice1", newMove.Dice1 },
+                    { "dice2", newMove.Dice2 },
+                    { "state", (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString() } } } });
+                firstIteration = false;
+
+                // Generate all possible moves
+                var validMoves = pos.GetAllValidMoves(whiteToPlay, newMove.Dice1, newMove.Dice2).GroupBy(move => move.EndPosition, new PossiblePosition.Comparer()).ToList();
+
+                if (validMoves.Count > 1)
+                {
+                    // Player must make a move
+                    game.State = whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove;
+                    yield return new MessageInfo(new JsonDict { { "state", game.State.ToString() } });
+                    break;
+                }
+
+                // Player either cannot move at all, or has only one possible move and thus no choice.
+                // Do not use the same int[] instance for the empty array because Classify then creates JSON that the JavaScript doesn’t cope with.
+                newMove.SourceTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().SourceTongues;
+                newMove.TargetTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().TargetTongues;
+                yield return new MessageInfo(new JsonDict { { "move", new JsonDict { { "sourceTongues", newMove.SourceTongues }, { "targetTongues", newMove.TargetTongues }, { "auto", validMoves.Count } } } });
+                pos = pos.ProcessMove(whiteToPlay, newMove);
             }
 
-            // Send all the WebSocket messages
-            // (We do this at the end so that we don’t send /any/ messages if any part of the above code throws an exception)
-            lock (_server.ActivePlaySockets)
-            {
-                List<PlayWebSocket> sockets;
-                if (toSend.Count > 0 && _server.ActivePlaySockets.TryGetValue(_gameId, out sockets))
-                    foreach (var socket in sockets)
-                        foreach (var sendMsg in toSend)
-                            if (sendMsg.Predicate == null || sendMsg.Predicate(socket))
-                                socket.SendMessage(sendMsg.Value);
-            }
+            game.Moves = ClassifyJson.Serialize(moves).ToString();
         }
 
         private JsonDict chatMessageJson(ChatMessage msg)

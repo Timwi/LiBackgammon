@@ -28,6 +28,7 @@ namespace LiBackgammon
                         new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
 
                         new STYLE { id = "converted-css" },
+                        new STYLE { id = "converted-content" },
 
                         new SCRIPT { src = jquery },
                         new SCRIPT { src = req.Url.WithParent("js").ToHref() },

@@ -64,11 +64,11 @@ namespace LiBackgammon
                 // E = Reject double
                 // F = Reject rematch
                 // G = Resign
-                // H
+                // H = Show/hide move helpers
                 // I = Match info, rules and help
                 // J = Join game
                 // K
-                // L
+                // L = Language
                 // M
                 // N = Resign cancel
                 // O = Offer a rematch
@@ -79,7 +79,7 @@ namespace LiBackgammon
                 // T = Chat
                 // U = Undo
                 // V
-                // W
+                // W = Style
                 // X = Go to next game
                 // Y = Resign confirm
                 // Z
@@ -124,7 +124,7 @@ namespace LiBackgammon
                                         new BUTTON { accesskey = "e", id = "reject" },
                                         new BUTTON { accesskey = "y", id = "resign-confirm" },
                                         new BUTTON { accesskey = "n", id = "resign-cancel" },
-                                        new DIV { id = "info" },
+                                        new DIV { id = "info-line" },
                                         new DIV { class_ = "dice-back", id = "dice-back-white" },
                                         new DIV { class_ = "dice-back", id = "dice-back-black" },
                                         Enumerable.Range(0, 4).Select(diceNum => new DIV { class_ = "dice" + (lastMove == null ? null : " val-" + (diceNum == 0 ? lastMove.Dice1 : lastMove.Dice2)), id = "dice-" + diceNum }._(
@@ -143,7 +143,7 @@ namespace LiBackgammon
                                         new DIV { class_ = "infobox", id = "info-pips" }._(
                                             new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-white" }._(pipsWhite)),
                                             new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-black" }._(pipsBlack))),
-                                        game.Match == null ? null : new DIV { class_ = "infobox", id = "info-match" }._(
+                                        game.Match == null ? null : new DIV { class_ = "infobox", id = "info-match-score" }._(
                                             new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number matchscore-white", id = "matchscore-white" }._(whiteMatchScore)),
                                             new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number matchscore-black", id = "matchscore-black" }._(blackMatchScore))),
                                         new A { href = "#", class_ = "mini-button", accesskey = "g", id = "btn-resign" },
@@ -177,18 +177,45 @@ namespace LiBackgammon
                                             new LABEL { for_ = "chat-msg", accesskey = "," },
                                             new INPUT { id = "chat-msg", type = itype.text }),
                                         new DIV { id = "info", class_ = "sidebar-tab" }._(
-                                            new DIV { class_ = "info-tab", id = "info-match" }._(
+                                            new DIV { class_ = "sidebar-inner-tab", id = "info-match" }._(
                                                 new DIV { id = "info-match-playto", class_ = "section" }._(new DIV { class_ = "content" }._(match.NullOr(m => m.MaxScore))),
                                                 new DIV { id = "info-match-cube", class_ = "section" + match.NullOr(m => " " + m.DoublingCubeRules) }._(new DIV { class_ = "content" }),
                                                 new DIV { id = "info-match-history", class_ = "section" }._(
                                                     history.NullOr(h => Ut.NewArray<object>(
-                                                        h.Select(g => new A { href = g.PublicID == publicId ? null : req.Url.WithParent("play/" + g.PublicID + (player == Player.White ? g.WhiteToken : player == Player.Black ? g.BlackToken : null)).ToFull(), class_ = "game " + (g.HasDoublingCube ? "cube" : "no-cube") }._(
-                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(g.WhiteScore.Apply(s => s == 0 ? null : s.ToString()))),
-                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(g.BlackScore.Apply(s => s == 0 ? null : s.ToString()))))),
+                                                        h.Select(g => new A
+                                                        {
+                                                            class_ = "game " + (g.HasDoublingCube ? "cube" : "no-cube"),
+                                                            href = g.PublicID == publicId ? null :
+                                                                req.Url.WithParent("play/" + g.PublicID + (player == Player.White ? g.WhiteToken : player == Player.Black ? g.BlackToken : null)).ToFull()
+                                                        }._(
+                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(g.WhiteScore == 0 ? null : g.WhiteScore.ToString())),
+                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(g.BlackScore == 0 ? null : g.BlackScore.ToString())))),
                                                         new HR(),
                                                         new DIV { class_ = "game totals" }._(
-                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(history.Sum(g => g.WhiteScore).Apply(s => s == 0 ? null : s.ToString()))),
-                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(history.Sum(g => g.BlackScore).Apply(s => s == 0 ? null : s.ToString())))))))))))),
+                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(history.Sum(g => g.WhiteScore))),
+                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(history.Sum(g => g.BlackScore))))))))),
+                                        new DIV { id = "settings", class_ = "sidebar-tab" }._(
+                                            new DIV { id = "settings-style", class_ = "section" }._(
+                                                new LABEL { for_ = "settings-style-select", accesskey = "w" },
+                                                new SELECT { id = "settings-style-select" }._(new OPTION("Loading..."))),
+                                            new DIV { id = "settings-language", class_ = "section" }._(
+                                                new LABEL { for_ = "settings-language-select", accesskey = "l" },
+                                                new SELECT { id = "settings-language-select" }._(new OPTION("Loading...")),
+                                                new BUTTON { id = "settings-language-custom" }),
+                                            new DIV { id = "settings-helpers", class_ = "section" }._(
+                                                new INPUT { id = "settings-helpers-select", type = itype.checkbox },
+                                                new LABEL { for_ = "settings-helpers-select", accesskey = "h" })),
+                                        new DIV { id = "translate", class_ = "sidebar-tab" }._(
+                                            new DIV { id = "translate-existing", class_ = "section" }._(
+                                                new SELECT { id = "translate-select" },
+                                                new BUTTON { id = "translate-edit" }),
+                                            new DIV { id = "translate-new", class_ = "section" }._(
+                                                new LABEL { for_ = "translate-name", id = "translate-name-label" },
+                                                new INPUT { id = "translate-name" },
+                                                new LABEL { for_ = "translate-code", id = "translate-code-label" },
+                                                new INPUT { id = "translate-code" },
+                                                new BUTTON { id = "translate-create" })),
+                                        new DIV { id = "translating", class_ = "sidebar-tab" }))),
                         "js/play");
             }
         }

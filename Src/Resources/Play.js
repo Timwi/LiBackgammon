@@ -1,5 +1,7 @@
 $(function ()
 {
+    var sidebars = ['chat', 'info', 'settings', 'translate', 'translating'];
+
     function makeArrow(source, dest)
     {
         var pieceSize = 5; // vw
@@ -196,7 +198,7 @@ $(function ()
                 return;
             }
             var item = animationQueue.shift();
-            var num = new Array();
+            var num = [];
             num[item.Data.tongue] = getPiecesOnTongue(item.Data.tongue).length + 1;
             num[item.Piece.data('tongue')] = getPiecesOnTongue(item.Piece.data('tongue')).length - 1;
             var otherPieces = $('#board>.piece')
@@ -392,7 +394,7 @@ $(function ()
 
             // Highlight all the auto-move targets
             var autoSourceMoves = {}, autoTargetMoves = {};
-            function processTongue(tongue, tongueInfos)
+            var processTongue = function (tongue, tongueInfos)
             {
                 if (tongue in tongueInfos)
                 {
@@ -401,8 +403,8 @@ $(function ()
                 }
                 else
                     tongueInfos[tongue] = { num: 1, numOthers: j };
-            }
-            function considerAutoMove(tongueInfos, autoMoves, move)
+            };
+            var considerAutoMove = function (tongueInfos, autoMoves, move)
             {
                 for (var tongue in tongueInfos)
                     if (tongueInfos[tongue].num > 1)
@@ -422,8 +424,8 @@ $(function ()
                                 }
                             };
                         }
-            }
-            function tongueCssClass(tongue)
+            };
+            var tongueCssClass = function (tongue)
             {
                 switch (tongue)
                 {
@@ -438,7 +440,7 @@ $(function ()
                     default:
                         return 'tongue-' + tongue + (tongue < 12 ? ' bottom' : ' top');
                 }
-            }
+            };
             for (var i = 0; i < allValidRestMoves.length; i++)
             {
                 var move = allValidRestMoves[i];
@@ -501,10 +503,10 @@ $(function ()
                         continue;
 
                     var piecesTaken = allValidRestMoves[i].EndPosition.NumPiecesPerTongue[getPrison(!playerIsWhite)];
-                    if (targetTongue in targetMoves && targetMoves[targetTongue].Index == k && targetMoves[targetTongue].SourceTongues.length === k + 1 && targetMoves[targetTongue].PiecesTaken > piecesTaken)
+                    if (targetTongue in targetMoves && targetMoves[targetTongue].Index === k && targetMoves[targetTongue].SourceTongues.length === k + 1 && targetMoves[targetTongue].PiecesTaken > piecesTaken)
                         continue;
 
-                    var indexTo = (targetTongue in targetMoves && targetMoves[targetTongue].Index == k) ? k + 1 : allValidRestMoves[i].SourceTongues.length;
+                    var indexTo = (targetTongue in targetMoves && targetMoves[targetTongue].Index === k) ? k + 1 : allValidRestMoves[i].SourceTongues.length;
                     if (targetTongue in targetMoves && targetMoves[targetTongue].Index <= k && targetMoves[targetTongue].SourceTongues.length < indexTo)
                         continue;
 
@@ -602,7 +604,7 @@ $(function ()
             hashRemove(['sidebar', id]);
         else
         {
-            hashRemove(['chat', 'info']);
+            hashRemove(sidebars);
             hashAdd(['sidebar', id]);
         }
         // We have to delay this because the hashchange event needs to happen first
@@ -660,6 +662,8 @@ $(function ()
     var chatLastScrolledBottom = true;
     var preventCmoScrollEventUntil = null;
     var lastCmoScrollPos = null;
+    var settingsLoaded = false;
+    var translationNotes = {};
 
     var position = main.data('initial');
     if (moves.length > 0)
@@ -689,51 +693,54 @@ $(function ()
     var socketQueue = [];
     var socketQueueProcessing = false;
 
-    var processSocketQueue = function ()
-    {
-        if (!socketQueue.length)
+    var socketMethods = {
+        nextUrl: function (args) { main.data('next-game', args).addClass('has-next-game'); },
+        state: function (args) { setState(args); },
+        on: function (args) { main.addClass('online-' + args); },
+        off: function (args) { main.removeClass('online-' + args); },
+        chatid: function (args) { $('#chat-token-' + json.chatid.token).attr('id', 'chat-' + json.chatid.id); },
+        resync: function (args)
         {
-            socketQueueProcessing = false;
-            return;
-        }
-
-        socketQueueProcessing = true;
-        var json = socketQueue.shift();
-
-        if ('resync' in json)
+            if (args)
+            {
+                window.location.reload();
+                return true;
+            }
+            if (getHash().indexOf('settings') !== -1 && !settingsLoaded)
+            {
+                socketSend({ settings: 1 });
+                settingsLoaded = true;
+            }
+        },
+        player: function (args)
         {
-            window.location.reload();
-            return;
-        }
-        else if ('player' in json)
-        {
-            playerIsWhite = json.player === 'White';
+            playerIsWhite = args === 'White';
             main.removeClass('player-random').addClass(playerIsWhite ? 'player-white' : 'player-black');
-        }
-        else if ('move' in json)
+        },
+        move: function (args)
         {
-            if ('auto' in json)
-                main.addClass('auto-' + json.auto);
+            if ('auto' in args)
+                main.addClass('auto-' + args.auto);
 
-            moves[moves.length - 1].SourceTongues = json.move.SourceTongues;
-            moves[moves.length - 1].TargetTongues = json.move.TargetTongues;
-            position = processMove(position, main.hasClass('state-White'), json.move.SourceTongues, json.move.TargetTongues, {
+            moves[moves.length - 1].SourceTongues = args.sourceTongues;
+            moves[moves.length - 1].TargetTongues = args.targetTongues;
+            position = processMove(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, {
                 mode: 'animate',
                 callback: function ()
                 {
-                    if ('auto' in json)
-                        setTimeout(processSocketQueue, json.auto ? 1000 : 2000);
+                    if ('auto' in args)
+                        setTimeout(processSocketQueue, args.auto ? 1000 : 2000);
                     else
                         processSocketQueue();
                 }
             });
-            return;
-        }
-        else if ('dice' in json)
+            return true;
+        },
+        dice: function (args)
         {
-            setState(json.dice.state, true);
+            setState(args.state, true);
             moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
-            moves.push({ Dice1: json.dice.dice1, Dice2: json.dice.dice2 });
+            moves.push({ Dice1: args.dice1, Dice2: args.dice2 });
             lastMove = moves[moves.length - 1];
 
             main
@@ -742,52 +749,45 @@ $(function ()
             $('#board>.dice').removeClass('val-1 val-2 val-3 val-4 val-5 val-6 crossed');
             $('#board>#dice-0').addClass('val-' + lastMove.Dice1);
             $('#board>#dice-1,#board>#dice-2,#board>#dice-3').addClass('val-' + lastMove.Dice2);
-        }
-        else if ('cube' in json)
+        },
+        cube: function (args)
         {
-            $('#cube-text').text(json.cube.GameValue);
+            $('#cube-text').text(args.gameValue);
             var oldTop = $('#cube').position().top;
-            main.removeClass('cube-white cube-black').addClass(json.cube.WhiteOwnsCube ? 'cube-white' : 'cube-black');
+            main.removeClass('cube-white cube-black').addClass(args.whiteOwnsCube ? 'cube-white' : 'cube-black');
             var newTop = $('#cube').position().top;
             $('#cube').css('top', oldTop).animate({ top: newTop }, { duration: 1000, complete: function () { $('#cube').css('top', ''); } });
-            position.GameValue = json.cube.GameValue;
-            position.WhiteOwnsCube = json.cube.WhiteOwnsCube;
+            position.GameValue = args.gameValue;
+            position.WhiteOwnsCube = args.whiteOwnsCube;
             setTimeout(processSocketQueue, 1000);
-            return;
-        }
-        else if ('nextUrl' in json)
+            return true;
+        },
+        win: function (args)
         {
-            main.data('next-game', json.nextUrl).addClass('has-next-game');
-        }
-        else if ('state' in json)
-        {
-            setState(json.state);
+            setState(args.state);
+            $('#win>.points>.number,#main.state-White #info-match-history>a.game:not([href])>.white>.number,#main.state-Black #info-match-history>a.game:not([href])>.black>.number').text(args.score);
+            $('#win>.points').removeClass('singular plural').addClass(args.score === 1 ? "singular" : "plural");
 
-            if ('win' in json)
-            {
-                $('#win>.points>.number').text(json.win);
-                $('#win>.points').removeClass('singular plural').addClass(json.win === 1 ? "singular" : "plural");
-
-                if ('whiteMatchScore' in json)
-                    $('.matchscore-white').text(json.whiteMatchScore);
-                if ('blackMatchScore' in json)
-                    $('.matchscore-black').text(json.blackMatchScore);
-                if ('matchOver' in json)
-                    main.addClass('end-of-match');
-            }
-        }
-        else if ('rematch' in json)
+            if ('whiteMatchScore' in args)
+                $('.matchscore-white,#info-match-history>.totals>.white>.number').text(args.whiteMatchScore);
+            if ('blackMatchScore' in args)
+                $('.matchscore-black,#info-match-history>.totals>.black>.number').text(args.blackMatchScore);
+            if ('matchOver' in args)
+                main.addClass('end-of-match');
+            if ('nextGame' in args)
+                $('<a><div class="piece white"><div class="number"></div></div><div class="piece black"><div class="number"></div></div></a>')
+                    .addClass('game ' + (args.nextGame.cube ? 'cube' : 'no-cube'))
+                    .attr('href', main.data('next-game') + window.location.hash)
+                    .insertBefore('#info-match-history>hr');
+        },
+        rematch: function (args)
         {
             main.removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, "rematch-".length) === "rematch-"; }).join(' '); });
-            main.addClass('rematch-' + json.rematch);
-        }
-        else if ('on' in json)
-            main.addClass('online-' + json.on);
-        else if ('off' in json)
-            main.removeClass('online-' + json.off);
-        else if ('chat' in json)
+            main.addClass('rematch-' + args);
+        },
+        chat: function (args)
         {
-            var chatList = json.chat instanceof Array ? json.chat : [json.chat];
+            var chatList = args instanceof Array ? args : [args];
             for (var i = 0; i < chatList.length; i++)
             {
                 var msg = chatList[i];
@@ -801,11 +801,32 @@ $(function ()
                 obj.find('.msg').text(msg.msg);
             }
             onResize();
+        },
+        settings: function (args)
+        {
+            ['style', 'language'].forEach(function (e)
+            {
+                var s = $('#settings-' + e + '-select').empty();
+                for (var i in args[e])
+                    s.append($('<option>').attr('value', i).text(args[e][i]));
+            });
         }
-        else if ('chatid' in json)
-            $('#chat-token-' + json.chatid.token).attr('id', 'chat-' + json.chatid.id);
+    };
 
-        processSocketQueue();
+    var processSocketQueue = function ()
+    {
+        if (!socketQueue.length)
+        {
+            socketQueueProcessing = false;
+            return;
+        }
+
+        socketQueueProcessing = true;
+        var json = socketQueue.shift();
+        var keys = Object.keys(json);
+
+        if (keys.length === 1 && keys[0] in socketMethods && socketMethods[keys[0]](json[keys[0]]) !== true)
+            processSocketQueue();
     };
 
     var newSocket = function ()
@@ -817,7 +838,7 @@ $(function ()
             for (var i = 0; i < sendQueue.length; i++)
                 socket.send(JSON.stringify(sendQueue[i]));
             sendQueue = [];
-            socket.send(JSON.stringify({ resync: { moves: moves.length, lastmovedone: lastMove && 'SourceTongues' in lastMove } }));
+            socket.send(JSON.stringify({ resync: { moveCount: moves.length, lastMoveDone: lastMove && 'SourceTongues' in lastMove } }));
         };
         socket.onclose = function ()
         {
@@ -955,7 +976,7 @@ $(function ()
             return false;
         });
 
-        function getGeneralisedButtonClick(msgToSend, condition, removeClasses)
+        var getGeneralisedButtonClick = function (msgToSend, condition, removeClasses)
         {
             return function ()
             {
@@ -967,10 +988,10 @@ $(function ()
                 }
                 return false;
             };
-        }
+        };
 
         $('#commit').click(getGeneralisedButtonClick(
-            function () { return { move: { SourceTongues: moveSoFar.SourceTongues, TargetTongues: moveSoFar.TargetTongues } }; },
+            function () { return { move: { sourceTongues: moveSoFar.SourceTongues, targetTongues: moveSoFar.TargetTongues } }; },
             function () { return $('#main.committable').length > 0; },
             'undoable committable'));
         $('#roll').click(getGeneralisedButtonClick({ roll: 1 }, function () { return $('#main.state-ToRoll').length > 0; }));
@@ -998,8 +1019,19 @@ $(function ()
 
     $('#btn-chat').click(function () { sidebar('chat'); return false; });
     $('#btn-info').click(function () { sidebar('info'); return false; });
+    $('#settings-language-custom').click(function () { sidebar('translate'); return false; });
     $('#join').click(function () { return main.hasClass('state-Waiting') && main.hasClass('spectating'); });
     $('#goto-next-game').click(function () { if (main.data('next-game')) window.location.href = main.data('next-game') + window.location.hash; return false; });
+    $('#settings-helpers-select').change(function () { ($('#settings-helpers-select:checked').length ? hashRemove : hashAdd)('nohelpers'); });
+    $('#translate-create').click(function () { socketSend({ createLanguage: { name: $('#translate-name').val(), hashName: $('#translate-code').val() } }); return false; });
+
+    $('#btn-settings').click(function ()
+    {
+        sidebar('settings');
+        if (!settingsLoaded)
+            socketSend({ settings: 1 });
+        return false;
+    });
 
     var chatToken = 0;
     $('#chat-msg').keypress(function (e)
@@ -1046,7 +1078,7 @@ $(function ()
             {
                 var propName = props[propix].replace(/-value$/, '');
                 var val = props.getPropertyValue(propName);
-                if (vwRe.test(val))
+                if (vwRe.test(val) || val === '0px')
                 {
                     var imp = props.getPropertyPriority(propName);
                     if (imp)
@@ -1065,11 +1097,9 @@ $(function ()
             }
         }
     }
-    var cssText =
-        cssWithSidebar.join('\n') +
+    $('#converted-css').text(cssWithSidebar.join('\n') +
         '\n\n@media screen and (min-aspect-ratio: 100/' + boardHeight + ') {\n    ' + cssInMedia.join('\n    ') + '}' +
-        '\n\n@media screen and (min-aspect-ratio: ' + (100 + sidebarWidth) + '/' + boardHeight + ') {\n    ' + cssInMediaWithSidebar.join('\n    ') + '}';
-    $('#converted-css').text(cssText);
+        '\n\n@media screen and (min-aspect-ratio: ' + (100 + sidebarWidth) + '/' + boardHeight + ') {\n    ' + cssInMediaWithSidebar.join('\n    ') + '}');
 
     $('#chat-msgs-outer').scroll(function ()
     {
@@ -1089,6 +1119,45 @@ $(function ()
         }, 1);
     });
 
-    $(window).resize(onResize);
+    $(window)
+        .on('resize', onResize)
+        .on('hashchange', function ()
+        {
+            var hashes = getHash(), pos = hashes.indexOf('sidebar');
+
+            var c = hashes.length;
+            for (var a = hashes.length - 1; a >= 0; a--)
+            {
+                if (hashes[a].length < 1)
+                    hashes.splice(a, 1);
+                else
+                    for (var b = hashes.length - 1; b > a; b--)
+                        if (hashes[a] === hashes[b])
+                            hashes.splice(b, 1);
+            }
+
+            if (pos !== -1)
+            {
+                var sides = [];
+                for (var i = 0; i < sidebars.length; i++)
+                    if (hashes.indexOf(sidebars[i]) !== -1)
+                        sides.push(sidebars[i]);
+                if (sides.length === 0)
+                    hashes.splice(pos, 1);
+                else
+                    for (var i = 1; i < sides.length; i++)
+                        hashes.splice(hashes.indexOf(sides[i]), 1);
+            }
+            else
+                for (var i = 0; i < sidebars.length; i++)
+                    if ((pos = hashes.indexOf(sidebars[i])) !== -1)
+                        hashes.splice(pos, 1);
+            if (hashes.length !== c)
+                window.location.hash = hashes.join('/');
+            onResize();
+        });
+
     onResize();
+
+    $('#settings-helpers-select').prop('checked', getHash().indexOf('nohelpers') === -1);
 });

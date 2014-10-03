@@ -21,7 +21,7 @@ namespace LiBackgammon
             _url = url;
         }
 
-        public override void OnBeginConnection()
+        protected override void onBeginConnection()
         {
             using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             using (var db = new Db())
@@ -40,7 +40,7 @@ namespace LiBackgammon
             }
         }
 
-        public override void OnEndConnection()
+        protected override void onEndConnection()
         {
             lock (_server.ActiveMainSockets)
                 _server.ActiveMainSockets.Remove(this);

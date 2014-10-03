@@ -68,8 +68,11 @@ namespace LiBackgammon {
         ///    src: local(&apos;Lato Black&apos;), local(&apos;Lato-Black&apos;), url(http://fonts.gstatic.com/s/lato/v10/BVtM30trf7q_jfqYeHfjtA.woff) format(&apos;woff&apos;);
         ///}
         ///
+        ///body, select, input, textarea {
+        ///    font-family: &apos;Candara&apos;, &apos;Calibri&apos;, &apos;Tahoma&apos;, &apos;Verdana&apos;, &apos;Arial&apos;, sans-serif;
+        ///}
+        ///
         ///body {
-        ///    font-family: &quot;Candara&quot;, &quot;Calibri&quot;, &quot;Tahoma&quot;, &quot;Verdana&quot;, &quot;Arial&quot;, sans-serif;
         ///    margin: 0;
         ///    padding: 0;
         ///    background: hsl(27, 35%, 50%);
@@ -80,8 +83,7 @@ namespace LiBackgammon {
         ///        cursor: inherit;
         ///    }
         ///
-        ///    body#main-page::before {
-        ///        content:  [rest of string was truncated]&quot;;.
+        ///    body# [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Css {
             get {
@@ -90,25 +92,34 @@ namespace LiBackgammon {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to $(function ()
-        ///{
-        ///    // Keyboard shortcut handling
-        ///    $(&apos;*[accesskey]&apos;).each(function ()
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Favicon {
+            get {
+                object obj = ResourceManager.GetObject("Favicon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LiBackgammon = {
+        ///    getHash: function ()
         ///    {
-        ///        $(this).append($(&apos;&lt;span&gt;&apos;).addClass(&apos;shortcut&apos;).text($(this).attr(&apos;accesskey&apos;)));
-        ///    });
+        ///        var values = [];
+        ///        var dict = {};
+        ///        var hash = window.location.hash.replace(/^#/, &apos;&apos;).split(&apos;/&apos;);
+        ///        for (var i = 0; i &lt; hash.length; i++)
+        ///            if (hash[i].length)
+        ///            {
+        ///                if (/^(.*)=(.*)$/.test(hash[i]))
+        ///                    dict[RegExp.$1] = RegExp.$2;
+        ///                else
+        ///                    values.push(hash[i]);
+        ///            }
+        ///        return { values: values, dict: dict };
+        ///    },
         ///
-        ///    $(document).keydown(function (e)
-        ///    {
-        ///        if (e.keyCode === 18)  // ALT key
-        ///            $(document.body).addClass(&apos;show-shortcuts&apos;);
-        ///    });
-        ///
-        ///    $(document).keyup(function (e)
-        ///    {
-        ///        if (e.keyCode === 18)  // ALT key
-        ///            $(document.body).removeClass(&apos;show-shortcuts&apos;);
-        ///    }) [rest of string was truncated]&quot;;.
+        ///    has [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Js {
             get {
@@ -139,6 +150,8 @@ namespace LiBackgammon {
         /// <summary>
         ///   Looks up a localized string similar to $(function ()
         ///{
+        ///    var sidebars = [&apos;chat&apos;, &apos;info&apos;, &apos;settings&apos;, &apos;translate&apos;, &apos;translating&apos;];
+        ///
         ///    function makeArrow(source, dest)
         ///    {
         ///        var pieceSize = 5; // vw
@@ -152,8 +165,7 @@ namespace LiBackgammon {
         ///            };
         ///        }
         ///
-        ///        var srcPos = midPoint($(source)), dstPos = midPoint($(dest));
-        ///        var dx = dstPos.left - srcPo [rest of string was truncated]&quot;;.
+        ///        var srcPos = midPoi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string JsPlay {
             get {

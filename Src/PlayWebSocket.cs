@@ -28,7 +28,7 @@ namespace LiBackgammon
             _url = url;
         }
 
-        public override void OnBeginConnection()
+        protected override void onBeginConnection()
         {
             lock (_server.ActivePlaySockets)
             {
@@ -56,7 +56,7 @@ namespace LiBackgammon
             }
         }
 
-        public override void OnEndConnection()
+        protected override void onEndConnection()
         {
             lock (_server.ActivePlaySockets)
             {
@@ -287,7 +287,7 @@ namespace LiBackgammon
                     .Select(s => new { s.Name, s.HashName })
                     .ToJsonDict(s => s.HashName, s => s.Name);
                 var languages = db.Languages
-                    .Where(s => s.Approved)
+                    .Where(s => (s.Status & LanguageStatus.Approved) == LanguageStatus.Approved)
                     .Select(s => new { s.Name, s.HashName })
                     .ToJsonDict(s => s.HashName, s => s.Name);
                 SendMessage(new JsonDict { { "settings", new JsonDict { { "style", styles }, { "language", languages } } } });
@@ -309,16 +309,30 @@ namespace LiBackgammon
         }
 
         [SocketMethod(spectatorAllowed: true)]
+        private MessageInfo[] getLanguages()
+        {
+            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var db = new Db())
+                SendMessage(new JsonDict { { "languages", db.Languages.ToJsonList(l => new JsonDict {
+                    { "name", l.Name },
+                    { "hash", l.HashName },
+                    { "isApproved", (l.Status & LanguageStatus.Approved) == LanguageStatus.Approved },
+                    { "isComplete", (l.Status & LanguageStatus.CompletenessMask) == LanguageStatus.Complete }
+                }) } });
+            return null;
+        }
+
+        [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] createLanguage(string name, string hashName)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "error", "empty-name" } } } });
+                SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "Please provide the name of your language." } } } });
                 return null;
             }
             if (string.IsNullOrWhiteSpace(hashName))
             {
-                SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "error", "empty-hash" } } } });
+                SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "Please provide the language code for your language." } } } });
                 return null;
             }
             name = name.Trim();
@@ -330,23 +344,94 @@ namespace LiBackgammon
                 var already = db.Languages.Where(l => l.Name == name).FirstOrDefault();
                 if (already != null)
                 {
-                    SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "status", "already-name" }, { "hash", already.HashName }, { "name", already.Name } } } });
+                    SendMessage(new JsonDict { { "translateError", new JsonDict {
+                        { "error", "A language by this name already exists (and has been selected for you in the dropdown above). Please edit the existing language or choose a new name (e.g. “Français (Québec)” instead of just “Français”)." },
+                        { "hash", already.HashName },
+                        { "name", already.Name } } } });
                     return null;
                 }
                 already = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
                 if (already != null)
                 {
-                    SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "status", "already-hash" }, { "hash", already.HashName }, { "name", already.Name } } } });
+                    SendMessage(new JsonDict { { "translateError", new JsonDict {
+                        { "error", "A language with this ISO code already exists (and has been selected for you in the dropdown above). Please edit the existing language or use a different code. For regional variants, add the country code (e.g. “fr-CA” instead of just “fr”). For exotic languages, use “xx-” followed by the name, e.g. “xx-quenya”." },
+                        { "hash", already.HashName },
+                        { "name", already.Name } } } });
                     return null;
                 }
 
-                var newLang = new Language { Approved = false, HashName = hashName, Name = name };
-                SendMessage(new JsonDict { { "createLanguage", new JsonDict { { "status", "ok" }, { "hash", already.HashName }, { "name", already.Name } } } });
+                var token = Rnd.GenerateString(8);
+                var data = new LanguageData();
+                data.Suggestions[token] = new Dictionary<string, string>();
+                var newLang = new Language
+                {
+                    HashName = hashName,
+                    Name = name,
+                    Data = ClassifyJson.Serialize(data).ToString(),
+                    LastChange = DateTime.UtcNow,
+                    Status = LanguageStatus.Empty
+                };
+                db.Languages.Add(newLang);
+                db.SaveChanges();
+                tr.Complete();
+                SendMessage(new JsonDict { { "translate", new JsonDict { { "hash", newLang.HashName }, { "name", newLang.Name }, { "token", token } } } });
                 return null;
             }
         }
 
-        public override void OnTextMessageReceived(string msg)
+        [SocketMethod(spectatorAllowed: true)]
+        private MessageInfo[] translate(string hashName, string token = null)
+        {
+            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var db = new Db())
+            {
+                var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
+                if (language == null)
+                {
+                    SendMessage(new JsonDict { { "translateError", "The specified language no longer exists. It may have been deleted in the meantime." } });
+                    return null;
+                }
+                var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
+                var strings = data.Translations.ToJsonDict(str => str.Key, str => str.Value);
+                if (token == null)
+                    token = Rnd.GenerateString(8);
+                else if (data.Suggestions.ContainsKey(token))
+                    foreach (var kvp in data.Suggestions[token])
+                        strings[kvp.Key] = kvp.Value;
+                SendMessage(new JsonDict { { "translate", new JsonDict { { "hash", language.HashName }, { "name", language.Name }, { "token", token }, { "strings", strings } } } });
+            }
+            return null;
+        }
+
+        [SocketMethod(spectatorAllowed: true)]
+        private MessageInfo[] translateSubmit(string hashName, string token, string sel, string trans)
+        {
+            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var db = new Db())
+            {
+                var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
+                if (language == null)
+                {
+                    SendMessage(new JsonDict { { "translateError", "The specified language no longer exists. It may have been deleted in the meantime." } });
+                    return null;
+                }
+                var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
+                if (!data.Suggestions.ContainsKey(token))
+                    data.Suggestions[token] = new Dictionary<string, string>();
+                var removed = string.IsNullOrWhiteSpace(trans);
+                if (removed)
+                    data.Suggestions[token].Remove(sel);
+                else
+                    data.Suggestions[token][sel] = trans;
+                language.Data = ClassifyJson.Serialize(data).ToString();
+                db.SaveChanges();
+                tr.Complete();
+                SendMessage(new JsonDict { { "translationSaved", new JsonDict { { "sel", sel }, { "removed", removed } } } });
+            }
+            return null;
+        }
+
+        protected override void onTextMessageReceived(string msg)
         {
             var json = JsonValue.Parse(msg);
             if (!(json is JsonDict) || json.Count != 1)

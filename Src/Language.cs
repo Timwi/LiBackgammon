@@ -13,6 +13,7 @@ namespace LiBackgammon
         public string HashName { get; set; }
         public string Name { get; set; }
         public string Data { get; set; }
-        public bool Approved { get; set; }
+        public LanguageStatus Status { get; set; }
+        public DateTime LastChange { get; set; }
     }
 }

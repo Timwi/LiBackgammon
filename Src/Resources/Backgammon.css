@@ -136,7 +136,7 @@ body {
     }
 
     #newgame > #newgame-cube > #newgame-cube-label-None::after {
-        content: 'None';
+        content: '{"text":"None","hint":"Button allowing user to play without the doubling cube."}';
     }
 
     #newgame > #newgame-cube > #newgame-cube-label-None::before {
@@ -813,7 +813,7 @@ body {
                 position: relative;
                 left: -50%;
                 top: -50%;
-                content: '✗';
+                content: '{"text":"✗","notranslate":1}';
             }
 
         #main > #board > .dice.crossed > .cross {
@@ -2084,10 +2084,11 @@ body.hash-settings > #main > #sidebar::after {
 }
 
 #main > #sidebar > #settings > #settings-helpers > input:checked + label::before {
-    content: '✓';
+    content: '{"text":"✓","notranslate":1}';
     background: hsl(32,50%,50%);
     line-height: 1em;
     box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
+    text-align: center;
 }
 
 #main > #sidebar > #settings > .section > button {
@@ -2100,25 +2101,34 @@ body.hash-settings > #main > #sidebar::after {
     box-sizing: border-box;
     vertical-align: middle;
     margin-left: 1vw;
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="3" height="3"><path style="fill:hsl(32, 50%, 90%)" d="M 1 0 2 0 2 1 3 1 3 2 2 2 2 3 1 3 1 2 0 2 0 1 1 1 z"/></svg>'), linear-gradient(hsl(32, 52%, 44%), hsl(32, 52%, 22%));
-    background-size: 70% 70%, 100% 100%;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
 }
 
-    #main > #sidebar > #settings > .section > button::before {
-        content: 'Become a translator!';
+    #main > #sidebar > #settings > .section > button::after {
+        content: '';
+        display: block;
+        position: absolute;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="3" height="3"><path style="fill:hsl(32, 50%, 90%)" d="M 1 0 2 0 2 1 3 1 3 2 2 2 2 3 1 3 1 2 0 2 0 1 1 1 z"/></svg>');
+        background-size: 100%;
+        background-repeat: no-repeat;
+        width: 74%;
+        height: 74%;
+        left: 12%;
+        top: 12%;
+    }
+
+    #main > #sidebar > #settings > .section > button#settings-language-custom::before {
+        content: '{"text":"Become a translator!","notranslate":1}';
         right: 0;
         top: 2.2vw;
     }
 
 /* Translate */
 body.hash-translate > #main > #sidebar::after, body.hash-translating > #main > #sidebar::after {
-    content: 'Translate';
+    content: '{"text":"Translate","notranslate":1}';
 }
 
 #main > #sidebar > #translate > #translate-existing::before {
-    content: 'Edit a translation';
+    content: '{"text":"Edit a translation","notranslate":1}';
 }
 
 #main > #sidebar > #translate > .section > button {
@@ -2134,15 +2144,15 @@ body.hash-translate > #main > #sidebar::after, body.hash-translating > #main > #
     position: relative;
 }
 
-    #main > #sidebar > #translate > .section > button::before {
+    #main > #sidebar > #translate > .section > button::after {
         content: '';
         display: block;
         position: absolute;
         background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="3" height="4"><path style="fill:hsl(32, 50%, 90%)" d="M 0 0 3 2 0 4 z"/></svg>');
-        width: 54%;
-        height: 72%;
         background-size: 100%;
         background-repeat: no-repeat;
+        width: 54%;
+        height: 72%;
         left: 30%;
         top: 14%;
     }
@@ -2153,7 +2163,7 @@ body.hash-translate > #main > #sidebar::after, body.hash-translating > #main > #
     }
 
 #main > #sidebar > #translate > #translate-new::before {
-    content: 'Start a new translation';
+    content: '{"text":"Start a new translation","notranslate":1}';
 }
 
 #main > #sidebar > #translate > #translate-new > label {
@@ -2162,11 +2172,11 @@ body.hash-translate > #main > #sidebar::after, body.hash-translating > #main > #
 }
 
 #main > #sidebar > #translate > #translate-new > #translate-code-label::before {
-    content: 'ISO language code (e.g.\a0 fr):';
+    content: '{"text":"ISO language code (e.g.\a0 fr):","notranslate":1}';
 }
 
 #main > #sidebar > #translate > #translate-new > #translate-name-label::before {
-    content: 'Native language name (e.g.\a0 Français):';
+    content: '{"text":"Native language name (e.g.\a0 Français):","notranslate":1}';
 }
 
 #main > #sidebar > #translate > #translate-new > input {
@@ -2174,6 +2184,99 @@ body.hash-translate > #main > #sidebar::after, body.hash-translating > #main > #
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+}
+
+#main > #sidebar > #translate > #translate-new > #translate-error {
+    border: 1px solid hsl(0,52%,50%);
+    background: hsl(0,52%,80%);
+    padding: .3em .7em;
+    box-shadow: .2em .2em .2em rgba(0, 0, 0, .2);
+    font-size: 80%;
+    display: none;
+}
+
+#main > #sidebar > #translating {
+    top: 10vw;
+}
+
+    #main > #sidebar > #translating > .important {
+        border: 1px solid hsl(60,52%,50%);
+        background: hsl(60,52%,80%);
+        padding: .3em .7em;
+        box-shadow: .2em .2em .2em rgba(0, 0, 0, .2);
+        font-size: 80%;
+        margin-bottom: 1em;
+    }
+
+    #main > #sidebar > #translating > .translatable {
+        margin-bottom: .2em;
+    }
+
+        #main > #sidebar > #translating > .translatable > .orig {
+            font-weight: bold;
+            font-size: 90%;
+        }
+
+        #main > #sidebar > #translating > .translatable > .hint {
+            font-size: 70%;
+            margin-left: 1em;
+        }
+
+        #main > #sidebar > #translating > .translatable > .trans > input {
+            width: 100%;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+#main > #sidebar > select.translating {
+    width: 28vw;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    top: 6vw;
+    left: 0;
+    right: 0;
+    display: none;
+}
+
+body.hash-translating > #main > #sidebar > select.translating {
+    display: block;
+}
+
+#main > #sidebar > #translating > .translatable > .trans::after {
+    content: '{"text":"\a0 ","notranslate":1}';
+    display: block;
+    text-align: right;
+    font-size: 50%;
+    opacity: .7;
+}
+
+#main > #sidebar > #translating > .translatable > .trans.saved::after {
+    content: '{"text":"saved","notranslate":1}';
+    color: green;
+}
+
+#main > #sidebar > #translating > .translatable > .trans.saved > input {
+    background: hsl(60,52%,80%);
+}
+
+#main > #sidebar > #translating > .translatable > .trans.unsaved::after {
+    content: '{"text":"unsaved","notranslate":1}';
+    color: red;
+}
+
+#main > #sidebar > #translating > .translatable > .trans.unsaved > input {
+    background: white;
+}
+
+#main > #sidebar > #translating > .translatable > .trans.submitting::after {
+    content: '{"text":"submitting...","notranslate":1}';
+}
+
+#main > #sidebar > #translating > .translatable > .trans.submitting > input {
+    background: hsl(180,52%,80%);
 }
 
 /* Buttons and other UI elements */

@@ -24,11 +24,14 @@ namespace LiBackgammon
                     new HEAD(
                         new TITLE("LiBackgammon"),
 
+                        new LINK { rel = "shortcut icon", href = req.Url.WithParent("favicon").ToHref() },
+
                         // CSS must be above JS because the vh conversion might not trigger otherwise
                         new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
 
                         new STYLE { id = "converted-css" },
                         new STYLE { id = "converted-content" },
+                        new STYLE { id = "translated-content" },
 
                         new SCRIPT { src = jquery },
                         new SCRIPT { src = req.Url.WithParent("js").ToHref() },

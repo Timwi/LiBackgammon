@@ -210,6 +210,7 @@ namespace LiBackgammon
                                                 new SELECT { id = "translate-select" },
                                                 new BUTTON { id = "translate-edit" }),
                                             new DIV { id = "translate-new", class_ = "section" }._(
+                                                new DIV { id = "translate-error" },
                                                 new LABEL { for_ = "translate-name", id = "translate-name-label" },
                                                 new INPUT { id = "translate-name" },
                                                 new LABEL { for_ = "translate-code", id = "translate-code-label" },

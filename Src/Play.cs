@@ -103,6 +103,9 @@ namespace LiBackgammon
                                     + (game.RematchOffer != RematchOffer.None ? " rematch-" + game.RematchOffer : null)
                                     + (player == Player.White || (ActivePlaySockets.ContainsKey(publicId) && ActivePlaySockets[publicId].Any(s => s.Player == Player.White)) ? " online-White" : null)
                                     + (player == Player.Black || (ActivePlaySockets.ContainsKey(publicId) && ActivePlaySockets[publicId].Any(s => s.Player == Player.Black)) ? " online-Black" : null)
+#if DEBUG
+ + " debug"
+#endif
                             }
                                 .Data("moves", game.Moves)
                                 .Data("initial", game.InitialPosition)
@@ -133,7 +136,7 @@ namespace LiBackgammon
                                                 "nesw".Select(ch => new DIV { class_ = "side " + ch })),
                                             "abcdefg".Select(ch => new DIV { class_ = "pip " + ch }),
                                             new DIV { class_ = "cross" })),
-                                        new DIV { id = "cube" }._(new DIV { class_ = "inner" }._(new DIV { id = "cube-text" }._(pos.GameValue))),
+                                        new DIV { id = "cube" }._(new DIV { id = "cube-text" }._(pos.GameValue)),
                                         Enumerable.Range(0, 15).Select(pieceNum => new[] { "white", "black" }.Select(color => new DIV { class_ = "piece " + color })),
                                         new DIV { class_ = "overlay", id = "overlay-bottom" },
                                         new DIV { class_ = "overlay", id = "overlay-right" }),
@@ -177,23 +180,23 @@ namespace LiBackgammon
                                             new LABEL { for_ = "chat-msg", accesskey = "," },
                                             new INPUT { id = "chat-msg", type = itype.text }),
                                         new DIV { id = "info", class_ = "sidebar-tab" }._(
-                                            new DIV { class_ = "sidebar-inner-tab", id = "info-match" }._(
-                                                new DIV { id = "info-match-playto", class_ = "section" }._(new DIV { class_ = "content" }._(match.NullOr(m => m.MaxScore))),
-                                                new DIV { id = "info-match-cube", class_ = "section" + match.NullOr(m => " " + m.DoublingCubeRules) }._(new DIV { class_ = "content" }),
-                                                new DIV { id = "info-match-history", class_ = "section" }._(
-                                                    history.NullOr(h => Ut.NewArray<object>(
-                                                        h.Select(g => new A
-                                                        {
-                                                            class_ = "game " + (g.HasDoublingCube ? "cube" : "no-cube"),
-                                                            href = g.PublicID == publicId ? null :
-                                                                req.Url.WithParent("play/" + g.PublicID + (player == Player.White ? g.WhiteToken : player == Player.Black ? g.BlackToken : null)).ToFull()
-                                                        }._(
-                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(g.WhiteScore == 0 ? null : g.WhiteScore.ToString())),
-                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(g.BlackScore == 0 ? null : g.BlackScore.ToString())))),
-                                                        new HR(),
-                                                        new DIV { class_ = "game totals" }._(
-                                                            new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(history.Sum(g => g.WhiteScore))),
-                                                            new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(history.Sum(g => g.BlackScore))))))))),
+                                            new DIV { id = "info-game-history", class_ = "section" },
+                                            new DIV { id = "info-match-history", class_ = "section match" }._(
+                                                history.NullOr(h => Ut.NewArray<object>(
+                                                    h.Select(g => new A
+                                                    {
+                                                        class_ = "row game " + (g.HasDoublingCube ? "cube" : "no-cube"),
+                                                        href = g.PublicID == publicId ? null :
+                                                            req.Url.WithParent("play/" + g.PublicID + (player == Player.White ? g.WhiteToken : player == Player.Black ? g.BlackToken : null)).ToFull()
+                                                    }._(
+                                                        new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(g.WhiteScore == 0 ? null : g.WhiteScore.ToString())),
+                                                        new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(g.BlackScore == 0 ? null : g.BlackScore.ToString())))),
+                                                    new HR(),
+                                                    new DIV { class_ = "row totals" }._(
+                                                        new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(history.Sum(g => g.WhiteScore))),
+                                                        new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(history.Sum(g => g.BlackScore))))))),
+                                            new DIV { id = "info-match-playto", class_ = "section match" }._(new DIV { class_ = "content" }._(match.NullOr(m => m.MaxScore))),
+                                            new DIV { id = "info-match-cube", class_ = "section match" + match.NullOr(m => " " + m.DoublingCubeRules) }._(new DIV { class_ = "content" })),
                                         new DIV { id = "settings", class_ = "sidebar-tab" }._(
                                             new DIV { id = "settings-style", class_ = "section" }._(
                                                 new LABEL { for_ = "settings-style-select", accesskey = "w" },

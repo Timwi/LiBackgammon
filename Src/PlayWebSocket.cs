@@ -572,6 +572,7 @@ namespace LiBackgammon
                 yield return new MessageInfo(new JsonDict { { "dice", new JsonDict {
                     { "dice1", newMove.Dice1 },
                     { "dice2", newMove.Dice2 },
+                    { "doubled", newMove.Doubled },
                     { "state", (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString() } } } });
                 firstIteration = false;
 

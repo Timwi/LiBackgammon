@@ -810,6 +810,54 @@ $(function ()
         $(this).parent().removeClass('unsaved');
     }
 
+    function updateGameHistory()
+    {
+        var h = $('#info-game-history').empty();
+        var value = 1;
+        var isWhite = moves.length > 0 && moves[0].Dice1 > moves[0].Dice2;
+        var diceTotals = { white: 0, black: 0 };
+        var tongueName = function (t)
+        {
+            if (t === Tongue.BlackPrison || t === Tongue.WhitePrison)
+                return 'P';
+            if (t === Tongue.BlackHome || t === Tongue.WhiteHome)
+                return 'H';
+            return t + 1;
+        };
+        for (var i = 0; i < moves.length; i++)
+        {
+            value *= moves[i].Doubled ? 2 : 1;
+            var moveStr = '';
+            if ('SourceTongues' in moves[i])
+            {
+                if (moves[i].SourceTongues.length === 0)
+                    moveStr = '(no moves)';
+                else
+                {
+                    for (var j = 0; j < moves[i].SourceTongues.length; j++)
+                    {
+                        if (moveStr.length)
+                            moveStr += j % 2 ? '\u2003' : '\n';
+                        moveStr += tongueName(moves[i].SourceTongues[j]) + '→' + tongueName(moves[i].TargetTongues[j]);
+                    }
+                }
+            }
+            h.append($('<div>')
+                .addClass('row move ' + (isWhite ? 'white' : 'black'))
+                .append(moves[i].Doubled ? $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(value)) : null)
+                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('.crossed').addClass('dice-0 val-' + moves[i].Dice1))
+                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('.crossed').addClass('dice-1 val-' + moves[i].Dice2))
+                .append($('<div>').addClass('move').text(moveStr)));
+            diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2;
+            isWhite = !isWhite;
+        }
+        h.append('<hr>').append($('<div>')
+            .addClass('row totals')
+            .append(position.GameValue === null ? null : $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(value)))
+            .append($('<div>').addClass('white dice-total').append($('<div>').text(diceTotals.white)))
+            .append($('<div>').addClass('black dice-total').append($('<div>').text(diceTotals.black))));
+    }
+
     var main = $('#main');
 
     // Special tongues
@@ -839,10 +887,10 @@ $(function ()
     window.setInterval(function ()
     {
         windowTitleFlash = !windowTitleFlash;
-        document.title =
+        document.title = (main.hasClass('debug') ? '(debug) ' : '') + (
             ((main.hasClass('player-white') && main.hasClass('state-White')) || (main.hasClass('player-black') && main.hasClass('state-Black'))) && (main.hasClass('state-ToMove') || main.hasClass('state-ToRoll') || main.hasClass('state-ToConfirmDouble'))
                 ? (windowTitleFlash ? "▲▼▲▼ Your turn" : "▼▲▼▲ Your turn")
-                : 'LiBackgammon';
+                : 'LiBackgammon');
     }, 750);
 
     var position = main.data('initial');
@@ -918,6 +966,7 @@ $(function ()
                         processSocketQueue();
                 }
             });
+            updateGameHistory();
             return true;
         },
 
@@ -925,8 +974,9 @@ $(function ()
         {
             setState(args.state, true);
             moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
-            moves.push({ Dice1: args.dice1, Dice2: args.dice2 });
+            moves.push({ Dice1: args.dice1, Dice2: args.dice2, Doubled: args.doubled });
             lastMove = moves[moves.length - 1];
+            updateGameHistory();
 
             main
                 .removeClass('dice-2 dice-4 dice-start')
@@ -1149,10 +1199,19 @@ $(function ()
             };
         };
 
-        $('#commit').click(getGeneralisedButtonClick(
-            function () { return { move: { sourceTongues: moveSoFar.SourceTongues, targetTongues: moveSoFar.TargetTongues } }; },
-            function () { return $('#main.committable').length > 0; },
-            'undoable committable'));
+        $('#commit').click(function ()
+        {
+            if (!main.hasClass('spectating') && main.hasClass('committable'))
+            {
+                socketSend({ move: { sourceTongues: moveSoFar.SourceTongues, targetTongues: moveSoFar.TargetTongues } });
+                main.removeClass('undoable committable');
+                moves[moves.length - 1].SourceTongues = moveSoFar.SourceTongues;
+                moves[moves.length - 1].TargetTongues = moveSoFar.TargetTongues;
+                updateGameHistory();
+            }
+            return false;
+        });
+
         $('#roll').click(getGeneralisedButtonClick({ roll: 1 }, function () { return $('#main.state-ToRoll').length > 0; }));
         $('#double').click(getGeneralisedButtonClick({ double: 1 }));
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
@@ -1305,4 +1364,5 @@ $(function ()
     onResize();
     reconnect();
     hashChange();
+    updateGameHistory();
 });

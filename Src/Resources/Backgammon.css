@@ -79,7 +79,7 @@ body {
             display: none;
         }
 
-        #newgame > .row > label, #main > #sidebar > #info > #info-match > #info-match-playto > .content, #main > #sidebar > #info > #info-match > #info-match-cube > .content {
+        #newgame > .row > label, #main > #sidebar > #info > #info-match-playto > .content, #main > #sidebar > #info > #info-match-cube > .content {
             position: relative;
             display: inline-block;
             border-radius: 1vw;
@@ -109,13 +109,13 @@ body {
             content: 'Play as black.';
         }
 
-    #newgame > .row > input:checked + label, #main > #sidebar > #info > #info-match > #info-match-playto > .content, #main > #sidebar > #info > #info-match > #info-match-cube > .content {
+    #newgame > .row > input:checked + label, #main > #sidebar > #info > #info-match-playto > .content, #main > #sidebar > #info > #info-match-cube > .content {
         background-image: linear-gradient(180deg, hsl(32, 50%, 45%), hsl(32, 50%, 55%));
         border-color: hsl(32, 50%, 80%);
         box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
     }
 
-    #newgame > #newgame-playto > label, #main > #sidebar > #info > #info-match > #info-match-playto > .content {
+    #newgame > #newgame-playto > label, #main > #sidebar > #info > #info-match-playto > .content {
         font-family: 'Roboto', 'Calibri';
         font-size: 3.5vw;
         padding: .7vw 1.75vw;
@@ -130,7 +130,7 @@ body {
         line-height: 1.2em;
     }
 
-    #newgame > #newgame-cube > label, #main > #sidebar > #info > #info-match > .section > .content {
+    #newgame > #newgame-cube > label, #main > #sidebar > #info > .section > .content {
         padding: .4vw 1.5vw;
         font-size: 2vw;
     }
@@ -272,27 +272,27 @@ body {
             transform: translate(-50%, -50%);
         }
 
-            #waiting-games > li > .doubling-cube.None::after, #main > #sidebar > #info > #info-match > .section.None > .content::after {
+            #waiting-games > li > .doubling-cube.None::after, #main > #sidebar > #info > .section.None > .content::after {
                 content: 'no doubling cube';
             }
 
-            #waiting-games > li > .doubling-cube.None::before, #main > #sidebar > #info > #info-match > .section.None > .content::before {
+            #waiting-games > li > .doubling-cube.None::before, #main > #sidebar > #info > .section.None > .content::before {
                 content: 'This match is played without the doubling cube.';
             }
 
-            #waiting-games > li > .doubling-cube.Standard::after, #main > #sidebar > #info > #info-match > .section.Standard > .content::after {
+            #waiting-games > li > .doubling-cube.Standard::after, #main > #sidebar > #info > .section.Standard > .content::after {
                 content: 'standard doubling cube';
             }
 
-            #waiting-games > li > .doubling-cube.Standard::before, #main > #sidebar > #info > #info-match > .section.Standard > .content::before {
+            #waiting-games > li > .doubling-cube.Standard::before, #main > #sidebar > #info > .section.Standard > .content::before {
                 content: 'Every game of this match is played with the doubling cube.';
             }
 
-            #waiting-games > li > .doubling-cube.Crawford::after, #main > #sidebar > #info > #info-match > .section.Crawford > .content::after {
+            #waiting-games > li > .doubling-cube.Crawford::after, #main > #sidebar > #info > .section.Crawford > .content::after {
                 content: 'Crawford rule';
             }
 
-            #waiting-games > li > .doubling-cube.Crawford::before, #main > #sidebar > #info > #info-match > .section.Crawford > .content::before {
+            #waiting-games > li > .doubling-cube.Crawford::before, #main > #sidebar > #info > .section.Crawford > .content::before {
                 content: 'Crawford rule: The doubling cube is used in all games except the first game in which either player has one less than the winning number of points.';
             }
 
@@ -531,7 +531,9 @@ body {
     #main > #board > .piece, #main > #win > .piece, #main > #joinable > form > #join::before,
     #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
     #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg::before,
-    #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece,
+    #main > #sidebar > #info > #info-match-history > .row > .piece,
+    #main > #sidebar > #info > #info-game-history > .move::after,
+    #main > #sidebar > #info > #info-game-history > .totals > .dice-total,
     #newgame > #newgame-playas > label::after, #waiting-games > li > .piece {
         width: 5vw;
         height: 5vw;
@@ -545,7 +547,9 @@ body {
         #main.state-White > #infobar > #info-state > .piece,
         #main > #infobar > .infobox > .infobox-white > .piece,
         #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.White::before,
-        #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.white,
+        #main > #sidebar > #info > #info-match-history > .row > .piece.white,
+        #main > #sidebar > #info > #info-game-history > .move.white::after,
+        #main > #sidebar > #info > #info-game-history > .totals > .white,
         #newgame > #newgame-playas > label.white::after,
         #waiting-games > li > .piece.white {
             background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
@@ -564,7 +568,9 @@ body {
         #main.state-Black > #infobar > #info-state > .piece,
         #main > #infobar > .infobox > .infobox-black > .piece,
         #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.Black::before,
-        #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.black,
+        #main > #sidebar > #info > #info-match-history > .row > .piece.black,
+        #main > #sidebar > #info > #info-game-history > .move.black::after,
+        #main > #sidebar > #info > #info-game-history > .totals > .black,
         #newgame > #newgame-playas > label.black::after,
         #waiting-games > li > .piece.black {
             background-image: linear-gradient(135deg, hsl(32, 50%, 5%), hsl(32, 50%, 15%));
@@ -694,139 +700,8 @@ body {
     #main > #board > .dice {
         left: 61vw;
         top: 25.5vw;
-        width: 5vw;
-        height: 5vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        background-image: linear-gradient(135deg, #fff, #ddd);
-        border-radius: .5vw;
         opacity: 0;
-        pointer-events: none;
-        -moz-transition: opacity .2s ease-in-out;
-        -o-transition: opacity .2s ease-in-out;
-        -webkit-transition: opacity .2s ease-in-out;
-        transition: opacity .2s ease-in-out;
     }
-
-        #main > #board > .dice > .razor {
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
-            border-radius: inherit;
-        }
-
-            #main > #board > .dice > .razor > .face {
-                position: absolute;
-                background-image: linear-gradient(135deg, #ddd, #fff);
-                left: .5vw;
-                top: .5vw;
-                width: 4vw;
-                height: 4vw;
-                border-radius: 30%;
-            }
-
-            #main > #board > .dice > .razor > .side {
-                position: absolute;
-                border-radius: 50%;
-                width: 5vw;
-                height: 1vw;
-            }
-
-                #main > #board > .dice > .razor > .side.n {
-                    top: -.5vw;
-                    left: .25vw;
-                    background-image: linear-gradient(0deg, #fff, #ccc);
-                }
-
-                #main > #board > .dice > .razor > .side.w {
-                    top: .25vw;
-                    left: -.5vw;
-                    width: 1vw;
-                    height: 5vw;
-                    background-image: linear-gradient(-90deg, #fff, #ccc);
-                }
-
-                #main > #board > .dice > .razor > .side.s {
-                    bottom: -.5vw;
-                    left: .25vw;
-                    background-image: linear-gradient(0deg, #888, #eee);
-                }
-
-                #main > #board > .dice > .razor > .side.e {
-                    top: .25vw;
-                    right: -.5vw;
-                    width: 1vw;
-                    height: 5vw;
-                    background-image: linear-gradient(-90deg, #888, #eee);
-                }
-
-        #main > #board > .dice > .pip {
-            position: absolute;
-            background: black;
-            border-radius: 50%;
-            width: .7vw;
-            height: .7vw;
-            box-shadow: .075vw .075vw 0 white;
-        }
-
-            #main > #board > .dice > .pip.a, #main > #board > .dice > .pip.b, #main > #board > .dice > .pip.c {
-                left: 1vw;
-            }
-
-            #main > #board > .dice > .pip.g {
-                left: 2.2vw;
-            }
-
-            #main > #board > .dice > .pip.b, #main > #board > .dice > .pip.e, #main > #board > .dice > .pip.g {
-                top: 2.2vw;
-            }
-
-            #main > #board > .dice > .pip.d, #main > #board > .dice > .pip.e, #main > #board > .dice > .pip.f {
-                right: 1vw;
-            }
-
-            #main > #board > .dice > .pip.a, #main > #board > .dice > .pip.d {
-                top: 1vw;
-            }
-
-            #main > #board > .dice > .pip.c, #main > #board > .dice > .pip.f {
-                bottom: 1vw;
-            }
-
-        #main > #board > .dice.val-1 .pip.a, #main > #board > .dice.val-1 .pip.b, #main > #board > .dice.val-1 .pip.c, #main > #board > .dice.val-1 .pip.d, #main > #board > .dice.val-1 .pip.e, #main > #board > .dice.val-1 .pip.f, #main > #board > .dice.val-2 .pip.b, #main > #board > .dice.val-2 .pip.c,
-        #main > #board > .dice.val-2 .pip.d, #main > #board > .dice.val-2 .pip.e, #main > #board > .dice.val-2 .pip.g, #main > #board > .dice.val-3 .pip.a, #main > #board > .dice.val-3 .pip.b, #main > #board > .dice.val-3 .pip.e, #main > #board > .dice.val-3 .pip.f, #main > #board > .dice.val-4 .pip.b,
-        #main > #board > .dice.val-4 .pip.e, #main > #board > .dice.val-4 .pip.g, #main > #board > .dice.val-5 .pip.b, #main > #board > .dice.val-5 .pip.e, #main > #board > .dice.val-6 .pip.g {
-            display: none;
-        }
-
-        #main > #board > .dice > .cross {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            height: 8vw;
-            font-size: 8vw;
-            font-weight: bold;
-            color: hsl(0, 80%, 50%);
-            line-height: 1;
-            opacity: 0;
-            -moz-transition: opacity ease-in-out .2s;
-            -o-transition: opacity ease-in-out .2s;
-            -webkit-transition: opacity ease-in-out .2s;
-            transition: opacity ease-in-out .2s;
-        }
-
-            #main > #board > .dice > .cross::after {
-                position: relative;
-                left: -50%;
-                top: -50%;
-                content: '{"text":"✗","notranslate":1}';
-            }
-
-        #main > #board > .dice.crossed > .cross {
-            opacity: .8;
-        }
 
     #main.dice-2:not(.resigning) > #board > #dice-0, #main.dice-2:not(.resigning) > #board > #dice-1, #main.dice-4:not(.resigning) > #board > .dice {
         opacity: .5;
@@ -855,33 +730,34 @@ body {
         opacity: 1;
     }
 
-    #main > #board > #cube {
+    #main > #board > #cube, #main > #sidebar > #info > #info-game-history > .row > .cube {
+        position: absolute;
         background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
         border-radius: .5vw;
         width: 4.8vw;
         height: 4.8vw;
         box-shadow: .2vw .2vw .05vw white inset, -.2vw -.2vw .05vw #ccc inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+    }
+
+    #main > #board > #cube {
         left: 41.6vw;
         top: 25.6vw;
     }
 
-        #main > #board > #cube > .inner {
+        #main > #board > #cube > #cube-text, #main > #sidebar > #info > #info-game-history > .row > .cube > .cube-text {
             position: absolute;
             left: 50%;
             top: 50%;
             font-family: 'Roboto', 'Calibri';
             font-size: 3.5vw;
-            line-height: 3.75vw;
-            height: 4vw;
+            color: #222;
+            text-shadow: .075vw .075vw 0 white;
+            -moz-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+            -o-transform: translate(-50%,-50%);
+            -webkit-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
         }
-
-            #main > #board > #cube > .inner > #cube-text {
-                position: relative;
-                left: -50%;
-                top: -50%;
-                color: #222;
-                text-shadow: .075vw .075vw 0 white;
-            }
 
     #main.no-cube > #board > #cube {
         display: none;
@@ -1694,7 +1570,7 @@ body {
         }
 
         #main > #infobar > .mini-button#btn-info::before {
-            content: 'Match info, rules and help';
+            content: 'Game info';
         }
 
         #main > #infobar > .mini-button#btn-info:hover::after, #main > #infobar > .mini-button#btn-info:active::after, #main > #infobar > .mini-button#btn-info:focus::after {
@@ -1770,11 +1646,11 @@ body.hash-sidebar > #main {
         top: 0;
     }
 
-    #main > #sidebar > .sidebar-tab > .section, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section {
+    #main > #sidebar > .sidebar-tab > .section {
         position: relative;
     }
 
-        #main > #sidebar > .sidebar-tab > .section::before, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section::before, #main:not(.in-match) > #sidebar > #info > #info-match::after {
+        #main > #sidebar > .sidebar-tab > .section::before {
             text-align: left;
             display: block;
             font-size: 2.5vw;
@@ -1783,11 +1659,11 @@ body.hash-sidebar > #main {
             font-weight: bold;
         }
 
-        #main > #sidebar > .sidebar-tab > .section:not(:first-child)::before, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section:not(:first-child)::before {
+        #main > #sidebar > .sidebar-tab > .section:not(:first-child)::before {
             margin-top: 2vw;
         }
 
-        #main > #sidebar > .sidebar-tab > .section > select, #main > #sidebar > .sidebar-tab > .sidebar-inner-tab > .section > select {
+        #main > #sidebar > .sidebar-tab > .section > select, #main > #sidebar > .sidebar-tab > .section > select {
             width: 22vw;
             vertical-align: middle;
         }
@@ -1916,139 +1792,248 @@ body.hash-chat > #main > #sidebar::after {
     display: none;
 }
 
-/* Match info, help and rules */
+/* Game info */
 body.hash-info > #main > #sidebar::after {
-    content: 'Match info';
+    content: 'Game info';
 }
 
-#main:not(.in-match) > #sidebar > #info > #info-match > .section {
+#main:not(.in-match) > #sidebar > #info > .section.match {
     display: none;
 }
 
-#main:not(.in-match) > #sidebar > #info > #info-match::after {
-    content: 'This game is not part of a match.';
-}
-
-#main > #sidebar > #info > .sidebar-inner-tab > .section {
+#main > #sidebar > #info > .section {
     text-align: right;
 }
 
-    #main > #sidebar > #info > .sidebar-inner-tab > .section > .content {
+    #main > #sidebar > #info > .section > .content {
         display: inline-block;
     }
 
-        #main > #sidebar > #info > .sidebar-inner-tab > .section > .content::before {
+        #main > #sidebar > #info > .section > .content::before {
             top: 3.3vw;
             right: 0;
             width: 20vw;
         }
 
-#main > #sidebar > #info > #info-match > #info-match-playto::before {
+#main > #sidebar > #info > #info-game-history::before {
+    content: 'Game history';
+}
+
+#main > #sidebar > #info > #info-match-history::before {
+    content: 'Match history';
+}
+
+#main > #sidebar > #info > #info-match-playto::before {
     content: 'Playing to';
 }
 
-#main > #sidebar > #info > #info-match > #info-match-playto > .content::before {
+#main > #sidebar > #info > #info-match-playto > .content::before {
     content: 'Indicates how many points the match is played to. The first player to reach this many points wins the match.';
     top: 6.1vw;
 }
 
-#main > #sidebar > #info > #info-match > #info-match-cube::before {
+#main > #sidebar > #info > #info-match-cube::before {
     content: 'Doubling cube';
 }
 
-#main > #sidebar > #info > #info-match > #info-match-history::before {
-    content: 'Match history';
-}
-
-#main > #sidebar > #info > #info-match > #info-match-history {
+#main > #sidebar > #info > #info-match-history {
     counter-reset: section;
 }
 
-    #main > #sidebar > #info > #info-match > #info-match-history > hr {
-        border: none;
-        border-top: 2px solid hsl(32, 50%, 30%);
+#main > #sidebar > #info > .section > hr {
+    border: none;
+    border-top: .2vw solid hsl(32, 50%, 30%);
+    margin: 1vw 0;
+}
+
+#main > #sidebar > #info > #info-match-history > .game[href] {
+    cursor: pointer;
+}
+
+#main > #sidebar > #info > #info-match-history > .game:not([href]) {
+    background: hsl(32, 50%, 60%);
+}
+
+#main > #sidebar > #info > #info-match-history > .row, #main > #sidebar > #info > #info-game-history > .row {
+    display: block;
+    background: hsl(32, 50%, 80%);
+    position: relative;
+    text-align: center;
+    color: black;
+    text-decoration: none;
+    border-radius: 2vw;
+}
+
+#main > #sidebar > #info > #info-match-history > .row {
+    counter-increment: section;
+    padding: .5vw 1vw;
+    margin-bottom: .5vw;
+}
+
+#main > #sidebar > #info > #info-game-history > .row {
+    padding: .2vw .5vw .2vw 13vw;
+    margin-bottom: .2vw;
+    height: 2.5vw;
+}
+
+#main > #sidebar > #info > #info-match-history > .row::before, #main > #sidebar > #info > #info-match-history > .game::after {
+    display: block;
+}
+
+#main > #sidebar > #info > #info-match-history > .game::before {
+    content: '{"text":"Game {n}","n":"counter(section)"}';
+    font-weight: bold;
+    font-size: 1.7vw;
+}
+
+#main > #sidebar > #info > #info-match-history > .totals::before {
+    content: 'Score';
+    font-weight: bold;
+    font-size: 2.9vw;
+}
+
+#main > #sidebar > #info > #info-match-history > .game.cube::after {
+    content: '(with cube)';
+    font-size: 1.2vw;
+}
+
+#main > #sidebar > #info > #info-match-history > .game.no-cube::after {
+    content: '(no cube)';
+    font-size: 1.2vw;
+}
+
+#main > #sidebar > #info > #info-match-history > .row > .piece {
+    position: absolute;
+    top: 50%;
+    -moz-transform: translateY(-50%) scale(.7);
+    -ms-transform: translateY(-50%) scale(.7);
+    -o-transform: translateY(-50%) scale(.7);
+    -webkit-transform: translateY(-50%) scale(.7);
+    transform: translateY(-50%) scale(.7);
+}
+
+    #main > #sidebar > #info > #info-match-history > .row > .piece > .number {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        -webkit-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
+        font-family: 'Roboto', 'Calibri';
+        font-size: 3vw;
     }
 
-    #main > #sidebar > #info > #info-match > #info-match-history > a.game[href] {
-        cursor: pointer;
-    }
-
-    #main > #sidebar > #info > #info-match > #info-match-history > a.game:not([href]) {
-        background: hsl(32, 50%, 60%);
-    }
-
-    #main > #sidebar > #info > #info-match > #info-match-history > .game {
-        display: block;
-        clear: both;
-        background: hsl(32, 50%, 80%);
-        padding: .5vw 1vw;
-        margin-bottom: .5vw;
-        position: relative;
-        counter-increment: section;
-        text-align: center;
+    #main > #sidebar > #info > #info-match-history > .row > .piece.white {
+        left: 0;
         color: black;
-        text-decoration: none;
-        border-radius: 2vw;
     }
 
-        #main > #sidebar > #info > #info-match > #info-match-history > .game::before, #main > #sidebar > #info > #info-match > #info-match-history > .game::after {
-            display: block;
-        }
+    #main > #sidebar > #info > #info-match-history > .row > .piece.black {
+        right: 0;
+        color: white;
+    }
 
-        #main > #sidebar > #info > #info-match > #info-match-history > .game::before {
-            content: '{"text":"Game {n}","n":"counter(section)"}';
-            font-weight: bold;
-            font-size: 1.7vw;
-        }
+#main > #sidebar > #info > #info-game-history > .row.move::after {
+    content: '';
+    position: absolute;
+    left: 2vw;
+    top: 50%;
+    -moz-transform: translateY(-50%) scale(.5);
+    -ms-transform: translateY(-50%) scale(.5);
+    -o-transform: translateY(-50%) scale(.5);
+    -webkit-transform: translateY(-50%) scale(.5);
+    transform: translateY(-50%) scale(.5);
+}
 
-        #main > #sidebar > #info > #info-match > #info-match-history > .game.totals::before {
-            content: 'Score';
-            font-weight: bold;
-            font-size: 2.9vw;
-        }
+#main > #sidebar > #info > #info-game-history > .row > .cube, #main > #sidebar > #info > #info-game-history > .row > .dice {
+    -moz-transform: translateY(-50%) scale(.5);
+    -ms-transform: translateY(-50%) scale(.5);
+    -o-transform: translateY(-50%) scale(.5);
+    -webkit-transform: translateY(-50%) scale(.5);
+    transform: translateY(-50%) scale(.5);
+    top: 50%;
+    position: absolute;
+}
 
-        #main > #sidebar > #info > #info-match > #info-match-history > .game.cube::after {
-            content: '(with cube)';
-            font-size: 1.2vw;
-        }
+#main > #sidebar > #info > #info-game-history > .row > .cube {
+    left: -1vw;
+}
 
-        #main > #sidebar > #info > #info-match > #info-match-history > .game.no-cube::after {
-            content: '(no cube)';
-            font-size: 1.2vw;
-        }
+#main > #sidebar > #info > #info-game-history > .row > .dice-0 {
+    left: 5vw;
+}
 
-        #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece {
-            position: absolute;
-            top: 50%;
-            -moz-transform: translateY(-50%) scale(.7);
-            -ms-transform: translateY(-50%) scale(.7);
-            -o-transform: translateY(-50%) scale(.7);
-            -webkit-transform: translateY(-50%) scale(.7);
-            transform: translateY(-50%) scale(.7);
-        }
+#main > #sidebar > #info > #info-game-history > .row > .dice-1 {
+    left: 8vw;
+}
 
-            #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece > .number {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                -moz-transform: translate(-50%,-50%);
-                -ms-transform: translate(-50%,-50%);
-                -o-transform: translate(-50%,-50%);
-                -webkit-transform: translate(-50%,-50%);
-                transform: translate(-50%,-50%);
-                font-family: 'Roboto', 'Calibri';
-                font-size: 3vw;
-            }
+#main > #sidebar > #info > #info-game-history > .row > .move {
+    position: absolute;
+    font-family: 'Roboto', 'Calibri';
+    font-size: .9vw;
+    line-height: .9vw;
+    white-space: pre;
+    text-align: right;
+    right: .75vw;
+    top: 50%;
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
 
-            #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.white {
-                left: 0;
-                color: black;
-            }
+#main > #sidebar > #info > #info-game-history > .totals > .dice-total {
+    position: absolute;
+    -moz-transform: translateY(-50%) scale(.5);
+    -ms-transform: translateY(-50%) scale(.5);
+    -o-transform: translateY(-50%) scale(.5);
+    -webkit-transform: translateY(-50%) scale(.5);
+    transform: translateY(-50%) scale(.5);
+    top: 50%;
+}
 
-            #main > #sidebar > #info > #info-match > #info-match-history > .game > .piece.black {
-                right: 0;
-                color: white;
-            }
+    #main > #sidebar > #info > #info-game-history > .totals > .dice-total > div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 2.5vw;
+        font-family: 'Roboto', 'Calibri';
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        -webkit-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
+    }
+
+    #main > #sidebar > #info > #info-game-history > .totals > .dice-total::before {
+        content: 'Dice totals.';
+        top: 100%;
+        left: 0;
+        white-space: nowrap;
+        -moz-transform: scale(2);
+        -ms-transform: scale(2);
+        -o-transform: scale(2);
+        -webkit-transform: scale(2);
+        transform: scale(2);
+        -moz-transform-origin: 0 0;
+        -ms-transform-origin: 0 0;
+        -o-transform-origin: 0 0;
+        -webkit-transform-origin: 0 0;
+        transform-origin: 0 0;
+    }
+
+#main > #sidebar > #info > #info-game-history > .totals > .white {
+    left: 5vw;
+    color: black;
+}
+
+#main > #sidebar > #info > #info-game-history > .totals > .black {
+    left: 8vw;
+    color: white;
+}
 
 /* Settings */
 body.hash-settings > #main > #sidebar::after {
@@ -2356,12 +2341,14 @@ body.show-shortcuts .shortcut {
 
 /* Tooltips */
 #main > #infobar > #info-pips::before, #main > #infobar > #info-match-score::before,
-#main > #infobar > .mini-button::before, #main > #sidebar > #info > #info-match > .section > .content::before,
+#main > #infobar > .mini-button::before, #main > #sidebar > #info > .section > .content::before,
 #main > #sidebar > #settings > .section > button::before,
 #newgame > .row > label::before, #waiting-games > li > .doubling-cube::before,
-#waiting-games > li > .playto::before, #waiting-games > li > .piece::before {
+#waiting-games > li > .playto::before, #waiting-games > li > .piece::before,
+#main > #sidebar > #info > #info-game-history > .totals > .dice-total::before {
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
     -moz-transition: opacity .1s ease-in-out;
     -o-transition: opacity .1s ease-in-out;
     -webkit-transition: opacity .1s ease-in-out;
@@ -2381,13 +2368,150 @@ body.show-shortcuts .shortcut {
 }
 
 #main > #infobar > #info-pips:hover::before, #main > #infobar > #info-match-score:hover::before,
-#main > #infobar > .mini-button:hover::before, #main > #sidebar > #info > #info-match > .section > .content:hover::before,
+#main > #infobar > .mini-button:hover::before, #main > #sidebar > #info > .section > .content:hover::before,
 #main > #sidebar > #settings > .section > button:hover::before,
 #newgame > .row > label:hover::before, #waiting-games > li > .doubling-cube:hover::before,
-#waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before {
+#waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before,
+#main > #sidebar > #info > #info-game-history > .totals > .dice-total:hover::before {
     opacity: 1;
     visibility: visible;
 }
+
+/* Dice */
+.dice {
+    width: 5vw;
+    height: 5vw;
+    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+    background-image: linear-gradient(135deg, #fff, #ddd);
+    border-radius: .5vw;
+    pointer-events: none;
+    -moz-transition: opacity .2s ease-in-out;
+    -o-transition: opacity .2s ease-in-out;
+    -webkit-transition: opacity .2s ease-in-out;
+    transition: opacity .2s ease-in-out;
+}
+
+    .dice > .razor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+        border-radius: inherit;
+    }
+
+        .dice > .razor > .face {
+            position: absolute;
+            background-image: linear-gradient(135deg, #ddd, #fff);
+            left: .5vw;
+            top: .5vw;
+            width: 4vw;
+            height: 4vw;
+            border-radius: 30%;
+        }
+
+        .dice > .razor > .side {
+            position: absolute;
+            border-radius: 50%;
+            width: 5vw;
+            height: 1vw;
+        }
+
+            .dice > .razor > .side.n {
+                top: -.5vw;
+                left: .25vw;
+                background-image: linear-gradient(0deg, #fff, #ccc);
+            }
+
+            .dice > .razor > .side.w {
+                top: .25vw;
+                left: -.5vw;
+                width: 1vw;
+                height: 5vw;
+                background-image: linear-gradient(-90deg, #fff, #ccc);
+            }
+
+            .dice > .razor > .side.s {
+                bottom: -.5vw;
+                left: .25vw;
+                background-image: linear-gradient(0deg, #888, #eee);
+            }
+
+            .dice > .razor > .side.e {
+                top: .25vw;
+                right: -.5vw;
+                width: 1vw;
+                height: 5vw;
+                background-image: linear-gradient(-90deg, #888, #eee);
+            }
+
+    .dice > .pip {
+        position: absolute;
+        background: black;
+        border-radius: 50%;
+        width: .7vw;
+        height: .7vw;
+        box-shadow: .075vw .075vw 0 white;
+    }
+
+        .dice > .pip.a, .dice > .pip.b, .dice > .pip.c {
+            left: 1vw;
+        }
+
+        .dice > .pip.g {
+            left: 2.2vw;
+        }
+
+        .dice > .pip.b, .dice > .pip.e, .dice > .pip.g {
+            top: 2.2vw;
+        }
+
+        .dice > .pip.d, .dice > .pip.e, .dice > .pip.f {
+            right: 1vw;
+        }
+
+        .dice > .pip.a, .dice > .pip.d {
+            top: 1vw;
+        }
+
+        .dice > .pip.c, .dice > .pip.f {
+            bottom: 1vw;
+        }
+
+    .dice.val-1 .pip.a, .dice.val-1 .pip.b, .dice.val-1 .pip.c, .dice.val-1 .pip.d, .dice.val-1 .pip.e, .dice.val-1 .pip.f, .dice.val-2 .pip.b, .dice.val-2 .pip.c,
+    .dice.val-2 .pip.d, .dice.val-2 .pip.e, .dice.val-2 .pip.g, .dice.val-3 .pip.a, .dice.val-3 .pip.b, .dice.val-3 .pip.e, .dice.val-3 .pip.f, .dice.val-4 .pip.b,
+    .dice.val-4 .pip.e, .dice.val-4 .pip.g, .dice.val-5 .pip.b, .dice.val-5 .pip.e, .dice.val-6 .pip.g {
+        display: none;
+    }
+
+    .dice > .cross {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        height: 8vw;
+        font-size: 8vw;
+        font-weight: bold;
+        color: hsl(0, 80%, 50%);
+        line-height: 1;
+        opacity: 0;
+        -moz-transition: opacity ease-in-out .2s;
+        -o-transition: opacity ease-in-out .2s;
+        -webkit-transition: opacity ease-in-out .2s;
+        transition: opacity ease-in-out .2s;
+    }
+
+        .dice > .cross::after {
+            position: relative;
+            left: -50%;
+            top: -50%;
+            content: '{"text":"✗","notranslate":1}';
+        }
+
+    .dice.crossed > .cross {
+        opacity: .8;
+    }
+
 
 @keyframes hypo-blink {
     from {

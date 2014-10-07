@@ -436,6 +436,14 @@ body {
                 border-color: hsla(110,70%,70%,.7);
             }
 
+                #main > #board > .tongue.selectable.top {
+                    border-bottom: 5vw solid transparent;
+                }
+
+                #main > #board > .tongue.selectable.bottom {
+                    border-top: 5vw solid transparent;
+                }
+
         #main > #board > .tongue-0, #main > #board > .tongue-23 {
             left: 81vw;
         }

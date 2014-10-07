@@ -835,6 +835,16 @@ $(function ()
     var translationNotes = {};
     var reconnectInterval = 0;
 
+    var windowTitleFlash = false;
+    window.setInterval(function ()
+    {
+        windowTitleFlash = !windowTitleFlash;
+        document.title =
+            ((main.hasClass('player-white') && main.hasClass('state-White')) || (main.hasClass('player-black') && main.hasClass('state-Black'))) && (main.hasClass('state-ToMove') || main.hasClass('state-ToRoll') || main.hasClass('state-ToConfirmDouble'))
+                ? (windowTitleFlash ? "▲▼▲▼ Your turn" : "▼▲▼▲ Your turn")
+                : 'LiBackgammon';
+    }, 750);
+
     var position = main.data('initial');
     if (moves.length > 0)
     {

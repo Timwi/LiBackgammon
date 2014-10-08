@@ -1132,7 +1132,7 @@ body {
     #main.state-Black.state-Waiting.player-black > #waiting,
     #main.state-Random.state-Waiting.player-random > #waiting,
     #main.state-Waiting.spectating > #joinable,
-    #main.state-Won > #win {
+    #main.state-Won:not(.viewing-history) > #win {
         opacity: 1;
         visibility: visible;
         -moz-transform: translateY(-50%);

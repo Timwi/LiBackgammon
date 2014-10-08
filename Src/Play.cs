@@ -67,7 +67,7 @@ namespace LiBackgammon
                 // H = Show/hide move helpers
                 // I = Match info, rules and help
                 // J = Join game
-                // K
+                // K = Back to game (leave history)
                 // L = Language
                 // M
                 // N = Resign cancel
@@ -127,6 +127,7 @@ namespace LiBackgammon
                                         new BUTTON { accesskey = "e", id = "reject" },
                                         new BUTTON { accesskey = "y", id = "resign-confirm" },
                                         new BUTTON { accesskey = "n", id = "resign-cancel" },
+                                        new BUTTON { accesskey = "k", id = "leave-history" },
                                         new DIV { id = "info-line" },
                                         new DIV { class_ = "dice-back", id = "dice-back-white" },
                                         new DIV { class_ = "dice-back", id = "dice-back-black" },

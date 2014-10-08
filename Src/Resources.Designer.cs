@@ -102,6 +102,16 @@ namespace LiBackgammon {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] FaviconDebug {
+            get {
+                object obj = ResourceManager.GetObject("FaviconDebug", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LiBackgammon = {
         ///    getHash: function ()
         ///    {

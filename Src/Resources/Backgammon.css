@@ -660,41 +660,51 @@ body {
         opacity: .5;
     }
 
-    #main.dice-start.state-White > #board > #dice-back-white::before,
-    #main.dice-start.state-White > #board > #dice-back-white::after {
+    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
+    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
+    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
+    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after {
         position: absolute;
         color: hsl(32, 50%, 95%);
         padding-right: .6vw;
         right: 100%;
     }
 
-    #main.dice-start.state-Black > #board > #dice-back-black::before,
-    #main.dice-start.state-Black > #board > #dice-back-black::after {
+    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
+    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
+    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before,
+    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
         position: absolute;
         color: hsl(32, 50%, 10%);
         padding-left: .6vw;
         left: 100%;
     }
 
-    #main.dice-start.state-White > #board > #dice-back-white::before,
-    #main.dice-start.state-Black > #board > #dice-back-black::before {
+    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
+    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
+    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
+    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
         font-size: 2.2vw;
         top: .8vw;
     }
 
-    #main.dice-start.state-White > #board > #dice-back-white::after,
-    #main.dice-start.state-Black > #board > #dice-back-black::after {
-        font-size: 1.3vw;
-        bottom: .8vw;
-        content: 'starts';
-    }
-
-    #main.dice-start.state-White > #board > #dice-back-white::before {
+    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
+    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before {
         content: 'white';
     }
 
-    #main.dice-start.state-Black > #board > #dice-back-black::before {
+    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
+    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
         content: 'black';
+    }
+
+    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
+    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
+    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after,
+    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
+        font-size: 1.3vw;
+        bottom: .8vw;
+        content: 'starts';
     }
 
     #main > #board > .dice {
@@ -703,30 +713,39 @@ body {
         opacity: 0;
     }
 
-    #main.dice-2:not(.resigning) > #board > #dice-0, #main.dice-2:not(.resigning) > #board > #dice-1, #main.dice-4:not(.resigning) > #board > .dice {
+    #main.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0, #main.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1, #main.dice-4:not(.resigning):not(.viewing-history) > #board > .dice {
         opacity: .5;
     }
 
-    #main.dice-2 > #board > #dice-1, #main.dice-4 > #board > #dice-2 {
+    #main.dice-2:not(.viewing-history) > #board > #dice-1, #main.dice-4:not(.viewing-history) > #board > #dice-2,
+    #main.viewing-history.history-dice-2 > #board > #dice-1, #main.viewing-history.history-dice-4 > #board > #dice-2 {
         left: 68vw;
     }
 
-    #main.dice-4 > #board > #dice-0 {
+    #main.dice-4:not(.viewing-history) > #board > #dice-0, #main.viewing-history.history-dice-4 > #board > #dice-0 {
         left: 54vw;
     }
 
-    #main.dice-4 > #board > #dice-3 {
+    #main.dice-4:not(.viewing-history) > #board > #dice-3, #main.viewing-history.history-dice-4 > #board > #dice-3 {
         left: 75vw;
     }
 
-    #main.player-white.state-White.state-ToMove.dice-2:not(.resigning) > #board > #dice-0,
-    #main.player-white.state-White.state-ToMove.dice-2:not(.resigning) > #board > #dice-1,
-    #main.player-white.state-White.state-ToMove.dice-4:not(.resigning) > #board > .dice,
-    #main.player-white.state-White.state-ToMove.dice-start:not(.resigning) > #board > .dice-back,
-    #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning) > #board > #dice-0,
-    #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning) > #board > #dice-1,
-    #main.player-black.state-Black.state-ToMove.dice-4:not(.resigning) > #board > .dice,
-    #main.player-black.state-Black.state-ToMove.dice-start:not(.resigning) > #board > .dice-back {
+    #main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
+    #main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
+    #main.player-white.state-White.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
+    #main.player-white.state-White.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
+    #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
+    #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
+    #main.player-black.state-Black.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
+    #main.player-black.state-Black.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
+    #main.viewing-history.history-dice-2 > #board > #dice-0,
+    #main.viewing-history.history-dice-2 > #board > #dice-1,
+    #main.viewing-history.history-dice-4 > #board > .dice,
+    #main.viewing-history.history-dice-start > #board > .dice-back,
+    #main.viewing-history.history-dice-2 > #board > #dice-0,
+    #main.viewing-history.history-dice-2 > #board > #dice-1,
+    #main.viewing-history.history-dice-4 > #board > .dice,
+    #main.viewing-history.history-dice-start > #board > .dice-back {
         opacity: 1;
     }
 
@@ -763,11 +782,13 @@ body {
         display: none;
     }
 
-    #main.cube-white > #board > #cube {
+    #main.cube-white:not(.viewing-history) > #board > #cube,
+    #main.viewing-history.history-cube-white > #board > #cube {
         top: 2.3vw;
     }
 
-    #main.cube-black > #board > #cube {
+    #main.cube-black:not(.viewing-history) > #board > #cube,
+    #main.viewing-history.history-cube-black > #board > #cube {
         top: 48.9vw;
     }
 
@@ -800,13 +821,8 @@ body {
         transition: opacity ease-in-out .2s;
     }
 
-    #main > #board > #commit {
-        font-size: 1.8vw;
-        left: 9vw;
-    }
-
-        #main > #board > #commit::before {
-            content: 'Commit';
+        #main > #board > button#leave-history {
+            width: 25vw;
         }
 
     #main > #board > #undo {
@@ -818,13 +834,21 @@ body {
             content: 'Undo';
         }
 
-    #main > #board > #accept {
+    #main > #board > #accept, #main > #board > #commit, #main > #board > #leave-history {
         font-size: 1.8vw;
         left: 9vw;
     }
 
+        #main > #board > #commit::before {
+            content: 'Commit';
+        }
+
         #main > #board > #accept::before {
             content: 'Accept';
+        }
+
+        #main > #board > #leave-history::before {
+            content: 'Go back to the game';
         }
 
     #main > #board > #reject {
@@ -867,27 +891,28 @@ body {
             content: 'Cancel';
         }
 
-    #main.state-ToRoll:not(.resigning) > #board > #roll,
-    #main.state-ToRoll:not(.resigning) > #board > #double,
-    #main.state-ToConfirmDouble:not(.resigning) > #board > #accept,
-    #main.state-ToConfirmDouble:not(.resigning) > #board > #reject {
+    #main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
+    #main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
+    #main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
+    #main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject {
         opacity: .5;
         visibility: visible;
         pointer-events: none;
     }
 
-    #main.undoable:not(.resigning) > #board > #undo,
-    #main.committable:not(.resigning) > #board > #commit,
-    #main.player-white.state-White.state-ToRoll:not(.resigning) > #board > #roll,
-    #main.player-black.state-Black.state-ToRoll:not(.resigning) > #board > #roll,
-    #main.player-white.state-White.state-ToRoll:not(.resigning) > #board > #double,
-    #main.player-black.state-Black.state-ToRoll:not(.resigning) > #board > #double,
-    #main.player-white.state-White.state-ToConfirmDouble:not(.resigning) > #board > #accept,
-    #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning) > #board > #accept,
-    #main.player-white.state-White.state-ToConfirmDouble:not(.resigning) > #board > #reject,
-    #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning) > #board > #reject,
-    #main.resigning > #board > #resign-confirm,
-    #main.resigning > #board > #resign-cancel {
+    #main.undoable:not(.resigning):not(.viewing-history) > #board > #undo,
+    #main.committable:not(.resigning):not(.viewing-history) > #board > #commit,
+    #main.player-white.state-White.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
+    #main.player-black.state-Black.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
+    #main.player-white.state-White.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
+    #main.player-black.state-Black.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
+    #main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
+    #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
+    #main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
+    #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
+    #main.resigning:not(.viewing-history) > #board > #resign-confirm,
+    #main.resigning:not(.viewing-history) > #board > #resign-cancel,
+    #main.viewing-history > #board > #leave-history {
         opacity: 1;
         visibility: visible;
         pointer-events: all;
@@ -917,7 +942,7 @@ body {
         text-shadow: .1vw .1vw .1vw hsl(32, 50%, 80%);
     }
 
-    #main.auto-0 > #board > #info-line, #main.auto-1 > #board > #info-line, #main.resigning > #board > #info-line {
+    #main.auto-0:not(.viewing-history) > #board > #info-line, #main.auto-1:not(.viewing-history) > #board > #info-line, #main.resigning:not(.viewing-history) > #board > #info-line {
         opacity: 1;
         -moz-transform: translateY(-50%) scale(1.5);
         -ms-transform: translateY(-50%) scale(1.5);
@@ -926,24 +951,24 @@ body {
         transform: translateY(-50%) scale(1.5);
     }
 
-        #main.auto-0 > #board > #info-line::before {
-            content: 'No moves';
-        }
+    #main.auto-0 > #board > #info-line::before {
+        content: 'No moves';
+    }
 
-        #main.auto-1 > #board > #info-line::before {
-            content: 'Forced move';
-        }
+    #main.auto-1 > #board > #info-line::before {
+        content: 'Forced move';
+    }
 
-        #main.resigning > #board > #info-line::before {
-            content: 'Resign?';
-        }
+    #main.resigning > #board > #info-line::before {
+        content: 'Resign?';
+    }
 
-    #main.state-ToConfirmDouble > #board > #info-line {
+    #main.state-ToConfirmDouble:not(.viewing-history) > #board > #info-line {
         left: 47vw;
         opacity: 1;
     }
 
-        #main.state-ToConfirmDouble > #board > #info-line::before {
+        #main.state-ToConfirmDouble:not(.viewing-history) > #board > #info-line::before {
             content: 'Double?';
         }
 
@@ -1864,6 +1889,10 @@ body.hash-info > #main > #sidebar::after {
     border-radius: 2vw;
 }
 
+    #main > #sidebar > #info > #info-game-history > .row.current {
+        background: hsl(32,50%,50%);
+    }
+
 #main > #sidebar > #info > #info-match-history > .row {
     counter-increment: section;
     padding: .5vw 1vw;
@@ -2482,7 +2511,7 @@ body.show-shortcuts .shortcut {
     .dice.val-1 .pip.a, .dice.val-1 .pip.b, .dice.val-1 .pip.c, .dice.val-1 .pip.d, .dice.val-1 .pip.e, .dice.val-1 .pip.f, .dice.val-2 .pip.b, .dice.val-2 .pip.c,
     .dice.val-2 .pip.d, .dice.val-2 .pip.e, .dice.val-2 .pip.g, .dice.val-3 .pip.a, .dice.val-3 .pip.b, .dice.val-3 .pip.e, .dice.val-3 .pip.f, .dice.val-4 .pip.b,
     .dice.val-4 .pip.e, .dice.val-4 .pip.g, .dice.val-5 .pip.b, .dice.val-5 .pip.e, .dice.val-6 .pip.g {
-        display: none;
+        visibility: hidden;
     }
 
     .dice > .cross {
@@ -2512,6 +2541,16 @@ body.show-shortcuts .shortcut {
         opacity: .8;
     }
 
+#main.viewing-history > #board > .dice .pip {
+    visibility: visible;
+}
+
+#main.viewing-history > #board > .dice.history-val-1 .pip.a, #main.viewing-history > #board > .dice.history-val-1 .pip.b, #main.viewing-history > #board > .dice.history-val-1 .pip.c, #main.viewing-history > #board > .dice.history-val-1 .pip.d, #main.viewing-history > #board > .dice.history-val-1 .pip.e, #main.viewing-history > #board > .dice.history-val-1 .pip.f, #main.viewing-history > #board > .dice.history-val-2 .pip.b, #main.viewing-history > #board > .dice.history-val-2 .pip.c,
+#main.viewing-history > #board > .dice.history-val-2 .pip.d, #main.viewing-history > #board > .dice.history-val-2 .pip.e, #main.viewing-history > #board > .dice.history-val-2 .pip.g, #main.viewing-history > #board > .dice.history-val-3 .pip.a, #main.viewing-history > #board > .dice.history-val-3 .pip.b, #main.viewing-history > #board > .dice.history-val-3 .pip.e, #main.viewing-history > #board > .dice.history-val-3 .pip.f, #main.viewing-history > #board > .dice.history-val-4 .pip.b,
+#main.viewing-history > #board > .dice.history-val-4 .pip.e, #main.viewing-history > #board > .dice.history-val-4 .pip.g, #main.viewing-history > #board > .dice.history-val-5 .pip.b, #main.viewing-history > #board > .dice.history-val-5 .pip.e, #main.viewing-history > #board > .dice.history-val-6 .pip.g,
+#main.viewing-history > #board > .dice > .cross {
+    visibility: hidden;
+}
 
 @keyframes hypo-blink {
     from {

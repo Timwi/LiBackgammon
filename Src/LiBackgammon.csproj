@@ -129,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Favicon.png" />
+    <Content Include="Resources\FaviconDebug.png" />
     <Content Include="Resources\Play.js" />
     <Content Include="Resources\Main.js" />
     <Content Include="Resources\JQuery.js" />

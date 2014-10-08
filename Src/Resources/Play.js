@@ -234,10 +234,13 @@ $(function ()
                     }
                 });
         }
-        if (animationQueue.length > 0)
-            processAnimationQueue();
-        else if (callback)
-            setTimeout(callback, 100);
+        if (mode === 'animate')
+        {
+            if (animationQueue.length > 0)
+                processAnimationQueue();
+            else if (callback)
+                setTimeout(callback, 100);
+        }
         return newPos;
     }
 
@@ -540,6 +543,17 @@ $(function ()
         return val + 'vw';
     }
 
+    function setupPosition(pos)
+    {
+        var whites = $('#board>.piece.white'), blacks = $('#board>.piece.black');
+        var whiteIndex = 0, blackIndex = 0;
+        for (var tng = 0; tng < Tongue.NumTongues; tng++)
+            for (var i = (tng < 12 ? pos.NumPiecesPerTongue[tng] - 1 : 0) ; (tng < 12) ? (i >= 0) : (i < pos.NumPiecesPerTongue[tng]) ; (tng < 12 ? i-- : i++))
+                $(pos.IsWhitePerTongue[tng] ? whites[whiteIndex++] : blacks[blackIndex++])
+                    .css({ left: convertFromVw(leftFromTongue(tng)), top: convertFromVw(topFromTongue(tng, i, pos.NumPiecesPerTongue[tng])) })
+                    .data({ tongue: tng, index: i, num: pos.NumPiecesPerTongue[tng] });
+    }
+
     function onResize(force)
     {
         var wasWide = lastWide;
@@ -548,20 +562,20 @@ $(function ()
         if (force || wasWide !== lastWide)
         {
             // If the aspect ratio has changed, move all the pieces into the right place
-            var whites = $('#board>.piece.white'), blacks = $('#board>.piece.black');
-            var whiteIndex = 0, blackIndex = 0;
-            for (var tng = 0; tng < Tongue.NumTongues; tng++)
-                for (var i = (tng < 12 ? position.NumPiecesPerTongue[tng] - 1 : 0) ; (tng < 12) ? (i >= 0) : (i < position.NumPiecesPerTongue[tng]) ; (tng < 12 ? i-- : i++))
-                    $(position.IsWhitePerTongue[tng] ? whites[whiteIndex++] : blacks[blackIndex++])
-                        .css({ left: convertFromVw(leftFromTongue(tng)), top: convertFromVw(topFromTongue(tng, i, position.NumPiecesPerTongue[tng])) })
-                        .data({ tongue: tng, index: i, num: position.NumPiecesPerTongue[tng] });
-
-            if (isPlayerToMove())
+            var v = viewingHistory;
+            if (v !== null)
+                afterViewingHistoryAnimationCallback(function () { setHistory(v, ''); }, null);
+            else
             {
-                if (selectedPiece !== null)
-                    selectPiece(selectedPiece.data('tongue'));
-                else
-                    deselectPiece();
+                setupPosition(position);
+
+                if (isPlayerToMove())
+                {
+                    if (selectedPiece !== null)
+                        selectPiece(selectedPiece.data('tongue'));
+                    else
+                        deselectPiece();
+                }
             }
         }
 
@@ -600,6 +614,9 @@ $(function ()
     function sidebar(id)
     {
         var hash = LiBackgammon.getHash().values;
+        if (viewingHistory)
+            historyLeaveAll();
+
         if (hash.indexOf('sidebar') !== -1 && hash.indexOf(id) !== -1)
             LiBackgammon.hashRemove(['sidebar', id]);
         else
@@ -642,7 +659,6 @@ $(function ()
         };
         socket.onmessage = function (msg)
         {
-            console.log(msg);
             var json = JSON.parse(msg.data);
             if (json instanceof Array)
                 for (var i = 0; i < json.length; i++)
@@ -785,7 +801,6 @@ $(function ()
     function submitTranslation()
     {
         var hash = LiBackgammon.getHash().dict, i = $(this);
-        console.log('submitTranslation: ' + i.data('sel'));
         i.parent().removeClass('saved unsaved').addClass('submitting');
         socketSend({ translateSubmit: { hashName: hash.lang, token: hash.translator, sel: i.data('sel'), trans: i.val() } });
         LiBackgammon.translation.strings[i.data('sel')] = i.val();
@@ -810,12 +825,113 @@ $(function ()
         $(this).parent().removeClass('unsaved');
     }
 
+    function setHistory(e, mode)
+    {
+        $('#board>.piece.hypo-target, #board>.arrow').remove();
+        var i = e.data('move'), move = moves[i], pos = e.data('pos');
+        main.addClass('viewing-history');
+        main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black');
+        if (i === 0)
+            main.addClass('history-dice-start ' + (moves[i].Dice1 > moves[i].Dice2 ? 'history-white' : 'history-black'));
+        if (pos.GameValue !== null && pos.WhiteOwnsCube !== null)
+            main.addClass(pos.WhiteOwnsCube ? 'history-cube-white' : 'history-cube-black');
+        main.addClass(moves[i].Dice1 === moves[i].Dice2 ? 'history-dice-4' : 'history-dice-2');
+        removeClassPrefix($('#board>#dice-0'), 'history-val-').addClass('history-val-' + moves[i].Dice1);
+        removeClassPrefix($('#board>#dice-1,#board>#dice-2,#board>#dice-3'), 'history-val-').addClass('history-val-' + moves[i].Dice2);
+        if (mode === '')
+            setupPosition('SourceTongues' in move ? processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues) : pos);
+        else
+        {
+            setupPosition(pos);
+            var newPos = pos;
+            if ('SourceTongues' in move)
+                newPos = processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues, {
+                    mode: mode,
+                    callback: function ()
+                    {
+                        if (viewingHistoryAnimationCallback)
+                        {
+                            var oldCallback = viewingHistoryAnimationCallback;
+                            viewingHistoryAnimationCallback = null;
+                            oldCallback();
+                        }
+                    }
+                });
+            return newPos;
+        }
+    }
+
+    function afterViewingHistoryAnimationCallback(fnc, th)
+    {
+        if (viewingHistoryAnimationCallback)
+        {
+            var oldCallback = viewingHistoryAnimationCallback;
+            viewingHistoryAnimationCallback = function ()
+            {
+                if (oldCallback)
+                    oldCallback();
+                fnc.apply(th);
+            };
+        }
+        else
+            fnc.apply(th);
+    }
+
+    function historyEnter()
+    {
+        afterViewingHistoryAnimationCallback(function ()
+        {
+            if ($(this).is(viewingHistory))
+                return;
+            setHistory($(this), 'indicate');
+        }, this);
+    }
+
+    function historyLeave()
+    {
+        afterViewingHistoryAnimationCallback(function ()
+        {
+            $('#board>.piece.hypo-target, #board>.arrow').remove();
+            if (viewingHistory !== null)
+                setHistory(viewingHistory, '');
+            else
+            {
+                main.removeClass('viewing-history');
+                setupPosition(position);
+            }
+        }, this);
+    }
+
+    function historyLeaveAll()
+    {
+        afterViewingHistoryAnimationCallback(function ()
+        {
+            viewingHistory = null;
+            $('#board>.piece.hypo-target, #board>.arrow').remove();
+            main.removeClass('viewing-history');
+            $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
+            setupPosition(position);
+        }, this);
+    }
+
+    function historyClick()
+    {
+        afterViewingHistoryAnimationCallback(function ()
+        {
+            var t = $(this), newPos = setHistory(t, 'animate');
+            viewingHistoryAnimationCallback = function () { };
+            $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
+            viewingHistory = t.addClass('current');
+        }, this);
+    }
+
     function updateGameHistory()
     {
         var h = $('#info-game-history').empty();
         var value = 1;
         var isWhite = moves.length > 0 && moves[0].Dice1 > moves[0].Dice2;
         var diceTotals = { white: 0, black: 0 };
+        var pos = main.data('initial');
         var tongueName = function (t)
         {
             if (t === Tongue.BlackPrison || t === Tongue.WhitePrison)
@@ -824,6 +940,7 @@ $(function ()
                 return 'H';
             return t + 1;
         };
+
         for (var i = 0; i < moves.length; i++)
         {
             value *= moves[i].Doubled ? 2 : 1;
@@ -845,10 +962,17 @@ $(function ()
             h.append($('<div>')
                 .addClass('row move ' + (isWhite ? 'white' : 'black'))
                 .append(moves[i].Doubled ? $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(value)) : null)
-                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('.crossed').addClass('dice-0 val-' + moves[i].Dice1))
-                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('.crossed').addClass('dice-1 val-' + moves[i].Dice2))
-                .append($('<div>').addClass('move').text(moveStr)));
+                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-0 val-' + moves[i].Dice1))
+                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
+                .append($('<div>').addClass('move').text(moveStr))
+                .data('move', i)
+                .data('pos', pos)
+                .data('isWhite', isWhite)
+                .mouseenter(historyEnter)
+                .mouseleave(historyLeave)
+                .click(historyClick));
             diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2;
+            pos = processMove(pos, isWhite, moves[i].SourceTongues, moves[i].TargetTongues);
             isWhite = !isWhite;
         }
         h.append('<hr>').append($('<div>')
@@ -882,15 +1006,18 @@ $(function ()
     var settingsLoaded = false;
     var translationNotes = {};
     var reconnectInterval = 0;
+    var viewingHistory = null;
+    var viewingHistoryAnimationCallback = false;
 
     var windowTitleFlash = false;
     window.setInterval(function ()
     {
         windowTitleFlash = !windowTitleFlash;
-        document.title = (main.hasClass('debug') ? '(debug) ' : '') + (
+        document.title =
+            main.hasClass('debug') ? '(𝐃𝐄𝐁𝐔𝐆) LiBackgammon' :
             ((main.hasClass('player-white') && main.hasClass('state-White')) || (main.hasClass('player-black') && main.hasClass('state-Black'))) && (main.hasClass('state-ToMove') || main.hasClass('state-ToRoll') || main.hasClass('state-ToConfirmDouble'))
                 ? (windowTitleFlash ? "▲▼▲▼ Your turn" : "▼▲▼▲ Your turn")
-                : 'LiBackgammon');
+                : 'LiBackgammon';
     }, 750);
 
     var position = main.data('initial');
@@ -1135,7 +1262,7 @@ $(function ()
 
         $('#board').on('click', '.tongue.selectable, .home.selectable, .automove', function ()
         {
-            $('#board>.piece.hypo-target, #board>.arrow').hide();
+            $('#board>.piece.hypo-target, #board>.arrow').remove();
             var move = $(this).data('move');
             deselectPiece(true);
             position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate', callback: deselectPiece });
@@ -1270,6 +1397,8 @@ $(function ()
             socketSend({ settings: 1 });
         return false;
     });
+
+    $('#leave-history').click(historyLeaveAll);
 
     var chatToken = 0;
     $('#chat-msg').keypress(function (e)

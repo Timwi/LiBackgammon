@@ -944,7 +944,7 @@ $(function ()
         for (var i = 0; i < moves.length; i++)
         {
             value *= moves[i].Doubled ? 2 : 1;
-            var moveStr = '';
+            var moveStr = '', origPos = pos;
             if ('SourceTongues' in moves[i])
             {
                 if (moves[i].SourceTongues.length === 0)
@@ -958,6 +958,7 @@ $(function ()
                         moveStr += tongueName(moves[i].SourceTongues[j]) + '→' + tongueName(moves[i].TargetTongues[j]);
                     }
                 }
+                pos = processMove(pos, isWhite, moves[i].SourceTongues, moves[i].TargetTongues);
             }
             h.append($('<div>')
                 .addClass('row move ' + (isWhite ? 'white' : 'black'))
@@ -966,13 +967,12 @@ $(function ()
                 .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
                 .append($('<div>').addClass('move').text(moveStr))
                 .data('move', i)
-                .data('pos', pos)
+                .data('pos', origPos)
                 .data('isWhite', isWhite)
                 .mouseenter(historyEnter)
                 .mouseleave(historyLeave)
                 .click(historyClick));
             diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2;
-            pos = processMove(pos, isWhite, moves[i].SourceTongues, moves[i].TargetTongues);
             isWhite = !isWhite;
         }
         h.append('<hr>').append($('<div>')

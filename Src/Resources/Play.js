@@ -98,7 +98,7 @@ $(function ()
 
         var newPos = copyPosition(pos);
         var animationQueue = [];
-        var arrows = [];
+        var arrows = {};
 
         var piecesByTongue;
         if (options && (options.mode === 'animate' || options.mode === 'indicate'))
@@ -138,7 +138,12 @@ $(function ()
                         .appendTo($('#board'))
                         .css({ left: convertFromVw(leftFromTongue(targetTongue)), top: convertFromVw(topFromTongue(targetTongue, newPos.NumPiecesPerTongue[targetTongue] - 1, newPos.NumPiecesPerTongue[targetTongue] - 1)) })
                         .data({ tongue: targetTongue, index: newPos.NumPiecesPerTongue[targetTongue] - 1, num: newPos.NumPiecesPerTongue[targetTongue] - 1 });
-                    arrows.push(makeArrow(piecesByTongue[sourceTongue][newPos.NumPiecesPerTongue[sourceTongue]], hypo));
+                    if (!(sourceTongue in arrows))
+                        arrows[sourceTongue] = {};
+                    if (!(targetTongue in arrows[sourceTongue]))
+                        arrows[sourceTongue][targetTongue] = [[], []];
+                    arrows[sourceTongue][targetTongue][0].push(piecesByTongue[sourceTongue][newPos.NumPiecesPerTongue[sourceTongue]]);
+                    arrows[sourceTongue][targetTongue][1][(sourceTongue > 11 && sourceTongue < 24) === (targetTongue > 11 && targetTongue < 24) ? 'unshift' : 'push'](hypo);
                     piecesByTongue[sourceTongue].pop();
                     piecesByTongue[targetTongue].push(hypo);
                     break;
@@ -177,8 +182,10 @@ $(function ()
             }
         }
 
-        for (var i = 0; i < arrows.length; i++)
-            arrows[i].appendTo($('#board'));
+        for (var i in arrows)
+            for (var j in arrows[i])
+                for (var k = 0; k < arrows[i][j][0].length; k++)
+                    makeArrow(arrows[i][j][0][k], arrows[i][j][1][k]).appendTo('#board');
 
         function processAnimationQueue()
         {
@@ -845,6 +852,9 @@ $(function ()
             setupPosition(pos);
             var newPos = pos;
             if ('SourceTongues' in move)
+            {
+                if (move === 'animate')
+                    viewingHistoryAnimationCallback = function () { };
                 newPos = processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues, {
                     mode: mode,
                     callback: function ()
@@ -857,6 +867,7 @@ $(function ()
                         }
                     }
                 });
+            }
             return newPos;
         }
     }
@@ -919,7 +930,6 @@ $(function ()
         afterViewingHistoryAnimationCallback(function ()
         {
             var t = $(this), newPos = setHistory(t, 'animate');
-            viewingHistoryAnimationCallback = function () { };
             $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
             viewingHistory = t.addClass('current');
         }, this);

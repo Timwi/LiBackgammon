@@ -136,8 +136,8 @@ $(function ()
                     var hypo = $('<div class="piece hypo-target">')
                         .addClass(isWhite ? 'white' : 'black')
                         .appendTo($('#board'))
-                        .css({ left: convertFromVw(leftFromTongue(targetTongue)), top: convertFromVw(topFromTongue(targetTongue, newPos.NumPiecesPerTongue[targetTongue] - 1, newPos.NumPiecesPerTongue[targetTongue] - 1)) })
-                        .data({ tongue: targetTongue, index: newPos.NumPiecesPerTongue[targetTongue] - 1, num: newPos.NumPiecesPerTongue[targetTongue] - 1 });
+                        .css({ left: convertFromVw(leftFromTongue(targetTongue)), top: convertFromVw(topFromTongue(targetTongue, newPos.NumPiecesPerTongue[targetTongue] - 1, newPos.NumPiecesPerTongue[targetTongue])) })
+                        .data({ tongue: targetTongue, index: newPos.NumPiecesPerTongue[targetTongue] - 1, num: newPos.NumPiecesPerTongue[targetTongue] });
                     if (!(sourceTongue in arrows))
                         arrows[sourceTongue] = {};
                     if (!(targetTongue in arrows[sourceTongue]))
@@ -334,7 +334,7 @@ $(function ()
         }
     }
 
-    function /* Dict */ getAllMoves(/* Position */ position, /* bool */ whitePlayer, /* int[][] */ diceSequences)
+    function /* Move[] */ getAllMoves(/* Position */ position, /* bool */ whitePlayer, /* int[][] */ diceSequences)
     {
         var validMoves = { curMax: 0, moves: [] };
         for (var seqIx = 0; seqIx < diceSequences.length; seqIx++)
@@ -391,7 +391,7 @@ $(function ()
 
     function deselectPiece(skipHighlight)
     {
-        $('#board>.piece.hypo-target, #board>.arrow, #board>.tongue.selectable, #board>.home.selectable, #board>.automove').remove();
+        $('#board>.piece.hypo-target, #board>.arrow, #board>.tongue.selectable, #board>.home.selectable, #board>.automove, #board>.percentage').remove();
         $('#board>.piece').removeClass('selectable selected');
         selectedPiece = null;
 
@@ -400,7 +400,8 @@ $(function ()
             // Highlight all the clickable pieces
             var clickable = getClickableSourceTongues();
             for (var tongue = 0; tongue < clickable.length; tongue++)
-                topPieceOfTongue(clickable[tongue]).addClass('selectable');
+                if (position.IsWhitePerTongue[clickable[tongue]] === playerIsWhite)
+                    topPieceOfTongue(clickable[tongue]).addClass('selectable');
 
             // Highlight all the auto-move targets
             var autoSourceMoves = {}, autoTargetMoves = {};
@@ -464,10 +465,51 @@ $(function ()
                 considerAutoMove(targetTongues, autoTargetMoves, move);
             }
             for (var tongue in autoSourceMoves)
-                $('<div>').addClass('automove source ' + tongueCssClass(+tongue)).data('move', autoSourceMoves[tongue].move).appendTo('#board');
+                if (position.NumPiecesPerTongue[tongue] > 1)
+                    $('<div>')
+                        .addClass('automove source ' + tongueCssClass(+tongue))
+                        .data('move', autoSourceMoves[tongue].move)
+                        .css('top', convertFromVw(topFromTongue(tongue, position.NumPiecesPerTongue[tongue] - 1, position.NumPiecesPerTongue[tongue])))
+                        .appendTo('#board');
             for (var tongue in autoTargetMoves)
                 $('<div>').addClass('automove target ' + tongueCssClass(+tongue)).data('move', autoTargetMoves[tongue].move).appendTo('#board');
+
+            // Calculate probabilities
+            var landedPerTongue = calculateProbabilities(position, playerIsWhite);
+            for (var k = 0; k < 24; k++)
+                $('#board').append($('<div>').addClass('percentage ' + tongueCssClass(k)).text(Math.round((landedPerTongue[k] / 36) * 100) + '%'));
         }
+    }
+
+    function calculateProbabilities(pos, isWhite)
+    {
+        var landedPerTongue = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        //var stackablePerTongue = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (var dice1 = 1; dice1 <= 6; dice1++)
+        {
+            for (var dice2 = 1; dice2 <= 6; dice2++)
+            {
+                var moves = getAllMoves(pos, !isWhite, dice1 === dice2 ? [[dice1, dice1, dice1, dice1]] : [[dice1, dice2], [dice2, dice1]]);
+                var anyLanded = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+                //var anyStackable = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+                for (var i = 0; i < moves.length; i++)
+                {
+                    for (var j = 0; j < moves[i].TargetTongues.length; j++)
+                        anyLanded[moves[i].TargetTongues[j]] = true;
+                    //for (var t = 0; t < 24; t++)
+                    //    anyStackable[t] |= moves[i].EndPosition.NumPiecesPerTongue[t] >= 2 && moves[i].EndPosition.IsWhitePerTongue[t] === !isWhite;
+                }
+                for (var k = 0; k < 24; k++)
+                {
+                    if (anyLanded[k])
+                        landedPerTongue[k]++;
+                    //if (anyStackable[k])
+                    //    stackablePerTongue[k]++;
+                }
+            }
+        }
+        return landedPerTongue;
+        //return stackablePerTongue;
     }
 
     function filterMoveByTargetTongue(move, tt)
@@ -742,7 +784,8 @@ $(function ()
 
         onResize(true);
 
-        $('#settings-helpers-select').prop('checked', hashValues.indexOf('nohelpers') === -1);
+        $('#settings-helpers-select').prop('checked', hashValues.indexOf('helpers') !== -1);
+        $('#settings-percentages-select').prop('checked', hashValues.indexOf('percentages') !== -1);
 
         if (hashValues.indexOf('sidebar') !== -1 && hashValues.indexOf('translate') !== -1)
             socketSend({ getLanguages: 1 });
@@ -1177,9 +1220,10 @@ $(function ()
         {
             ['style', 'language'].forEach(function (e)
             {
-                var s = $('#settings-' + e + '-select').empty();
+                var s = $('#settings-' + e + '-select').empty().append($('<option>').text('(default)'));
                 for (var i in args[e])
                     s.append($('<option>').attr('value', i).text(args[e][i]));
+                s.val(LiBackgammon.getHash().dict[e] || '');
             });
         },
 
@@ -1376,7 +1420,8 @@ $(function ()
     $('#btn-info').click(function () { sidebar('info'); return false; });
     $('#join').click(function () { return main.hasClass('state-Waiting') && main.hasClass('spectating'); });
     $('#goto-next-game').click(function () { if (main.data('next-game')) window.location.href = main.data('next-game') + window.location.hash; return false; });
-    $('#settings-helpers-select').change(function () { LiBackgammon[$('#settings-helpers-select:checked').length ? 'hashRemove' : 'hashAdd']('nohelpers'); });
+    $('#settings-helpers-select').change(function () { LiBackgammon[$('#settings-helpers-select:checked').length ? 'hashAdd' : 'hashRemove']('helpers'); });
+    $('#settings-percentages-select').change(function () { LiBackgammon[$('#settings-percentages-select:checked').length ? 'hashAdd' : 'hashRemove']('percentages'); });
 
     $('#settings-language-custom').click(function ()
     {

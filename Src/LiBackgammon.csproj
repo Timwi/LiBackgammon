@@ -49,7 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Admin.cs" />
     <Compile Include="ChatMessage.cs" />
+    <Compile Include="DbAuthenticator.cs" />
+    <Compile Include="DbSession.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="LanguageData.cs" />
     <Compile Include="LanguageStatus.cs" />
@@ -92,8 +95,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="PlaySocket.cs" />
+    <Compile Include="UserSession.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Tongue.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserFlags.cs" />
     <Compile Include="Visibility.cs" />
   </ItemGroup>
   <ItemGroup>

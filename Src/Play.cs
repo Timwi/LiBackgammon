@@ -15,7 +15,7 @@ namespace LiBackgammon
             if (req.Url.Path.Length < 9)
                 return HttpResponse.Redirect(req.Url.WithParent(""));
 
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var stuff = req.Url.Path.Substring(1);
@@ -37,7 +37,7 @@ namespace LiBackgammon
                 {
                     var whiteStarts = moves.Count > 0 && moves[0].Dice1 > moves[0].Dice2;
                     for (int i = 0; i < moves.Count; i++)
-                        pos = pos.ProcessMove(whiteStarts ? (i % 2 == 0) : (i % 2 != 0), moves[i]);
+                        pos = pos.ProcessMove(i % 2 == (whiteStarts ? 0 : 1), moves[i]);
                 }
                 var lastMove = moves.LastOrDefault();
                 var points =
@@ -208,7 +208,9 @@ namespace LiBackgammon
                                                 new BUTTON { id = "settings-language-custom" }),
                                             new DIV { id = "settings-helpers", class_ = "section" }._(
                                                 new INPUT { id = "settings-helpers-select", type = itype.checkbox },
-                                                new LABEL { for_ = "settings-helpers-select", accesskey = "h" })),
+                                                new LABEL { for_ = "settings-helpers-select", accesskey = "h" },
+                                                new INPUT { id = "settings-percentages-select", type = itype.checkbox },
+                                                new LABEL { for_ = "settings-percentages-select" })),
                                         new DIV { id = "translate", class_ = "sidebar-tab" }._(
                                             new DIV { id = "translate-existing", class_ = "section" }._(
                                                 new SELECT { id = "translate-select" },

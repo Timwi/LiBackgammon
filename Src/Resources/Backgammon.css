@@ -436,14 +436,6 @@ body {
                 border-color: hsla(110,70%,70%,.7);
             }
 
-                #main > #board > .tongue.selectable.top {
-                    border-bottom: 5vw solid transparent;
-                }
-
-                #main > #board > .tongue.selectable.bottom {
-                    border-top: 5vw solid transparent;
-                }
-
         #main > #board > .tongue-0, #main > #board > .tongue-23 {
             left: 81vw;
         }
@@ -492,1145 +484,1177 @@ body {
             left: 0;
         }
 
-        #main > #board > .automove, #main > #board > .automove.home {
-            border-left: 3.5vw solid hsla(110,70%,70%,.6);
-            border-top: 1.5vw solid transparent;
-            border-bottom: 1.5vw solid transparent;
+        #main > #board > .automove {
+            border-bottom: 2.5vw solid hsla(110,70%,70%,.6);
+            border-left: 1.5vw solid transparent;
+            border-right: 1.5vw solid transparent;
             width: 0;
             height: 0;
-            border-radius: 1.5vw;
-            margin-left: -.5vw;
+            display: none;
+            margin-left: 2vw;
         }
+
+            #main > #board > .automove.home {
+                margin-left: 1.5vw;
+            }
 
             #main > #board > .automove.prison {
                 left: 42.25vw;
             }
 
             #main > #board > .automove.top, #main > #board > .automove.white.home, #main > #board > .automove.black.prison {
-                top: 1vw;
+                border-top: 2.5vw solid hsla(110,70%,70%,.6);
+                border-bottom: none;
             }
 
-            #main > #board > .automove.bottom, #main > #board > .automove.black.home, #main > #board > .automove.white.prison {
-                bottom: 3vw;
+                #main > #board > .automove.top.target, #main > #board > .automove.white.home.target {
+                    top: -1.5vw;
+                }
+
+            #main > #board > .automove.bottom.target, #main > #board > .automove.black.home.target {
+                bottom: .5vw;
             }
 
-    #main.player-black > #board > .automove.top,
-    #main.player-white > #board > .automove.bottom {
-        border-right: 3.5vw solid hsla(110,70%,70%,.6);
-        border-left: none;
-    }
-
-        #main.player-white > #board > .automove.bottom.target,
-        #main.player-white > #board > .automove.top.source,
-        #main.player-black > #board > .automove.bottom.source,
-        #main.player-black > #board > .automove.top.target {
-            margin-left: 4vw;
-        }
-
-    /* Pieces */
-    #main > #board > .piece, #main > #win > .piece, #main > #joinable > form > #join::before,
-    #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
-    #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg::before,
-    #main > #sidebar > #info > #info-match-history > .row > .piece,
-    #main > #sidebar > #info > #info-game-history > .move::after,
-    #main > #sidebar > #info > #info-game-history > .totals > .dice-total,
-    #newgame > #newgame-playas > label::after, #waiting-games > li > .piece {
-        width: 5vw;
-        height: 5vw;
-        border-radius: 100%;
-    }
-
-        #main > #board > .piece.white,
-        #main.state-Black.state-Waiting > #joinable > form > #join::before,
-        #main.state-White.state-Won > #win > .piece,
-        #main.player-white > #infobar > #info-player > .piece,
-        #main.state-White > #infobar > #info-state > .piece,
-        #main > #infobar > .infobox > .infobox-white > .piece,
-        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.White::before,
-        #main > #sidebar > #info > #info-match-history > .row > .piece.white,
-        #main > #sidebar > #info > #info-game-history > .move.white::after,
-        #main > #sidebar > #info > #info-game-history > .totals > .white,
-        #newgame > #newgame-playas > label.white::after,
-        #waiting-games > li > .piece.white {
-            background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
-            box-shadow: .2vw .2vw .1vw hsl(32, 50%, 100%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 90%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        }
-
-            #main > #board > .piece.white.selected {
-                background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
-                box-shadow: .2vw .2vw .1vw hsl(0, 100%, 90%) inset, -.2vw -.2vw .1vw hsl(0, 100%, 85%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+            #main > #board > .automove.top.source {
+                margin-top: 5.5vw;
             }
 
-        #main > #board > .piece.black,
-        #main.state-White.state-Waiting > #joinable > form > #join::before,
-        #main.state-Black.state-Won > #win > .piece,
-        #main.player-black > #infobar > #info-player > .piece,
-        #main.state-Black > #infobar > #info-state > .piece,
-        #main > #infobar > .infobox > .infobox-black > .piece,
-        #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.Black::before,
-        #main > #sidebar > #info > #info-match-history > .row > .piece.black,
-        #main > #sidebar > #info > #info-game-history > .move.black::after,
-        #main > #sidebar > #info > #info-game-history > .totals > .black,
-        #newgame > #newgame-playas > label.black::after,
-        #waiting-games > li > .piece.black {
-            background-image: linear-gradient(135deg, hsl(32, 50%, 5%), hsl(32, 50%, 15%));
-            box-shadow: .2vw .2vw .1vw hsl(32, 50%, 15%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 5%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        }
-
-            #main > #board > .piece.black.selected {
-                background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
-                box-shadow: .2vw .2vw .1vw hsl(0, 100%, 30%) inset, -.2vw -.2vw .1vw hsl(0, 100%, 20%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+            #main > #board > .automove.bottom.source {
+                margin-top: -3vw;
             }
 
-        #main.state-Random > #joinable > form > #join::before,
-        #main.player-random > #infobar > #info-player > .piece,
-        #main.state-Random.state-Waiting > #infobar > #info-state > .piece,
-        #newgame > #newgame-playas > label.random::after,
-        #waiting-games > li > .piece.random {
-            box-shadow: .2vw .2vw .1vw hsl(32, 50%, 70%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 60%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="583" height="1000"><path style="fill:hsl(32, 50%, 10%)" d="M 303 34 C 300 34 297 34 294 34 L 294 169 C 295 169 296 169 298 169 331 169 358 180 379 201 399 222 410 249 410 281 410 313 400 340 380 361 L 294 448 294 680 366 680 366 621 C 366 587 373 560 389 541 395 534 403 525 413 515 423 505 435 494 449 480 464 467 475 456 484 447 492 438 505 424 521 403 550 368 564 325 564 273 564 198 540 139 491 97 443 55 380 34 303 34 z M 294 776 294 968 C 294 968 294 968 295 968 322 968 345 958 365 939 384 920 394 898 394 871 394 845 384 822 364 804 344 785 321 776 294 776 z"/><path style="fill:hsl(32, 50%, 90%)" d="M 294 34 C 221 36 160 58 110 100 59 143 29 204 20 281 L 177 281 C 181 247 193 220 215 200 237 180 263 170 294 169 L 294 34 z M 294 448 285 456 C 257 484 239 506 231 523 223 540 219 566 219 600 L 219 680 294 680 294 448 z M 293 776 C 266 776 243 785 223 804 204 823 194 846 194 873 194 899 204 921 224 940 244 958 267 968 294 968 L 294 776 C 294 776 293 776 293 776 z"/></svg>'),linear-gradient(135deg, hsl(32, 50%, 60%), hsl(32, 50%, 70%));
-            background-repeat: no-repeat;
-            background-position: 50% 50%;
-            background-size: contain;
-        }
-
-        #main > #board > .piece.selectable::before {
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            background: hsl(110, 50%, 50%);
-            border-radius: 100%;
-            content: '';
+        #main > #board > .percentage {
+            font-family: 'Roboto', 'Calibri';
+            font-size: 1vw;
+            margin-left: 3.5vw;
+            -moz-transform: translateX(-50%);
+            -ms-transform: translateX(-50%);
+            -o-transform: translateX(-50%);
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            color: white;
             opacity: .3;
-            -moz-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-            -o-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-            -webkit-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-            animation: selectable-blink 1s ease-in-out 0s infinite alternate;
-        }
-
-        #main > #board > .piece.selectable.selected::before {
             display: none;
-        }
-
-        #main > #board > .piece.hypo-target {
-            opacity: .5;
-            -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-            -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-            -webkit-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
-            animation: hypo-blink 1s ease-in-out 0s infinite alternate;
             pointer-events: none;
         }
 
-    #main.player-white.state-White.state-ToMove > #board > .piece.white,
-    #main.player-black.state-Black.state-ToMove > #board > .piece.black,
-    #main > #board > .automove {
-        cursor: pointer;
-    }
-
-    #main > #board > .dice-back {
-        border-radius: 1vw;
-        width: 6vw;
-        height: 6vw;
-        top: 25vw;
-        font-family: 'Lato';
-        text-align: right;
-        text-transform: uppercase;
-        white-space: nowrap;
-        pointer-events: none;
-        opacity: 0;
-        -moz-transition: opacity .2s ease-in-out;
-        -o-transition: opacity .2s ease-in-out;
-        -webkit-transition: opacity .2s ease-in-out;
-        transition: opacity .2s ease-in-out;
-    }
-
-        #main > #board > .dice-back#dice-back-white {
-            left: 60.5vw;
-            background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
-        }
-
-        #main > #board > .dice-back#dice-back-black {
-            left: 67.5vw;
-            background-image: linear-gradient(135deg, hsl(32, 50%, 0%), hsl(32, 50%, 20%));
-        }
-
-    #main.dice-start:not(.resigning) > #board > .dice-back {
-        opacity: .5;
-    }
-
-    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
-    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
-    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
-    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after {
-        position: absolute;
-        color: hsl(32, 50%, 95%);
-        padding-right: .6vw;
-        right: 100%;
-    }
-
-    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
-    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
-    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before,
-    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
-        position: absolute;
-        color: hsl(32, 50%, 10%);
-        padding-left: .6vw;
-        left: 100%;
-    }
-
-    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
-    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
-    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
-    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
-        font-size: 2.2vw;
-        top: .8vw;
-    }
-
-    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
-    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before {
-        content: 'white';
-    }
-
-    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
-    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
-        content: 'black';
-    }
-
-    #main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
-    #main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
-    #main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after,
-    #main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
-        font-size: 1.3vw;
-        bottom: .8vw;
-        content: 'starts';
-    }
-
-    #main > #board > .dice {
-        left: 61vw;
-        top: 25.5vw;
-        opacity: 0;
-    }
-
-    #main.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0, #main.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1, #main.dice-4:not(.resigning):not(.viewing-history) > #board > .dice {
-        opacity: .5;
-    }
-
-    #main.dice-2:not(.viewing-history) > #board > #dice-1, #main.dice-4:not(.viewing-history) > #board > #dice-2,
-    #main.viewing-history.history-dice-2 > #board > #dice-1, #main.viewing-history.history-dice-4 > #board > #dice-2 {
-        left: 68vw;
-    }
-
-    #main.dice-4:not(.viewing-history) > #board > #dice-0, #main.viewing-history.history-dice-4 > #board > #dice-0 {
-        left: 54vw;
-    }
-
-    #main.dice-4:not(.viewing-history) > #board > #dice-3, #main.viewing-history.history-dice-4 > #board > #dice-3 {
-        left: 75vw;
-    }
-
-    #main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
-    #main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
-    #main.player-white.state-White.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
-    #main.player-white.state-White.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
-    #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
-    #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
-    #main.player-black.state-Black.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
-    #main.player-black.state-Black.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
-    #main.viewing-history.history-dice-2 > #board > #dice-0,
-    #main.viewing-history.history-dice-2 > #board > #dice-1,
-    #main.viewing-history.history-dice-4 > #board > .dice,
-    #main.viewing-history.history-dice-start > #board > .dice-back,
-    #main.viewing-history.history-dice-2 > #board > #dice-0,
-    #main.viewing-history.history-dice-2 > #board > #dice-1,
-    #main.viewing-history.history-dice-4 > #board > .dice,
-    #main.viewing-history.history-dice-start > #board > .dice-back {
-        opacity: 1;
-    }
-
-    #main > #board > #cube, #main > #sidebar > #info > #info-game-history > .row > .cube {
-        position: absolute;
-        background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
-        border-radius: .5vw;
-        width: 4.8vw;
-        height: 4.8vw;
-        box-shadow: .2vw .2vw .05vw white inset, -.2vw -.2vw .05vw #ccc inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
-    }
-
-    #main > #board > #cube {
-        left: 41.6vw;
-        top: 25.6vw;
-    }
-
-        #main > #board > #cube > #cube-text, #main > #sidebar > #info > #info-game-history > .row > .cube > .cube-text {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            font-family: 'Roboto', 'Calibri';
-            font-size: 3.5vw;
-            color: #222;
-            text-shadow: .075vw .075vw 0 white;
-            -moz-transform: translate(-50%,-50%);
-            -ms-transform: translate(-50%,-50%);
-            -o-transform: translate(-50%,-50%);
-            -webkit-transform: translate(-50%,-50%);
-            transform: translate(-50%,-50%);
-        }
-
-    #main.no-cube > #board > #cube {
-        display: none;
-    }
-
-    #main.cube-white:not(.viewing-history) > #board > #cube,
-    #main.viewing-history.history-cube-white > #board > #cube {
-        top: 2.3vw;
-    }
-
-    #main.cube-black:not(.viewing-history) > #board > #cube,
-    #main.viewing-history.history-cube-black > #board > #cube {
-        top: 48.9vw;
-    }
-
-    #main > #board > .arrow {
-        pointer-events: none;
-        height: 2.5vw;
-        background: #dd5;
-    }
-
-        #main > #board > .arrow::before {
-            position: absolute;
-            right: -6.25vw;
-            top: -1.25vw;
-            width: 0;
-            height: 0;
-            border: 2.5vw solid transparent;
-            border-left: 4.0625vw solid #dd5;
-            content: '';
-        }
-
-    #main > #board > button {
-        height: 4vw;
-        top: 26vw;
-        width: 11vw;
-        visibility: hidden;
-        opacity: 0;
-        -moz-transition: opacity ease-in-out .2s;
-        -o-transition: opacity ease-in-out .2s;
-        -webkit-transition: opacity ease-in-out .2s;
-        transition: opacity ease-in-out .2s;
-    }
-
-        #main > #board > button#leave-history {
-            width: 25vw;
-        }
-
-    #main > #board > #undo {
-        font-size: 2vw;
-        left: 22vw;
-    }
-
-        #main > #board > #undo::before {
-            content: 'Undo';
-        }
-
-    #main > #board > #accept, #main > #board > #commit, #main > #board > #leave-history {
-        font-size: 1.8vw;
-        left: 9vw;
-    }
-
-        #main > #board > #commit::before {
-            content: 'Commit';
-        }
-
-        #main > #board > #accept::before {
-            content: 'Accept';
-        }
-
-        #main > #board > #leave-history::before {
-            content: 'Go back to the game';
-        }
-
-    #main > #board > #reject {
-        font-size: 1.8vw;
-        left: 22vw;
-    }
-
-        #main > #board > #reject::before {
-            content: 'Reject';
-        }
-
-    #main > #board > #roll, #main > #board > #resign-confirm {
-        font-size: 2vw;
-        left: 55vw;
-    }
-
-        #main > #board > #roll::before {
-            content: 'Roll';
-        }
-
-        #main > #board > #resign-confirm::before {
-            content: 'Resign';
-        }
-
-    #main > #board > #double {
-        font-size: 1.8vw;
-        left: 68vw;
-    }
-
-        #main > #board > #double::before {
-            content: 'Double';
-        }
-
-    #main > #board > #resign-cancel {
-        font-size: 2vw;
-        left: 68vw;
-    }
-
-        #main > #board > #resign-cancel::before {
-            content: 'Cancel';
-        }
-
-    #main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
-    #main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
-    #main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
-    #main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject {
-        opacity: .5;
-        visibility: visible;
-        pointer-events: none;
-    }
-
-    #main.undoable:not(.resigning):not(.viewing-history) > #board > #undo,
-    #main.committable:not(.resigning):not(.viewing-history) > #board > #commit,
-    #main.player-white.state-White.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
-    #main.player-black.state-Black.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
-    #main.player-white.state-White.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
-    #main.player-black.state-Black.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
-    #main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
-    #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
-    #main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
-    #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
-    #main.resigning:not(.viewing-history) > #board > #resign-confirm,
-    #main.resigning:not(.viewing-history) > #board > #resign-cancel,
-    #main.viewing-history > #board > #leave-history {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: all;
-    }
-
-    #main > #board > #info-line {
-        pointer-events: none;
-        opacity: 0;
-        -moz-transition: opacity ease-in-out .5s, transform linear 2s;
-        -o-transition: opacity ease-in-out .5s, transform linear 2s;
-        -webkit-transition: opacity ease-in-out .5s, transform linear 2s;
-        transition: opacity ease-in-out .5s, transform linear 2s;
-        position: absolute;
-        left: 0vw;
-        top: 28vw;
-        width: 42vw;
-        text-align: center;
-        font-size: 5vw;
-        font-weight: bold;
-        font-style: italic;
-        -moz-transform: translateY(-50%);
-        -ms-transform: translateY(-50%);
-        -o-transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
-        transform: translateY(-50%);
-        color: hsl(32, 50%, 20%);
-        text-shadow: .1vw .1vw .1vw hsl(32, 50%, 80%);
-    }
-
-    #main.auto-0:not(.viewing-history) > #board > #info-line, #main.auto-1:not(.viewing-history) > #board > #info-line, #main.resigning:not(.viewing-history) > #board > #info-line {
-        opacity: 1;
-        -moz-transform: translateY(-50%) scale(1.5);
-        -ms-transform: translateY(-50%) scale(1.5);
-        -o-transform: translateY(-50%) scale(1.5);
-        -webkit-transform: translateY(-50%) scale(1.5);
-        transform: translateY(-50%) scale(1.5);
-    }
-
-    #main.auto-0 > #board > #info-line::before {
-        content: 'No moves';
-    }
-
-    #main.auto-1 > #board > #info-line::before {
-        content: 'Forced move';
-    }
-
-    #main.resigning > #board > #info-line::before {
-        content: 'Resign?';
-    }
-
-    #main.state-ToConfirmDouble:not(.viewing-history) > #board > #info-line {
-        left: 47vw;
-        opacity: 1;
-    }
-
-        #main.state-ToConfirmDouble:not(.viewing-history) > #board > #info-line::before {
-            content: 'Double?';
-        }
-
-    #main > #connecting {
-        position: absolute;
-        color: hsl(0, 100%, 75%);
-        font-size: 1vw;
-        font-weight: bold;
-        top: 8.3vw;
-        right: 10vw;
-        display: none;
-    }
-
-        #main > #connecting::before {
-            content: 'Reconnecting...';
-        }
-
-    #main.connecting > #connecting {
-        display: block;
-    }
-
-    #main > .dialog {
-        opacity: 0;
-        visibility: hidden;
-        top: 36vw;
-        left: 15vw;
-        right: 15vw;
-        border: .7vw solid hsl(32, 50%, 20%);
-        background: hsl(32, 50%, 70%);
-        padding: 0 3vw;
-        box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        color: hsl(32, 50%, 30%);
-        -moz-transform: translateY(-50%) scale(.5);
-        -ms-transform: translateY(-50%) scale(.5);
-        -o-transform: translateY(-50%) scale(.5);
-        -webkit-transform: translateY(-50%) scale(.5);
-        transform: translateY(-50%) scale(.5);
-        -moz-transition: transform 1s ease-out, opacity 1s ease-in-out;
-        -o-transition: transform 1s ease-out, opacity 1s ease-in-out;
-        -webkit-transition: transform 1s ease-out, opacity 1s ease-in-out;
-        transition: transform 1s ease-out, opacity 1s ease-in-out;
-    }
-
-        #main > .dialog > p, #main > .dialog > form {
-            text-align: center;
-            font-size: 1.8vw;
-            margin: 2vw 0;
-        }
-
-            #main > .dialog > p.link, #main > .dialog > form {
-                background: hsl(32, 50%, 90%);
-                padding: 1vw 0;
-                font-weight: bold;
+            #main > #board > .percentage.top {
+                top: -1.5vw;
             }
 
-            #main > .dialog > p.link {
-                font-family: monospace;
+            #main > #board > .percentage.bottom {
+                bottom: .5vw;
             }
 
-    #main > #win > .win {
-        margin: 3vw 0;
+body.hash-percentages > #main.player-white.state-White.state-ToMove > #board > .percentage,
+body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .percentage {
+    display: block;
+}
+
+/* Pieces */
+#main > #board > .piece, #main > #win > .piece, #main > #joinable > form > #join::before,
+#main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece,
+#main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg::before,
+#main > #sidebar > #info > #info-match-history > .row > .piece,
+#main > #sidebar > #info > #info-game-history > .move::after,
+#main > #sidebar > #info > #info-game-history > .totals > .dice-total,
+#newgame > #newgame-playas > label::after, #waiting-games > li > .piece {
+    width: 5vw;
+    height: 5vw;
+    border-radius: 100%;
+}
+
+    #main > #board > .piece.white,
+    #main.state-Black.state-Waiting > #joinable > form > #join::before,
+    #main.state-White.state-Won > #win > .piece,
+    #main.player-white > #infobar > #info-player > .piece,
+    #main.state-White > #infobar > #info-state > .piece,
+    #main > #infobar > .infobox > .infobox-white > .piece,
+    #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.White::before,
+    #main > #sidebar > #info > #info-match-history > .row > .piece.white,
+    #main > #sidebar > #info > #info-game-history > .move.white::after,
+    #main > #sidebar > #info > #info-game-history > .totals > .white,
+    #newgame > #newgame-playas > label.white::after,
+    #waiting-games > li > .piece.white {
+        background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
+        box-shadow: .2vw .2vw .1vw hsl(32, 50%, 100%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 90%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
     }
 
-        #main > #win > .win::before {
-            display: block;
-            background: hsl(32, 50%, 90%);
-            padding: .2vw 0;
-            font-size: 5vw;
+        #main > #board > .piece.white.selected {
+            background-image: linear-gradient(135deg, hsl(0, 100%, 85%), hsl(0, 100%, 90%));
+            box-shadow: .2vw .2vw .1vw hsl(0, 100%, 90%) inset, -.2vw -.2vw .1vw hsl(0, 100%, 85%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
-        #main > #win > .win::after {
-            display: block;
-            padding: .2vw 0 0;
-            margin-bottom: -1.25vw;
-            font-size: 2vw;
+    #main > #board > .piece.black,
+    #main.state-White.state-Waiting > #joinable > form > #join::before,
+    #main.state-Black.state-Won > #win > .piece,
+    #main.player-black > #infobar > #info-player > .piece,
+    #main.state-Black > #infobar > #info-state > .piece,
+    #main > #infobar > .infobox > .infobox-black > .piece,
+    #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.Black::before,
+    #main > #sidebar > #info > #info-match-history > .row > .piece.black,
+    #main > #sidebar > #info > #info-game-history > .move.black::after,
+    #main > #sidebar > #info > #info-game-history > .totals > .black,
+    #newgame > #newgame-playas > label.black::after,
+    #waiting-games > li > .piece.black {
+        background-image: linear-gradient(135deg, hsl(32, 50%, 5%), hsl(32, 50%, 15%));
+        box-shadow: .2vw .2vw .1vw hsl(32, 50%, 15%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 5%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+    }
+
+        #main > #board > .piece.black.selected {
+            background-image: linear-gradient(135deg, hsl(0, 100%, 20%), hsl(0, 100%, 30%));
+            box-shadow: .2vw .2vw .1vw hsl(0, 100%, 30%) inset, -.2vw -.2vw .1vw hsl(0, 100%, 20%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
         }
 
-    #main > #win > .piece {
+    #main.state-Random > #joinable > form > #join::before,
+    #main.player-random > #infobar > #info-player > .piece,
+    #main.state-Random.state-Waiting > #infobar > #info-state > .piece,
+    #newgame > #newgame-playas > label.random::after,
+    #waiting-games > li > .piece.random {
+        box-shadow: .2vw .2vw .1vw hsl(32, 50%, 70%) inset, -.2vw -.2vw .1vw hsl(32, 50%, 60%) inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="583" height="1000"><path style="fill:hsl(32, 50%, 10%)" d="M 303 34 C 300 34 297 34 294 34 L 294 169 C 295 169 296 169 298 169 331 169 358 180 379 201 399 222 410 249 410 281 410 313 400 340 380 361 L 294 448 294 680 366 680 366 621 C 366 587 373 560 389 541 395 534 403 525 413 515 423 505 435 494 449 480 464 467 475 456 484 447 492 438 505 424 521 403 550 368 564 325 564 273 564 198 540 139 491 97 443 55 380 34 303 34 z M 294 776 294 968 C 294 968 294 968 295 968 322 968 345 958 365 939 384 920 394 898 394 871 394 845 384 822 364 804 344 785 321 776 294 776 z"/><path style="fill:hsl(32, 50%, 90%)" d="M 294 34 C 221 36 160 58 110 100 59 143 29 204 20 281 L 177 281 C 181 247 193 220 215 200 237 180 263 170 294 169 L 294 34 z M 294 448 285 456 C 257 484 239 506 231 523 223 540 219 566 219 600 L 219 680 294 680 294 448 z M 293 776 C 266 776 243 785 223 804 204 823 194 846 194 873 194 899 204 921 224 940 244 958 267 968 294 968 L 294 776 C 294 776 293 776 293 776 z"/></svg>'),linear-gradient(135deg, hsl(32, 50%, 60%), hsl(32, 50%, 70%));
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        background-size: contain;
+    }
+
+    #main > #board > .piece.selectable::before {
         position: absolute;
-        top: 3.7vw;
-        left: 4.2vw;
-    }
-
-    #main > #win > .points {
-        position: absolute;
-        right: 4vw;
-        text-align: right;
-        top: 3.25vw;
-    }
-
-        #main > #win > .points > .number {
-            font-family: 'Roboto', 'Calibri';
-            font-size: 4vw;
-            line-height: 4vw;
-            margin: 0;
-        }
-
-        #main > #win > .points > .word {
-            font-size: 1.5vw;
-            line-height: 1.5vw;
-            margin: 0;
-        }
-
-        #main > #win > .points.singular > .word::before {
-            content: 'point';
-        }
-
-        #main > #win > .points.plural > .word::before {
-            content: 'points';
-        }
-
-    #main > #win > #next-game > button {
-        display: none;
-        margin-right: 1vw;
-    }
-
-        #main > #win > #next-game > button#goto-next-game::before {
-            content: 'Go to next game';
-        }
-
-        #main > #win > #next-game > button#offer-rematch::before {
-            content: 'Offer a rematch';
-        }
-
-        #main > #win > #next-game > button#accept-rematch::before {
-            content: 'Accept';
-        }
-
-        #main > #win > #next-game > button#cancel-rematch::before {
-            content: 'Cancel';
-        }
-
-    #main > #joinable > form > #join::before {
-        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background: hsl(110, 50%, 50%);
+        border-radius: 100%;
         content: '';
+        opacity: .3;
+        -moz-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+        -o-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+        -webkit-animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+        animation: selectable-blink 1s ease-in-out 0s infinite alternate;
+    }
+
+    #main > #board > .piece.selectable.selected::before {
+        display: none;
+    }
+
+    #main > #board > .piece.hypo-target {
+        opacity: .5;
+        -moz-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+        -o-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+        -webkit-animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+        animation: hypo-blink 1s ease-in-out 0s infinite alternate;
+        pointer-events: none;
+    }
+
+#main.player-white.state-White.state-ToMove > #board > .piece.white,
+#main.player-black.state-Black.state-ToMove > #board > .piece.black,
+#main > #board > .automove {
+    cursor: pointer;
+}
+
+#main > #board > .dice-back {
+    border-radius: 1vw;
+    width: 6vw;
+    height: 6vw;
+    top: 25vw;
+    font-family: 'Lato';
+    text-align: right;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    -moz-transition: opacity .2s ease-in-out;
+    -o-transition: opacity .2s ease-in-out;
+    -webkit-transition: opacity .2s ease-in-out;
+    transition: opacity .2s ease-in-out;
+}
+
+    #main > #board > .dice-back#dice-back-white {
+        left: 60.5vw;
+        background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
+    }
+
+    #main > #board > .dice-back#dice-back-black {
+        left: 67.5vw;
+        background-image: linear-gradient(135deg, hsl(32, 50%, 0%), hsl(32, 50%, 20%));
+    }
+
+#main.dice-start:not(.resigning) > #board > .dice-back {
+    opacity: .5;
+}
+
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after {
+    position: absolute;
+    color: hsl(32, 50%, 95%);
+    padding-right: .6vw;
+    right: 100%;
+}
+
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
+    position: absolute;
+    color: hsl(32, 50%, 10%);
+    padding-left: .6vw;
+    left: 100%;
+}
+
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
+    font-size: 2.2vw;
+    top: .8vw;
+}
+
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before {
+    content: 'white';
+}
+
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
+    content: 'black';
+}
+
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
+    font-size: 1.3vw;
+    bottom: .8vw;
+    content: 'starts';
+}
+
+#main > #board > .dice {
+    left: 61vw;
+    top: 25.5vw;
+    opacity: 0;
+}
+
+#main.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0, #main.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1, #main.dice-4:not(.resigning):not(.viewing-history) > #board > .dice {
+    opacity: .5;
+}
+
+#main.dice-2:not(.viewing-history) > #board > #dice-1, #main.dice-4:not(.viewing-history) > #board > #dice-2,
+#main.viewing-history.history-dice-2 > #board > #dice-1, #main.viewing-history.history-dice-4 > #board > #dice-2 {
+    left: 68vw;
+}
+
+#main.dice-4:not(.viewing-history) > #board > #dice-0, #main.viewing-history.history-dice-4 > #board > #dice-0 {
+    left: 54vw;
+}
+
+#main.dice-4:not(.viewing-history) > #board > #dice-3, #main.viewing-history.history-dice-4 > #board > #dice-3 {
+    left: 75vw;
+}
+
+#main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
+#main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
+#main.player-white.state-White.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
+#main.player-white.state-White.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
+#main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
+#main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
+#main.player-black.state-Black.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
+#main.player-black.state-Black.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
+#main.viewing-history.history-dice-2 > #board > #dice-0,
+#main.viewing-history.history-dice-2 > #board > #dice-1,
+#main.viewing-history.history-dice-4 > #board > .dice,
+#main.viewing-history.history-dice-start > #board > .dice-back,
+#main.viewing-history.history-dice-2 > #board > #dice-0,
+#main.viewing-history.history-dice-2 > #board > #dice-1,
+#main.viewing-history.history-dice-4 > #board > .dice,
+#main.viewing-history.history-dice-start > #board > .dice-back {
+    opacity: 1;
+}
+
+#main > #board > #cube, #main > #sidebar > #info > #info-game-history > .row > .cube {
+    position: absolute;
+    background-image: linear-gradient(135deg, #e8e8e8, #f0f0f0);
+    border-radius: .5vw;
+    width: 4.8vw;
+    height: 4.8vw;
+    box-shadow: .2vw .2vw .05vw white inset, -.2vw -.2vw .05vw #ccc inset, .3vw .3vw .5vw rgba(0, 0, 0, .3);
+}
+
+#main > #board > #cube {
+    left: 41.6vw;
+    top: 25.6vw;
+}
+
+    #main > #board > #cube > #cube-text, #main > #sidebar > #info > #info-game-history > .row > .cube > .cube-text {
+        position: absolute;
+        left: 50%;
         top: 50%;
-        -moz-transform: translateY(-50%);
-        -ms-transform: translateY(-50%);
-        -o-transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
-        transform: translateY(-50%);
+        font-family: 'Roboto', 'Calibri';
+        font-size: 3.5vw;
+        color: #222;
+        text-shadow: .075vw .075vw 0 white;
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        -webkit-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
     }
 
-    #main > #joinable > form > #join::after {
-        padding-left: 6vw;
+#main.no-cube > #board > #cube {
+    display: none;
+}
+
+#main.cube-white:not(.viewing-history) > #board > #cube,
+#main.viewing-history.history-cube-white > #board > #cube {
+    top: 2.3vw;
+}
+
+#main.cube-black:not(.viewing-history) > #board > #cube,
+#main.viewing-history.history-cube-black > #board > #cube {
+    top: 48.9vw;
+}
+
+#main > #board > .arrow {
+    pointer-events: none;
+    height: 2.5vw;
+    background: hsla(60, 70%, 60%, 0.7);
+}
+
+    #main > #board > .arrow::before {
+        position: absolute;
+        left: 100%;
+        top: -1.25vw;
+        width: 0;
+        height: 0;
+        border: 2.5vw solid transparent;
+        border-left: 4vw solid hsla(60, 70%, 60%, 0.7);
+        content: '';
     }
 
-    #main.state-Black > #joinable > form > #join::after {
-        content: 'Join as White';
+#main > #board > button {
+    height: 4vw;
+    top: 26vw;
+    width: 11vw;
+    visibility: hidden;
+    opacity: 0;
+    -moz-transition: opacity ease-in-out .2s;
+    -o-transition: opacity ease-in-out .2s;
+    -webkit-transition: opacity ease-in-out .2s;
+    transition: opacity ease-in-out .2s;
+}
+
+    #main > #board > button#leave-history {
+        width: 25vw;
     }
 
-    #main.state-White > #joinable > form > #join::after {
-        content: 'Join as Black';
+#main > #board > #undo {
+    font-size: 2vw;
+    left: 22vw;
+}
+
+    #main > #board > #undo::before {
+        content: 'Undo';
     }
 
-    #main.state-Random > #joinable > form > #join::after {
-        content: 'Join (random color)';
+#main > #board > #accept, #main > #board > #commit, #main > #board > #leave-history {
+    font-size: 1.8vw;
+    left: 9vw;
+}
+
+    #main > #board > #commit::before {
+        content: 'Commit';
     }
 
-    #main.state-White.state-Waiting.player-white > #waiting,
-    #main.state-Black.state-Waiting.player-black > #waiting,
-    #main.state-Random.state-Waiting.player-random > #waiting,
-    #main.state-Waiting.spectating > #joinable,
-    #main.state-Won:not(.viewing-history) > #win {
-        opacity: 1;
-        visibility: visible;
-        -moz-transform: translateY(-50%);
-        -ms-transform: translateY(-50%);
-        -o-transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
-        transform: translateY(-50%);
+    #main > #board > #accept::before {
+        content: 'Accept';
     }
 
-    #main.has-next-game > #win > #next-game > button#goto-next-game,
-    #main.rematch-White.player-black > #win > #next-game > button#accept-rematch,
-    #main.rematch-Black.player-white > #win > #next-game > button#accept-rematch,
-    #main.rematch-White.player-black > #win > #next-game > button#cancel-rematch,
-    #main.rematch-Black.player-white > #win > #next-game > button#cancel-rematch,
-    #main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
-    #main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
-    #main.rematch-WhiteRejected.player-white > #win > #next-game > button#offer-rematch,
-    #main.rematch-BlackRejected.player-black > #win > #next-game > button#offer-rematch {
-        display: inline;
+    #main > #board > #leave-history::before {
+        content: 'Go back to the game';
     }
 
-    #main.rematch-White > #win > #next-game > #next-game-text,
-    #main.rematch-Black > #win > #next-game > #next-game-text,
-    #main.rematch-Accepted > #win > #next-game > #next-game-text {
-        margin-right: 1.5vw;
+#main > #board > #reject {
+    font-size: 1.8vw;
+    left: 22vw;
+}
+
+    #main > #board > #reject::before {
+        content: 'Reject';
     }
 
-    #main.rematch-White:not(.player-white) > #win > #next-game > #next-game-text::before {
-        content: 'White is offering a rematch.';
+#main > #board > #roll, #main > #board > #resign-confirm {
+    font-size: 2vw;
+    left: 55vw;
+}
+
+    #main > #board > #roll::before {
+        content: 'Roll';
     }
 
-    #main.rematch-Black:not(.player-black) > #win > #next-game > #next-game-text::before {
-        content: 'Black is offering a rematch.';
+    #main > #board > #resign-confirm::before {
+        content: 'Resign';
     }
 
-    #main.rematch-White.player-white > #win > #next-game > #next-game-text::before,
-    #main.rematch-Black.player-black > #win > #next-game > #next-game-text::before {
-        content: 'Rematch offer sent.';
+#main > #board > #double {
+    font-size: 1.8vw;
+    left: 68vw;
+}
+
+    #main > #board > #double::before {
+        content: 'Double';
     }
 
-    #main.rematch-Accepted > #win > #next-game > #next-game-text::before {
-        content: 'Rematch is on.';
+#main > #board > #resign-cancel {
+    font-size: 2vw;
+    left: 68vw;
+}
+
+    #main > #board > #resign-cancel::before {
+        content: 'Cancel';
     }
 
-    #main.rematch-WhiteRejected:not(.player-white) > #win > #next-game > #next-game-text::before {
-        content: 'White refuses a rematch.';
+#main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
+#main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
+#main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
+#main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject {
+    opacity: .5;
+    visibility: visible;
+    pointer-events: none;
+}
+
+#main.undoable:not(.resigning):not(.viewing-history) > #board > #undo,
+#main.committable:not(.resigning):not(.viewing-history) > #board > #commit,
+#main.player-white.state-White.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
+#main.player-black.state-Black.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
+#main.player-white.state-White.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
+#main.player-black.state-Black.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
+#main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
+#main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
+#main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
+#main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
+#main.resigning:not(.viewing-history) > #board > #resign-confirm,
+#main.resigning:not(.viewing-history) > #board > #resign-cancel,
+#main.viewing-history > #board > #leave-history {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+#main > #board > #info-line {
+    pointer-events: none;
+    opacity: 0;
+    -moz-transition: opacity ease-in-out .5s, transform linear 2s;
+    -o-transition: opacity ease-in-out .5s, transform linear 2s;
+    -webkit-transition: opacity ease-in-out .5s, transform linear 2s;
+    transition: opacity ease-in-out .5s, transform linear 2s;
+    position: absolute;
+    left: 0vw;
+    top: 28vw;
+    width: 42vw;
+    text-align: center;
+    font-size: 5vw;
+    font-weight: bold;
+    font-style: italic;
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    color: hsl(32, 50%, 20%);
+    text-shadow: .1vw .1vw .1vw hsl(32, 50%, 80%);
+}
+
+#main.auto-0:not(.viewing-history) > #board > #info-line, #main.auto-1:not(.viewing-history) > #board > #info-line, #main.resigning:not(.viewing-history) > #board > #info-line {
+    opacity: 1;
+    -moz-transform: translateY(-50%) scale(1.5);
+    -ms-transform: translateY(-50%) scale(1.5);
+    -o-transform: translateY(-50%) scale(1.5);
+    -webkit-transform: translateY(-50%) scale(1.5);
+    transform: translateY(-50%) scale(1.5);
+}
+
+#main.auto-0 > #board > #info-line::before {
+    content: 'No moves';
+}
+
+#main.auto-1 > #board > #info-line::before {
+    content: 'Forced move';
+}
+
+#main.resigning > #board > #info-line::before {
+    content: 'Resign?';
+}
+
+#main.state-ToConfirmDouble:not(.viewing-history) > #board > #info-line {
+    left: 47vw;
+    opacity: 1;
+}
+
+    #main.state-ToConfirmDouble:not(.viewing-history) > #board > #info-line::before {
+        content: 'Double?';
     }
 
-    #main.rematch-BlackRejected:not(.player-black) > #win > #next-game > #next-game-text::before {
-        content: 'Black refuses a rematch.';
+#main > #connecting {
+    position: absolute;
+    color: hsl(0, 100%, 75%);
+    font-size: 1vw;
+    font-weight: bold;
+    top: 8.3vw;
+    right: 10vw;
+    display: none;
+}
+
+    #main > #connecting::before {
+        content: 'Reconnecting...';
     }
 
-    #main > #waiting > #send-this-link::before {
-        content: 'Send the following link to your friend to allow them to join the game:';
+#main.connecting > #connecting {
+    display: block;
+}
+
+#main > .dialog {
+    opacity: 0;
+    visibility: hidden;
+    top: 36vw;
+    left: 15vw;
+    right: 15vw;
+    border: .7vw solid hsl(32, 50%, 20%);
+    background: hsl(32, 50%, 70%);
+    padding: 0 3vw;
+    box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+    color: hsl(32, 50%, 30%);
+    -moz-transform: translateY(-50%) scale(.5);
+    -ms-transform: translateY(-50%) scale(.5);
+    -o-transform: translateY(-50%) scale(.5);
+    -webkit-transform: translateY(-50%) scale(.5);
+    transform: translateY(-50%) scale(.5);
+    -moz-transition: transform 1s ease-out, opacity 1s ease-in-out;
+    -o-transition: transform 1s ease-out, opacity 1s ease-in-out;
+    -webkit-transition: transform 1s ease-out, opacity 1s ease-in-out;
+    transition: transform 1s ease-out, opacity 1s ease-in-out;
+}
+
+    #main > .dialog > p, #main > .dialog > form {
+        text-align: center;
+        font-size: 1.8vw;
+        margin: 2vw 0;
     }
 
-    #main > #waiting > #game-will-begin::before {
-        content: 'The game will begin when the other player joins the game.';
+        #main > .dialog > p.link, #main > .dialog > form {
+            background: hsl(32, 50%, 90%);
+            padding: 1vw 0;
+            font-weight: bold;
+        }
+
+        #main > .dialog > p.link {
+            font-family: monospace;
+        }
+
+#main > #win > .win {
+    margin: 3vw 0;
+}
+
+    #main > #win > .win::before {
+        display: block;
+        background: hsl(32, 50%, 90%);
+        padding: .2vw 0;
+        font-size: 5vw;
     }
 
-    #main > #joinable > #player-waiting::before {
-        content: 'The player is waiting for an opponent to play with.';
+    #main > #win > .win::after {
+        display: block;
+        padding: .2vw 0 0;
+        margin-bottom: -1.25vw;
+        font-size: 2vw;
     }
 
-    #main.state-Won.state-White > #win > .win::before {
-        content: 'White wins';
+#main > #win > .piece {
+    position: absolute;
+    top: 3.7vw;
+    left: 4.2vw;
+}
+
+#main > #win > .points {
+    position: absolute;
+    right: 4vw;
+    text-align: right;
+    top: 3.25vw;
+}
+
+    #main > #win > .points > .number {
+        font-family: 'Roboto', 'Calibri';
+        font-size: 4vw;
+        line-height: 4vw;
+        margin: 0;
     }
 
-    #main.state-Won.state-White.end-of-match > #win > .win::before {
-        content: 'White is victorious';
+    #main > #win > .points > .word {
+        font-size: 1.5vw;
+        line-height: 1.5vw;
+        margin: 0;
     }
 
-    #main.state-Won.state-Black > #win > .win::before {
-        content: 'Black wins';
+    #main > #win > .points.singular > .word::before {
+        content: 'point';
     }
 
-    #main.state-Won.state-Black.end-of-match > #win > .win::before {
-        content: 'Black is victorious';
+    #main > #win > .points.plural > .word::before {
+        content: 'points';
     }
 
-    #main.state-White.state-RejectedDouble > #win > .win::after {
-        content: 'Black rejected a double.';
+#main > #win > #next-game > button {
+    display: none;
+    margin-right: 1vw;
+}
+
+    #main > #win > #next-game > button#goto-next-game::before {
+        content: 'Go to next game';
     }
 
-    #main.state-Black.state-RejectedDouble > #win > .win::after {
-        content: 'White rejected a double.';
+    #main > #win > #next-game > button#offer-rematch::before {
+        content: 'Offer a rematch';
     }
 
-    #main.state-White.state-Resignation > #win > .win::after {
-        content: 'Black resigned.';
+    #main > #win > #next-game > button#accept-rematch::before {
+        content: 'Accept';
     }
 
-    #main.state-Black.state-Resignation > #win > .win::after {
-        content: 'White resigned.';
+    #main > #win > #next-game > button#cancel-rematch::before {
+        content: 'Cancel';
     }
 
-    #main > #infobar {
+#main > #joinable > form > #join::before {
+    position: absolute;
+    content: '';
+    top: 50%;
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#main > #joinable > form > #join::after {
+    padding-left: 6vw;
+}
+
+#main.state-Black > #joinable > form > #join::after {
+    content: 'Join as White';
+}
+
+#main.state-White > #joinable > form > #join::after {
+    content: 'Join as Black';
+}
+
+#main.state-Random > #joinable > form > #join::after {
+    content: 'Join (random color)';
+}
+
+#main.state-White.state-Waiting.player-white > #waiting,
+#main.state-Black.state-Waiting.player-black > #waiting,
+#main.state-Random.state-Waiting.player-random > #waiting,
+#main.state-Waiting.spectating > #joinable,
+#main.state-Won:not(.viewing-history) > #win {
+    opacity: 1;
+    visibility: visible;
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#main.has-next-game > #win > #next-game > button#goto-next-game,
+#main.rematch-White.player-black > #win > #next-game > button#accept-rematch,
+#main.rematch-Black.player-white > #win > #next-game > button#accept-rematch,
+#main.rematch-White.player-black > #win > #next-game > button#cancel-rematch,
+#main.rematch-Black.player-white > #win > #next-game > button#cancel-rematch,
+#main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
+#main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
+#main.rematch-WhiteRejected.player-white > #win > #next-game > button#offer-rematch,
+#main.rematch-BlackRejected.player-black > #win > #next-game > button#offer-rematch {
+    display: inline;
+}
+
+#main.rematch-White > #win > #next-game > #next-game-text,
+#main.rematch-Black > #win > #next-game > #next-game-text,
+#main.rematch-Accepted > #win > #next-game > #next-game-text {
+    margin-right: 1.5vw;
+}
+
+#main.rematch-White:not(.player-white) > #win > #next-game > #next-game-text::before {
+    content: 'White is offering a rematch.';
+}
+
+#main.rematch-Black:not(.player-black) > #win > #next-game > #next-game-text::before {
+    content: 'Black is offering a rematch.';
+}
+
+#main.rematch-White.player-white > #win > #next-game > #next-game-text::before,
+#main.rematch-Black.player-black > #win > #next-game > #next-game-text::before {
+    content: 'Rematch offer sent.';
+}
+
+#main.rematch-Accepted > #win > #next-game > #next-game-text::before {
+    content: 'Rematch is on.';
+}
+
+#main.rematch-WhiteRejected:not(.player-white) > #win > #next-game > #next-game-text::before {
+    content: 'White refuses a rematch.';
+}
+
+#main.rematch-BlackRejected:not(.player-black) > #win > #next-game > #next-game-text::before {
+    content: 'Black refuses a rematch.';
+}
+
+#main > #waiting > #send-this-link::before {
+    content: 'Send the following link to your friend to allow them to join the game:';
+}
+
+#main > #waiting > #game-will-begin::before {
+    content: 'The game will begin when the other player joins the game.';
+}
+
+#main > #joinable > #player-waiting::before {
+    content: 'The player is waiting for an opponent to play with.';
+}
+
+#main.state-Won.state-White > #win > .win::before {
+    content: 'White wins';
+}
+
+#main.state-Won.state-White.end-of-match > #win > .win::before {
+    content: 'White is victorious';
+}
+
+#main.state-Won.state-Black > #win > .win::before {
+    content: 'Black wins';
+}
+
+#main.state-Won.state-Black.end-of-match > #win > .win::before {
+    content: 'Black is victorious';
+}
+
+#main.state-White.state-RejectedDouble > #win > .win::after {
+    content: 'Black rejected a double.';
+}
+
+#main.state-Black.state-RejectedDouble > #win > .win::after {
+    content: 'White rejected a double.';
+}
+
+#main.state-White.state-Resignation > #win > .win::after {
+    content: 'Black resigned.';
+}
+
+#main.state-Black.state-Resignation > #win > .win::after {
+    content: 'White resigned.';
+}
+
+#main > #infobar {
+    height: 6vw;
+    left: 2vw;
+    top: 2vw;
+    width: 96vw;
+}
+
+    #main > #infobar > .infobox {
+        background: hsl(32, 50%, 70%);
+        position: absolute;
+        top: 0;
         height: 6vw;
-        left: 2vw;
-        top: 2vw;
-        width: 96vw;
     }
 
-        #main > #infobar > .infobox {
-            background: hsl(32, 50%, 70%);
+        #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece {
+            position: absolute;
+            top: .5vw;
+        }
+
+        #main > #infobar > .infobox#info-player > .piece, #main > #infobar > .infobox#info-state > .piece {
+            left: .9vw;
+        }
+
+        #main > #infobar > .infobox > .infobox-inner {
             position: absolute;
             top: 0;
-            height: 6vw;
+            bottom: 0;
+            width: 15vw;
+            overflow: hidden;
         }
 
-            #main > #infobar > .infobox > .piece, #main > #infobar > .infobox > .infobox-inner > .piece {
+            #main > #infobar > .infobox > .infobox-inner.infobox-white {
+                left: 0;
+            }
+
+                #main > #infobar > .infobox > .infobox-inner.infobox-white > .piece {
+                    right: -2.5vw;
+                }
+
+            #main > #infobar > .infobox > .infobox-inner.infobox-black {
+                right: 0;
+            }
+
+                #main > #infobar > .infobox > .infobox-inner.infobox-black > .piece {
+                    left: -2.5vw;
+                }
+
+            #main > #infobar > #info-player::before, #main > #infobar > #info-player::after,
+            #main > #infobar > #info-state::before, #main > #infobar > #info-state::after,
+            #main > #infobar > .infobox > .infobox-inner > .number {
                 position: absolute;
-                top: .5vw;
+                color: hsl(32, 50%, 30%);
+                font-family: 'Lato';
+                text-transform: uppercase;
+                white-space: pre;
             }
 
-            #main > #infobar > .infobox#info-player > .piece, #main > #infobar > .infobox#info-state > .piece {
-                left: .9vw;
-            }
-
-            #main > #infobar > .infobox > .infobox-inner {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                width: 15vw;
-                overflow: hidden;
-            }
-
-                #main > #infobar > .infobox > .infobox-inner.infobox-white {
-                    left: 0;
-                }
-
-                    #main > #infobar > .infobox > .infobox-inner.infobox-white > .piece {
-                        right: -2.5vw;
-                    }
-
-                #main > #infobar > .infobox > .infobox-inner.infobox-black {
-                    right: 0;
-                }
-
-                    #main > #infobar > .infobox > .infobox-inner.infobox-black > .piece {
-                        left: -2.5vw;
-                    }
-
-                #main > #infobar > #info-player::before, #main > #infobar > #info-player::after,
-                #main > #infobar > #info-state::before, #main > #infobar > #info-state::after,
-                #main > #infobar > .infobox > .infobox-inner > .number {
-                    position: absolute;
-                    color: hsl(32, 50%, 30%);
-                    font-family: 'Lato';
-                    text-transform: uppercase;
-                    white-space: pre;
-                }
-
-        #main > #infobar > #info-player::before {
-            top: .5vw;
-        }
-
-        #main > #infobar > #info-player::after {
-            bottom: .5vw;
-        }
-
-        #main > #infobar > #info-state::before {
-            left: 7vw;
-            top: .5vw;
-            font-size: 3.4vw;
-            line-height: 3.4vw;
-        }
-
-        #main > #infobar > #info-state::after {
-            left: 7vw;
-            bottom: .5vw;
-            font-size: 1.3vw;
-            line-height: 1.3vw;
-        }
-
-        #main > #infobar > .infobox > .infobox-inner > .number {
-            top: 3vw;
-            -moz-transform: translateY(-50%);
-            -ms-transform: translateY(-50%);
-            -o-transform: translateY(-50%);
-            -webkit-transform: translateY(-50%);
-            transform: translateY(-50%);
-            font-size: 4vw;
-            line-height: 4vw;
-            text-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
-        }
-
-        #main > #infobar > .infobox > .infobox-inner::after {
-            text-transform: uppercase;
-            position: absolute;
-            top: 3vw;
-            font-family: 'Lato';
-        }
-
-        #main > #infobar > .infobox > .infobox-white::after {
-            right: 0;
-            -moz-transform: translateX(50%) translateY(-50%);
-            -ms-transform: translateX(50%) translateY(-50%);
-            -o-transform: translateX(50%) translateY(-50%);
-            -webkit-transform: translateX(50%) translateY(-50%);
-            transform: translateX(50%) translateY(-50%);
-            color: hsl(32, 50%, 10%);
-        }
-
-        #main > #infobar > .infobox > .infobox-black::after {
-            left: 0;
-            -moz-transform: translateX(-50%) translateY(-50%);
-            -ms-transform: translateX(-50%) translateY(-50%);
-            -o-transform: translateX(-50%) translateY(-50%);
-            -webkit-transform: translateX(-50%) translateY(-50%);
-            transform: translateX(-50%) translateY(-50%);
-            color: hsl(32, 50%, 95%);
-        }
-
-        #main > #infobar > .infobox > .infobox-white > .number {
-            right: 3.5vw;
-            color: hsl(32, 50%, 95%);
-        }
-
-        #main > #infobar > .infobox > .infobox-black > .number {
-            left: 3.5vw;
-            color: hsl(32, 50%, 10%);
-        }
-
-        #main > #infobar > .infobox#info-player {
-            left: 0;
-            width: 27vw;
-        }
-
-        #main > #infobar > .infobox#info-state {
-            left: 29vw;
-            width: 27vw;
-        }
-
-        #main > #infobar > .infobox#info-pips {
-            left: 58vw;
-            width: 30vw;
-        }
-
-        #main > #infobar > .infobox#info-match-score {
-            left: 90vw;
-            width: 30vw;
-        }
-
-    #main.in-match > #infobar > .infobox#info-player {
-        left: 0;
-        width: 19vw;
+    #main > #infobar > #info-player::before {
+        top: .5vw;
     }
 
-    #main.in-match > #infobar > .infobox#info-state {
-        left: 21vw;
-        width: 19vw;
+    #main > #infobar > #info-player::after {
+        bottom: .5vw;
     }
 
-    #main.in-match > #infobar > .infobox#info-pips {
-        left: 42vw;
-        width: 22vw;
-    }
-
-    #main.in-match > #infobar > .infobox#info-match-score {
-        left: 66vw;
-        width: 22vw;
-    }
-
-    #main.in-match > #infobar > .infobox > .infobox-inner {
-        width: 11vw;
-    }
-
-    #main.spectating > #infobar > #info-player::before, #main.spectating > #infobar > #info-player::after {
-        font-size: 2.4vw;
-        line-height: 2.4vw;
-        left: 50%;
-        -moz-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        -webkit-transform: translateX(-50%);
-        transform: translateX(-50%);
-    }
-
-    #main:not(.spectating) > #infobar > #info-player::before {
-        content: 'You are playing';
+    #main > #infobar > #info-state::before {
         left: 7vw;
-        font-size: 1.3vw;
-        line-height: 1.3vw;
-    }
-
-    #main:not(.spectating) > #infobar > #info-player::after {
-        left: 7vw;
+        top: .5vw;
         font-size: 3.4vw;
         line-height: 3.4vw;
     }
 
-    #main.player-white > #infobar > #info-player::after {
-        content: 'white';
-    }
-
-    #main.player-black > #infobar > #info-player::after {
-        content: 'black';
-    }
-
-    #main.player-random > #infobar > #info-player::after {
-        content: '?';
-    }
-
-    #main.spectating > #infobar > #info-player > .piece {
-        display: none;
-    }
-
-    #main.spectating > #infobar > #info-player::before {
-        content: 'You are';
-    }
-
-    #main.spectating > #infobar > #info-player::after {
-        content: 'spectating';
-    }
-
-    #main.state-White > #infobar > #info-state::before {
-        content: 'White';
-    }
-
-    #main.state-Black > #infobar > #info-state::before {
-        content: 'Black';
-    }
-
-    #main.state-Random > #infobar > #info-state::before {
-        content: '?';
-    }
-
-    #main.state-Waiting > #infobar > #info-state::after {
-        content: 'waiting';
-    }
-
-    #main.state-ToRoll > #infobar > #info-state::after {
-        content: 'to roll';
-    }
-
-    #main.state-ToConfirmDouble > #infobar > #info-state::after {
-        content: 'to confirm';
-    }
-
-    #main.state-ToMove > #infobar > #info-state::after {
-        content: 'to play';
-    }
-
-    #main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state,
-    #main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state,
-    #main.state-White.state-ToConfirmDouble:not(.online-White) > #infobar > #info-state,
-    #main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state,
-    #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state,
-    #main.state-Black.state-ToConfirmDouble:not(.online-Black) > #infobar > #info-state {
-        opacity: .5;
-    }
-
-        #main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state::after,
-        #main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state::after,
-        #main.state-White.state-ToConfirmDouble:not(.online-White) > #infobar > #info-state::after,
-        #main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state::after,
-        #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state::after,
-        #main.state-Black.state-ToConfirmDouble:not(.online-Black) > #infobar > #info-state::after {
-            content: 'is offline';
-        }
-
-    #main.state-Won > #infobar > #info-state::after {
-        content: 'wins';
-    }
-
-    #main > #infobar > #info-pips::before, #main > #infobar > #info-match-score::before {
-        width: 16vw;
-        top: 6.1vw;
-        left: 50%;
-        -moz-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        -webkit-transform: translateX(-50%);
-        transform: translateX(-50%);
-    }
-
-    #main > #infobar > .mini-button::before {
-        white-space: nowrap;
-        top: 1.5vw;
-        right: -1.25vw;
-    }
-
-    #main > #infobar > #info-pips::before {
-        content: 'Shows the sum of how many steps all of your pieces are away from home.';
-    }
-
-    #main > #infobar > #info-match-score::before {
-        content: 'Shows your score within the current match.';
-    }
-
-    #main > #infobar > #info-pips > .infobox-inner::after {
-        content: 'pips';
-        font-size: 2vw;
-    }
-
-    #main > #infobar > #info-match-score > .infobox-inner::after {
-        content: 'match';
+    #main > #infobar > #info-state::after {
+        left: 7vw;
+        bottom: .5vw;
         font-size: 1.3vw;
+        line-height: 1.3vw;
     }
 
-    #main > #infobar > .mini-button {
+    #main > #infobar > .infobox > .infobox-inner > .number {
+        top: 3vw;
+        -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        font-size: 4vw;
+        line-height: 4vw;
+        text-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3);
+    }
+
+    #main > #infobar > .infobox > .infobox-inner::after {
+        text-transform: uppercase;
         position: absolute;
-        width: 0;
-        height: 0;
-        left: 91.25vw;
-        top: 1.25vw;
-        border-radius: 100%;
+        top: 3vw;
+        font-family: 'Lato';
     }
 
-        #main:not(.state-Won) > #infobar > .mini-button:hover:not(:active):not(:focus), #main > #infobar > .mini-button:not(#btn-resign):hover:not(:active):not(:focus) {
-            box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
-        }
-
-        #main > #infobar > .mini-button:focus:not(:active) {
-            outline: none;
-            box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
-        }
-
-        #main > #infobar > .mini-button:active {
-            outline: none;
-            box-shadow: 0 0 2vw 1vw rgba(0, 0, 0, 1);
-            margin: .1vw 0 0 .1vw;
-        }
-
-        #main > #infobar > .mini-button::after {
-            content: '';
-            position: absolute;
-            left: -1.25vw;
-            top: -1.25vw;
-            right: -1.25vw;
-            bottom: -1.25vw;
-            background-position: center center;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-
-        #main > #infobar > .mini-button#btn-chat, #main > #infobar > .mini-button#btn-settings {
-            left: 94.75vw;
-        }
-
-        #main > #infobar > .mini-button#btn-resign, #main > #infobar > .mini-button#btn-settings {
-            top: 4.75vw;
-        }
-
-        #main > #infobar > .mini-button#btn-info::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
-        }
-
-        #main > #infobar > .mini-button#btn-chat::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
-        }
-
-        #main > #infobar > .mini-button#btn-resign::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
-        }
-
-        #main > #infobar > .mini-button#btn-settings::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
-        }
-
-        #main > #infobar > .mini-button#btn-info::before {
-            content: 'Game info';
-        }
-
-        #main > #infobar > .mini-button#btn-info:hover::after, #main > #infobar > .mini-button#btn-info:active::after, #main > #infobar > .mini-button#btn-info:focus::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
-        }
-
-        #main > #infobar > .mini-button#btn-chat::before {
-            content: 'Chat';
-        }
-
-        #main > #infobar > .mini-button#btn-chat:hover::after, #main > #infobar > .mini-button#btn-chat:active::after, #main > #infobar > .mini-button#btn-chat:focus::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
-        }
-
-        #main > #infobar > .mini-button#btn-settings::before {
-            content: 'Settings';
-        }
-
-        #main > #infobar > .mini-button#btn-settings:hover::after, #main > #infobar > .mini-button#btn-settings:active::after, #main > #infobar > .mini-button#btn-settings:focus::after {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
-        }
-
-    #main:not(.state-Won):not(.state-Waiting):not(.spectating) > #infobar > .mini-button#btn-resign::before {
-        content: 'Resign this game';
+    #main > #infobar > .infobox > .infobox-white::after {
+        right: 0;
+        -moz-transform: translateX(50%) translateY(-50%);
+        -ms-transform: translateX(50%) translateY(-50%);
+        -o-transform: translateX(50%) translateY(-50%);
+        -webkit-transform: translateX(50%) translateY(-50%);
+        transform: translateX(50%) translateY(-50%);
+        color: hsl(32, 50%, 10%);
     }
 
-    #main:not(.state-Won) > #infobar > .mini-button#btn-resign:hover::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:active::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:focus::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
+    #main > #infobar > .infobox > .infobox-black::after {
+        left: 0;
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        color: hsl(32, 50%, 95%);
     }
 
-    #main.state-Waiting > #infobar > .mini-button#btn-resign,
-    #main.state-Won > #infobar > .mini-button#btn-resign,
-    #main.spectating > #infobar > .mini-button#btn-resign {
-        opacity: .2;
+    #main > #infobar > .infobox > .infobox-white > .number {
+        right: 3.5vw;
+        color: hsl(32, 50%, 95%);
     }
+
+    #main > #infobar > .infobox > .infobox-black > .number {
+        left: 3.5vw;
+        color: hsl(32, 50%, 10%);
+    }
+
+    #main > #infobar > .infobox#info-player {
+        left: 0;
+        width: 27vw;
+    }
+
+    #main > #infobar > .infobox#info-state {
+        left: 29vw;
+        width: 27vw;
+    }
+
+    #main > #infobar > .infobox#info-pips {
+        left: 58vw;
+        width: 30vw;
+    }
+
+    #main > #infobar > .infobox#info-match-score {
+        left: 90vw;
+        width: 30vw;
+    }
+
+#main.in-match > #infobar > .infobox#info-player {
+    left: 0;
+    width: 19vw;
+}
+
+#main.in-match > #infobar > .infobox#info-state {
+    left: 21vw;
+    width: 19vw;
+}
+
+#main.in-match > #infobar > .infobox#info-pips {
+    left: 42vw;
+    width: 22vw;
+}
+
+#main.in-match > #infobar > .infobox#info-match-score {
+    left: 66vw;
+    width: 22vw;
+}
+
+#main.in-match > #infobar > .infobox > .infobox-inner {
+    width: 11vw;
+}
+
+#main.spectating > #infobar > #info-player::before, #main.spectating > #infobar > #info-player::after {
+    font-size: 2.4vw;
+    line-height: 2.4vw;
+    left: 50%;
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+#main:not(.spectating) > #infobar > #info-player::before {
+    content: 'You are playing';
+    left: 7vw;
+    font-size: 1.3vw;
+    line-height: 1.3vw;
+}
+
+#main:not(.spectating) > #infobar > #info-player::after {
+    left: 7vw;
+    font-size: 3.4vw;
+    line-height: 3.4vw;
+}
+
+#main.player-white > #infobar > #info-player::after {
+    content: 'white';
+}
+
+#main.player-black > #infobar > #info-player::after {
+    content: 'black';
+}
+
+#main.player-random > #infobar > #info-player::after {
+    content: '?';
+}
+
+#main.spectating > #infobar > #info-player > .piece {
+    display: none;
+}
+
+#main.spectating > #infobar > #info-player::before {
+    content: 'You are';
+}
+
+#main.spectating > #infobar > #info-player::after {
+    content: 'spectating';
+}
+
+#main.state-White > #infobar > #info-state::before {
+    content: 'White';
+}
+
+#main.state-Black > #infobar > #info-state::before {
+    content: 'Black';
+}
+
+#main.state-Random > #infobar > #info-state::before {
+    content: '?';
+}
+
+#main.state-Waiting > #infobar > #info-state::after {
+    content: 'waiting';
+}
+
+#main.state-ToRoll > #infobar > #info-state::after {
+    content: 'to roll';
+}
+
+#main.state-ToConfirmDouble > #infobar > #info-state::after {
+    content: 'to confirm';
+}
+
+#main.state-ToMove > #infobar > #info-state::after {
+    content: 'to play';
+}
+
+#main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state,
+#main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state,
+#main.state-White.state-ToConfirmDouble:not(.online-White) > #infobar > #info-state,
+#main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state,
+#main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state,
+#main.state-Black.state-ToConfirmDouble:not(.online-Black) > #infobar > #info-state {
+    opacity: .5;
+}
+
+    #main.state-White.state-ToMove:not(.online-White) > #infobar > #info-state::after,
+    #main.state-White.state-ToRoll:not(.online-White) > #infobar > #info-state::after,
+    #main.state-White.state-ToConfirmDouble:not(.online-White) > #infobar > #info-state::after,
+    #main.state-Black.state-ToMove:not(.online-Black) > #infobar > #info-state::after,
+    #main.state-Black.state-ToRoll:not(.online-Black) > #infobar > #info-state::after,
+    #main.state-Black.state-ToConfirmDouble:not(.online-Black) > #infobar > #info-state::after {
+        content: 'is offline';
+    }
+
+#main.state-Won > #infobar > #info-state::after {
+    content: 'wins';
+}
+
+#main > #infobar > #info-pips::before, #main > #infobar > #info-match-score::before {
+    width: 16vw;
+    top: 6.1vw;
+    left: 50%;
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+#main > #infobar > .mini-button::before {
+    white-space: nowrap;
+    top: 1.5vw;
+    right: -1.25vw;
+}
+
+#main > #infobar > #info-pips::before {
+    content: 'Shows the sum of how many steps all of your pieces are away from home.';
+}
+
+#main > #infobar > #info-match-score::before {
+    content: 'Shows your score within the current match.';
+}
+
+#main > #infobar > #info-pips > .infobox-inner::after {
+    content: 'pips';
+    font-size: 2vw;
+}
+
+#main > #infobar > #info-match-score > .infobox-inner::after {
+    content: 'match';
+    font-size: 1.3vw;
+}
+
+#main > #infobar > .mini-button {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 91.25vw;
+    top: 1.25vw;
+    border-radius: 100%;
+}
+
+    #main:not(.state-Won) > #infobar > .mini-button:hover:not(:active):not(:focus), #main > #infobar > .mini-button:not(#btn-resign):hover:not(:active):not(:focus) {
+        box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
+    }
+
+    #main > #infobar > .mini-button:focus:not(:active) {
+        outline: none;
+        box-shadow: 0 0 3vw 1vw rgba(0, 0, 0, .5);
+    }
+
+    #main > #infobar > .mini-button:active {
+        outline: none;
+        box-shadow: 0 0 2vw 1vw rgba(0, 0, 0, 1);
+        margin: .1vw 0 0 .1vw;
+    }
+
+    #main > #infobar > .mini-button::after {
+        content: '';
+        position: absolute;
+        left: -1.25vw;
+        top: -1.25vw;
+        right: -1.25vw;
+        bottom: -1.25vw;
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    #main > #infobar > .mini-button#btn-chat, #main > #infobar > .mini-button#btn-settings {
+        left: 94.75vw;
+    }
+
+    #main > #infobar > .mini-button#btn-resign, #main > #infobar > .mini-button#btn-settings {
+        top: 4.75vw;
+    }
+
+    #main > #infobar > .mini-button#btn-info::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
+    }
+
+    #main > #infobar > .mini-button#btn-chat::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
+    }
+
+    #main > #infobar > .mini-button#btn-resign::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
+    }
+
+    #main > #infobar > .mini-button#btn-settings::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+    }
+
+    #main > #infobar > .mini-button#btn-info::before {
+        content: 'Game info';
+    }
+
+    #main > #infobar > .mini-button#btn-info:hover::after, #main > #infobar > .mini-button#btn-info:active::after, #main > #infobar > .mini-button#btn-info:focus::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
+    }
+
+    #main > #infobar > .mini-button#btn-chat::before {
+        content: 'Chat';
+    }
+
+    #main > #infobar > .mini-button#btn-chat:hover::after, #main > #infobar > .mini-button#btn-chat:active::after, #main > #infobar > .mini-button#btn-chat:focus::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
+    }
+
+    #main > #infobar > .mini-button#btn-settings::before {
+        content: 'Settings';
+    }
+
+    #main > #infobar > .mini-button#btn-settings:hover::after, #main > #infobar > .mini-button#btn-settings:active::after, #main > #infobar > .mini-button#btn-settings:focus::after {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+    }
+
+#main:not(.state-Won):not(.state-Waiting):not(.spectating) > #infobar > .mini-button#btn-resign::before {
+    content: 'Resign this game';
+}
+
+#main:not(.state-Won) > #infobar > .mini-button#btn-resign:hover::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:active::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:focus::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
+}
+
+#main.state-Waiting > #infobar > .mini-button#btn-resign,
+#main.state-Won > #infobar > .mini-button#btn-resign,
+#main.spectating > #infobar > .mini-button#btn-resign {
+    opacity: .2;
+}
 
 /* Sidebar */
 body.hash-sidebar > #main {
@@ -1693,8 +1717,8 @@ body.hash-sidebar > #main {
             vertical-align: middle;
         }
 
-body.hash-nohelpers #main > #board > .automove, body.hash-nohelpers #main > #board > .automove.home {
-    display: none;
+body.hash-helpers #main > #board > .automove, body.hash-helpers #main > #board > .automove.home {
+    display: block;
 }
 
 body.hash-chat > #main > #sidebar > #chat,
@@ -2083,6 +2107,7 @@ body.hash-settings > #main > #sidebar::after {
 
 #main > #sidebar > #settings > .section > label {
     position: relative;
+    display: block;
 }
 
 #main > #sidebar > #settings > #settings-helpers > input {
@@ -2101,8 +2126,15 @@ body.hash-settings > #main > #sidebar::after {
 }
 
 #main > #sidebar > #settings > #settings-helpers > label::after {
-    content: 'Show multi-move helpers';
     vertical-align: middle;
+}
+
+#main > #sidebar > #settings > #settings-helpers > #settings-helpers-select + label::after {
+    content: 'Show multi-move helpers';
+}
+
+#main > #sidebar > #settings > #settings-helpers > #settings-percentages-select + label::after {
+    content: 'Show opponent landing probabilities';
 }
 
 #main > #sidebar > #settings > #settings-helpers > input:checked + label::before {

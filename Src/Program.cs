@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
+using System.Transactions;
 using RT.PropellerApi;
 using RT.Util;
 using RT.Util.Consoles;
@@ -48,6 +49,11 @@ namespace LiBackgammon
             PropellerUtil.RunStandalone(PathUtil.AppPathCombine("LiBackgammon.Settings.json"), new LiBackgammonPropellerModule());
             Console.ReadLine();
             return 0;
+        }
+
+        public static TransactionScope NewTransaction()
+        {
+            return new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable });
         }
     }
 }

@@ -1131,6 +1131,7 @@ $(function ()
 
         move: function (args)
         {
+            deselectPiece(true);
             if ('auto' in args)
                 main.addClass('auto-' + args.auto);
 
@@ -1316,7 +1317,6 @@ $(function ()
 
         $('#board').on('click', '.tongue.selectable, .home.selectable, .automove', function ()
         {
-            $('#board>.piece.hypo-target, #board>.arrow').remove();
             var move = $(this).data('move');
             deselectPiece(true);
             position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate', callback: deselectPiece });

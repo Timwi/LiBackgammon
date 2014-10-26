@@ -28,7 +28,7 @@ namespace LiBackgammon
             var cubeRules = EnumStrong.Parse<DoublingCubeRules>(req.Post["cube"].Value);
             var visibility = EnumStrong.Parse<Visibility>(req.Post["visibility"].Value);
 
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var result = db.CreateNewMatch(

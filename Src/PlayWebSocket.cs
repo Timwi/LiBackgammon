@@ -41,7 +41,7 @@ namespace LiBackgammon
                         SendMessage(new JsonDict { { "on", socket.Player.ToString() } });
                 }
 
-                using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                using (var tr = Program.NewTransaction())
                 using (var db = new Db())
                 {
                     var chatList = db.ChatMessages
@@ -264,7 +264,7 @@ namespace LiBackgammon
             if (msg.Length == 0)
                 return null;
 
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var chatMsgObj = new ChatMessage { GameID = _gameId, Player = _player, Time = DateTime.UtcNow, Message = msg };
@@ -279,7 +279,7 @@ namespace LiBackgammon
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] settings()
         {
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var styles = db.Styles
@@ -311,7 +311,7 @@ namespace LiBackgammon
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] getLanguages()
         {
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
                 SendMessage(new JsonDict { { "languages", db.Languages.ToJsonList(l => new JsonDict {
                     { "name", l.Name },
@@ -338,7 +338,7 @@ namespace LiBackgammon
             name = name.Trim();
             hashName = hashName.Trim();
 
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var already = db.Languages.Where(l => l.Name == name).FirstOrDefault();
@@ -382,7 +382,7 @@ namespace LiBackgammon
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] translate(string hashName, string token = null)
         {
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
@@ -406,7 +406,7 @@ namespace LiBackgammon
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] translateSubmit(string hashName, string token, string sel, string trans)
         {
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
@@ -470,7 +470,7 @@ namespace LiBackgammon
 
         private T processGameState<T>(Func<Db, Game, Position, bool, List<Move>, T> func)
         {
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var game = db.Games.FirstOrDefault(g => g.PublicID == _gameId);

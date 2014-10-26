@@ -21,7 +21,7 @@ namespace LiBackgammon
             if (req.Url.Path.Length != 9)
                 return HttpResponse.Redirect(req.Url.WithParent("play" + req.Url.Path));
 
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 var stuff = req.Url.Path.Substring(1);

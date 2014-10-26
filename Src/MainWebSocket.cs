@@ -23,7 +23,7 @@ namespace LiBackgammon
 
         protected override void onBeginConnection()
         {
-            using (var tr = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
                 SendMessage(new JsonDict

@@ -11,6 +11,7 @@ namespace LiBackgammon
     {
         private UrlResolver makeResolver()
         {
+            var auth = new DbAuthenticator();
             return new UrlResolver(
 
 #if DEBUG
@@ -24,6 +25,8 @@ namespace LiBackgammon
                 new UrlMapping(path: "/play", handler: play),
                 new UrlMapping(path: "/socket/play", handler: playSocket),
                 new UrlMapping(path: "/join", handler: join),
+                new UrlMapping(path: "/admin", handler: admin),
+                new UrlMapping(path: "/auth", handler: admin),
                 new UrlMapping(path: "/css", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.css", "text/css", HttpResponse.Css(Regex.Replace(Resources.Css, @"\s+", " ", RegexOptions.Singleline).ToUtf8()))),
                 new UrlMapping(path: "/js", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.Js).ToUtf8()))),
                 new UrlMapping(path: "/js/play", specificPath: true, handler: getFileResourceHandler(@"Resources\Play.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.JsPlay).ToUtf8()))),
@@ -40,7 +43,7 @@ namespace LiBackgammon
             );
         }
 
-        public static Func<HttpRequest, HttpResponse> getFileResourceHandler(string path, string contentType, HttpResponse releaseResponse)
+        private static Func<HttpRequest, HttpResponse> getFileResourceHandler(string path, string contentType, HttpResponse releaseResponse)
         {
 #if DEBUG
             if (Program.SourceDir != null)

@@ -25,5 +25,7 @@ namespace LiBackgammon
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<Style> Styles { get; set; }
         public DbSet<Language> Languages { get; set; }
+        public DbSet<UserSession> Sessions { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

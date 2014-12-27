@@ -877,12 +877,14 @@ $(function ()
 
     function setHistory(e, mode)
     {
-        $('#board>.piece.hypo-target, #board>.arrow').remove();
+        deselectPiece(true);
         var i = e.data('move'), move = moves[i], pos = e.data('pos');
         main.addClass('viewing-history');
         main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black');
         if (i === 0)
-            main.addClass('history-dice-start ' + (moves[i].Dice1 > moves[i].Dice2 ? 'history-white' : 'history-black'));
+            main.addClass('history-dice-start ' + (moves[0].Dice1 > moves[0].Dice2 ? 'history-white' : 'history-black'));
+        else
+            main.addClass((moves[0].Dice1 > moves[0].Dice2) ^ (i % 2 === 0) ? 'history-black' : 'history-white');
         if (pos.GameValue !== null && pos.WhiteOwnsCube !== null)
             main.addClass(pos.WhiteOwnsCube ? 'history-cube-white' : 'history-cube-black');
         main.addClass(moves[i].Dice1 === moves[i].Dice2 ? 'history-dice-4' : 'history-dice-2');
@@ -952,6 +954,7 @@ $(function ()
             {
                 main.removeClass('viewing-history');
                 setupPosition(position);
+                deselectPiece(false);
             }
         }, this);
     }
@@ -965,6 +968,7 @@ $(function ()
             main.removeClass('viewing-history');
             $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
             setupPosition(position);
+            deselectPiece(false);
         }, this);
     }
 

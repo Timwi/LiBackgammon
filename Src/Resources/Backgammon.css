@@ -2454,7 +2454,7 @@ body.show-shortcuts .shortcut {
 #main.state-White:not(.dice-start):not(.viewing-history) > #board > .dice,
 #main.dice-start:not(.viewing-history) > #board > #dice-0,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice,
-#main.viewing-history.history-white.history-dice-start > #board > #dice-0,
+#main.viewing-history.history-dice-start > #board > #dice-0,
 #main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 {
     background-image: linear-gradient(135deg, #fff, #ddd);
@@ -2463,7 +2463,7 @@ body.show-shortcuts .shortcut {
 #main.state-Black:not(.dice-start):not(.viewing-history) > #board > .dice,
 #main.dice-start:not(.viewing-history) > #board > #dice-1,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice,
-#main.viewing-history.history-black.history-dice-start > #board > #dice-1,
+#main.viewing-history.history-dice-start > #board > #dice-1,
 #main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 {
     background-image: linear-gradient(135deg, #444, #222);
@@ -2491,7 +2491,7 @@ body.show-shortcuts .shortcut {
 #main.state-White:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .face,
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .face,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .face,
-#main.viewing-history.history-white.history-dice-start > #board > #dice-0 > .razor > .face,
+#main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .face,
 #main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .face,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .face {
     background-image: linear-gradient(135deg, #ddd, #fff);
@@ -2500,7 +2500,7 @@ body.show-shortcuts .shortcut {
 #main.state-Black:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .face,
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .face,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .face,
-#main.viewing-history.history-black.history-dice-start > #board > #dice-1 > .razor > .face,
+#main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .face,
 #main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .face,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .face {
     background-image: linear-gradient(135deg, #222, #444);
@@ -2521,7 +2521,7 @@ body.show-shortcuts .shortcut {
 #main.state-White:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.n,
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.n,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.n,
-#main.viewing-history.history-white.history-dice-start > #board > #dice-0 > .razor > .side.n,
+#main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.n,
 #main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.n,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.n {
     background-image: linear-gradient(0deg, #fff, #ccc);
@@ -2530,7 +2530,7 @@ body.show-shortcuts .shortcut {
 #main.state-Black:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.n,
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.n,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.n,
-#main.viewing-history.history-black.history-dice-start > #board > #dice-1 > .razor > .side.n,
+#main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.n,
 #main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.n,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.n {
     background-image: linear-gradient(0deg, #444, #222);
@@ -2546,7 +2546,7 @@ body.show-shortcuts .shortcut {
 #main.state-White:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.w,
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.w,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.w,
-#main.viewing-history.history-white.history-dice-start > #board > #dice-0 > .razor > .side.w,
+#main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.w,
 #main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.w,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.w {
     background-image: linear-gradient(-90deg, #fff, #ccc);
@@ -2555,7 +2555,7 @@ body.show-shortcuts .shortcut {
 #main.state-Black:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.w,
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.w,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.w,
-#main.viewing-history.history-black.history-dice-start > #board > #dice-1 > .razor > .side.w,
+#main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.w,
 #main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.w,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.w {
     background-image: linear-gradient(-90deg, #444, #222);
@@ -2569,7 +2569,7 @@ body.show-shortcuts .shortcut {
 #main.state-White:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.s,
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.s,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.s,
-#main.viewing-history.history-white.history-dice-start > #board > #dice-0 > .razor > .side.s,
+#main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.s,
 #main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.s,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.s {
     background-image: linear-gradient(0deg, #888, #eee);
@@ -2578,7 +2578,7 @@ body.show-shortcuts .shortcut {
 #main.state-Black:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.s,
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.s,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.s,
-#main.viewing-history.history-black.history-dice-start > #board > #dice-1 > .razor > .side.s,
+#main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.s,
 #main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.s,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.s {
     background-image: linear-gradient(0deg, #000, #333);
@@ -2594,7 +2594,7 @@ body.show-shortcuts .shortcut {
 #main.state-White:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.e,
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.e,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.e,
-#main.viewing-history.history-white.history-dice-start > #board > #dice-0 > .razor > .side.e,
+#main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.e,
 #main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.e,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.e {
     background-image: linear-gradient(-90deg, #888, #eee);
@@ -2603,7 +2603,7 @@ body.show-shortcuts .shortcut {
 #main.state-Black:not(.dice-start):not(.viewing-history) > #board > .dice > .razor > .side.e,
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.e,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.e,
-#main.viewing-history.history-black.history-dice-start > #board > #dice-1 > .razor > .side.e,
+#main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.e,
 #main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.e,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.e {
     background-image: linear-gradient(-90deg, #000, #333);
@@ -2619,7 +2619,7 @@ body.show-shortcuts .shortcut {
 #main.state-White:not(.dice-start):not(.viewing-history) > #board > .dice > .pip,
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .pip,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .pip,
-#main.viewing-history.history-white.history-dice-start > #board > #dice-0 > .pip,
+#main.viewing-history.history-dice-start > #board > #dice-0 > .pip,
 #main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .pip,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .pip {
     background: black;
@@ -2629,7 +2629,7 @@ body.show-shortcuts .shortcut {
 #main.state-Black:not(.dice-start):not(.viewing-history) > #board > .dice > .pip,
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .pip,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .pip,
-#main.viewing-history.history-black.history-dice-start > #board > #dice-1 > .pip,
+#main.viewing-history.history-dice-start > #board > #dice-1 > .pip,
 #main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .pip,
 #main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .pip {
     background: #ddd;

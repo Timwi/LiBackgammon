@@ -881,10 +881,9 @@ $(function ()
         var i = e.data('move'), move = moves[i], pos = e.data('pos');
         main.addClass('viewing-history');
         main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black');
+        main.addClass((moves[0].Dice1 > moves[0].Dice2) ^ (i % 2 === 0) ? 'history-black' : 'history-white');
         if (i === 0)
-            main.addClass('history-dice-start ' + (moves[0].Dice1 > moves[0].Dice2 ? 'history-white' : 'history-black'));
-        else
-            main.addClass((moves[0].Dice1 > moves[0].Dice2) ^ (i % 2 === 0) ? 'history-black' : 'history-white');
+            main.addClass('history-dice-start');
         if (pos.GameValue !== null && pos.WhiteOwnsCube !== null)
             main.addClass(pos.WhiteOwnsCube ? 'history-cube-white' : 'history-cube-black');
         main.addClass(moves[i].Dice1 === moves[i].Dice2 ? 'history-dice-4' : 'history-dice-2');

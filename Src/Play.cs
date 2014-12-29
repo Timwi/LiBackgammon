@@ -129,8 +129,6 @@ namespace LiBackgammon
                                         new BUTTON { accesskey = "n", id = "resign-cancel" },
                                         new BUTTON { accesskey = "k", id = "leave-history" },
                                         new DIV { id = "info-line" },
-                                        new DIV { class_ = "dice-back", id = "dice-back-white" },
-                                        new DIV { class_ = "dice-back", id = "dice-back-black" },
                                         Enumerable.Range(0, 4).Select(diceNum => new DIV { class_ = "dice" + (lastMove == null ? null : " val-" + (diceNum == 0 ? lastMove.Dice1 : lastMove.Dice2)), id = "dice-" + diceNum }._(
                                             new DIV { class_ = "razor" }._(
                                                 new DIV { class_ = "face" },

@@ -653,81 +653,55 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     cursor: pointer;
 }
 
-#main > #board > .dice-back {
-    border-radius: 1vw;
-    width: 6vw;
-    height: 6vw;
-    top: 25vw;
-    font-family: 'Lato';
-    text-align: right;
-    text-transform: uppercase;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    -moz-transition: opacity .2s ease-in-out;
-    -o-transition: opacity .2s ease-in-out;
-    -webkit-transition: opacity .2s ease-in-out;
-    transition: opacity .2s ease-in-out;
-}
-
-    #main > #board > .dice-back#dice-back-white {
-        left: 60.5vw;
-        background-image: linear-gradient(135deg, hsl(32, 50%, 90%), hsl(32, 50%, 100%));
-    }
-
-    #main > #board > .dice-back#dice-back-black {
-        left: 67.5vw;
-        background-image: linear-gradient(135deg, hsl(32, 50%, 0%), hsl(32, 50%, 20%));
-    }
-
-#main.dice-start:not(.resigning) > #board > .dice-back {
-    opacity: .5;
-}
-
-#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
-#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
-#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
-#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after {
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-0::before,
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-0::after,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-0::before,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-0::after {
     position: absolute;
     color: hsl(32, 50%, 95%);
     padding-right: .6vw;
     right: 100%;
 }
 
-#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
-#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
-#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before,
-#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-1::before,
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-1::after,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-1::before,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-1::after {
     position: absolute;
     color: hsl(32, 50%, 10%);
     padding-left: .6vw;
     left: 100%;
 }
 
-#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
-#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
-#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before,
-#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
+#main.dice-start:not(.viewing-history) > #board > .dice::before,
+#main.dice-start:not(.viewing-history) > #board > .dice::after,
+#main.viewing-history.history-dice-start > #board > .dice::before,
+#main.viewing-history.history-dice-start > #board > .dice::after {
+    font-family: 'Lato';
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
     font-size: 2.2vw;
-    top: .8vw;
 }
 
-#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::before,
-#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::before {
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-0::before,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-0::before {
     content: 'white';
+    top: .4vw;
 }
 
-#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::before,
-#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::before {
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-1::before,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-1::before {
     content: 'black';
+    top: .4vw;
 }
 
-#main.dice-start.state-White:not(.viewing-history) > #board > #dice-back-white::after,
-#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-back-black::after,
-#main.viewing-history.history-dice-start.history-white > #board > #dice-back-white::after,
-#main.viewing-history.history-dice-start.history-black > #board > #dice-back-black::after {
+#main.dice-start.state-White:not(.viewing-history) > #board > #dice-0::after,
+#main.dice-start.state-Black:not(.viewing-history) > #board > #dice-1::after,
+#main.viewing-history.history-dice-start.history-white > #board > #dice-0::after,
+#main.viewing-history.history-dice-start.history-black > #board > #dice-1::after {
     font-size: 1.3vw;
-    bottom: .8vw;
+    bottom: .4vw;
     content: 'starts';
 }
 
@@ -757,19 +731,15 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 #main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
 #main.player-white.state-White.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
 #main.player-white.state-White.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
-#main.player-white.state-White.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
 #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-0,
 #main.player-black.state-Black.state-ToMove.dice-2:not(.resigning):not(.viewing-history) > #board > #dice-1,
 #main.player-black.state-Black.state-ToMove.dice-4:not(.resigning):not(.viewing-history) > #board > .dice,
-#main.player-black.state-Black.state-ToMove.dice-start:not(.resigning):not(.viewing-history) > #board > .dice-back,
 #main.viewing-history.history-dice-2 > #board > #dice-0,
 #main.viewing-history.history-dice-2 > #board > #dice-1,
 #main.viewing-history.history-dice-4 > #board > .dice,
-#main.viewing-history.history-dice-start > #board > .dice-back,
 #main.viewing-history.history-dice-2 > #board > #dice-0,
 #main.viewing-history.history-dice-2 > #board > #dice-1,
-#main.viewing-history.history-dice-4 > #board > .dice,
-#main.viewing-history.history-dice-start > #board > .dice-back {
+#main.viewing-history.history-dice-4 > #board > .dice {
     opacity: 1;
 }
 

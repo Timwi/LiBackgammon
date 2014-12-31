@@ -287,10 +287,10 @@ namespace LiBackgammon
                     .Select(s => new { s.Name, s.HashName })
                     .ToJsonDict(s => s.HashName, s => s.Name);
                 var languages = db.Languages
-                    .Where(s => (s.Status & LanguageStatus.Approved) == LanguageStatus.Approved)
+                    .Where(s => s.Approved)
                     .Select(s => new { s.Name, s.HashName })
                     .ToJsonDict(s => s.HashName, s => s.Name);
-                SendMessage(new JsonDict { { "settings", new JsonDict { { "style", styles }, { "language", languages } } } });
+                SendMessage(new JsonDict { { "settings", new JsonDict { { "style", styles }, { "lang", languages } } } });
                 return null;
             }
         }
@@ -316,8 +316,7 @@ namespace LiBackgammon
                 SendMessage(new JsonDict { { "languages", db.Languages.ToJsonList(l => new JsonDict {
                     { "name", l.Name },
                     { "hash", l.HashName },
-                    { "isApproved", (l.Status & LanguageStatus.Approved) == LanguageStatus.Approved },
-                    { "isComplete", (l.Status & LanguageStatus.CompletenessMask) == LanguageStatus.Complete }
+                    { "isApproved", l.Approved }
                 }) } });
             return null;
         }
@@ -362,14 +361,14 @@ namespace LiBackgammon
 
                 var token = Rnd.GenerateString(8);
                 var data = new LanguageData();
-                data.Suggestions[token] = new Dictionary<string, string>();
+                data.Suggestions[token] = new LanguageSuggestion { LastChange = DateTime.UtcNow };
                 var newLang = new Language
                 {
                     HashName = hashName,
                     Name = name,
                     Data = ClassifyJson.Serialize(data).ToString(),
                     LastChange = DateTime.UtcNow,
-                    Status = LanguageStatus.Empty
+                    Approved = false
                 };
                 db.Languages.Add(newLang);
                 db.SaveChanges();
@@ -396,7 +395,7 @@ namespace LiBackgammon
                 if (token == null)
                     token = Rnd.GenerateString(8);
                 else if (data.Suggestions.ContainsKey(token))
-                    foreach (var kvp in data.Suggestions[token])
+                    foreach (var kvp in data.Suggestions[token].Translations)
                         strings[kvp.Key] = kvp.Value;
                 SendMessage(new JsonDict { { "translate", new JsonDict { { "hash", language.HashName }, { "name", language.Name }, { "token", token }, { "strings", strings } } } });
             }
@@ -417,13 +416,19 @@ namespace LiBackgammon
                 }
                 var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
                 if (!data.Suggestions.ContainsKey(token))
-                    data.Suggestions[token] = new Dictionary<string, string>();
+                    data.Suggestions[token] = new LanguageSuggestion();
+                data.Suggestions[token].LastChange = DateTime.UtcNow;
                 var removed = string.IsNullOrWhiteSpace(trans);
                 if (removed)
-                    data.Suggestions[token].Remove(sel);
+                {
+                    data.Suggestions[token].Translations.Remove(sel);
+                    if (data.Suggestions[token].Translations.Count == 0)
+                        data.Suggestions.Remove(token);
+                }
                 else
-                    data.Suggestions[token][sel] = trans;
+                    data.Suggestions[token].Translations[sel] = trans;
                 language.Data = ClassifyJson.Serialize(data).ToString();
+                language.LastChange = DateTime.UtcNow;
                 db.SaveChanges();
                 tr.Complete();
                 SendMessage(new JsonDict { { "translationSaved", new JsonDict { { "sel", sel }, { "removed", removed } } } });

@@ -200,10 +200,10 @@ namespace LiBackgammon
                                             new DIV { id = "settings-style", class_ = "section" }._(
                                                 new LABEL { for_ = "settings-style-select", accesskey = "w" },
                                                 new SELECT { id = "settings-style-select" }._(new OPTION("Loading..."))),
-                                            new DIV { id = "settings-language", class_ = "section" }._(
-                                                new LABEL { for_ = "settings-language-select", accesskey = "l" },
-                                                new SELECT { id = "settings-language-select" }._(new OPTION("Loading...")),
-                                                new BUTTON { id = "settings-language-custom" }),
+                                            new DIV { id = "settings-lang", class_ = "section" }._(
+                                                new LABEL { for_ = "settings-lang-select", accesskey = "l" },
+                                                new SELECT { id = "settings-lang-select" }._(new OPTION("Loading...")),
+                                                new BUTTON { id = "settings-lang-custom" }),
                                             new DIV { id = "settings-helpers", class_ = "section" }._(
                                                 new INPUT { id = "settings-helpers-select", type = itype.checkbox },
                                                 new LABEL { for_ = "settings-helpers-select", accesskey = "h" },
@@ -220,7 +220,8 @@ namespace LiBackgammon
                                                 new LABEL { for_ = "translate-code", id = "translate-code-label" },
                                                 new INPUT { id = "translate-code" },
                                                 new BUTTON { id = "translate-create" })),
-                                        new DIV { id = "translating", class_ = "sidebar-tab" }))),
+                                        new DIV { id = "translating", class_ = "sidebar-tab" },
+                                        new DIV { id = "translating-link" }._(new A { href = "#" }._("back to translating →"))))),
                         "js/play");
             }
         }

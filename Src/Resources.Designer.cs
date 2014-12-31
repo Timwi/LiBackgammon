@@ -92,6 +92,15 @@ namespace LiBackgammon {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string CssAdmin {
+            get {
+                return ResourceManager.GetString("CssAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Favicon {
@@ -134,6 +143,22 @@ namespace LiBackgammon {
         internal static string Js {
             get {
                 return ResourceManager.GetString("Js", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to $(function ()
+        ///{
+        ///    $(&apos;tr.translation&apos;).each(function (_, e)
+        ///    {
+        ///        var obj = LiBackgammon.strings[$(e).data(&apos;selector&apos;)];
+        ///        $(e).find(&apos;td.original&apos;).text(obj ? obj.text : &apos;&lt;invalid string&gt;&apos;);
+        ///    });
+        ///});.
+        /// </summary>
+        internal static string JsAdmin {
+            get {
+                return ResourceManager.GetString("JsAdmin", resourceCulture);
             }
         }
         

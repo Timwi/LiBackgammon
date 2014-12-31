@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 using RT.Servers;
+using RT.Util;
 
 namespace LiBackgammon
 {
@@ -61,6 +58,22 @@ namespace LiBackgammon
                 db.SaveChanges();
                 tr.Complete();
                 return true;
+            }
+        }
+
+        public HttpResponse Handle(HttpRequest req, DbSession sess)
+        {
+            using (var tr = Program.NewTransaction())
+            using (var db = new Db())
+            {
+                var user = sess.LoggedInUserId.NullOr(liu => db.Users.FirstOrDefault(u => u.UserID == liu));
+
+                return base.Handle(req, user == null ? null : user.Username, un =>
+                {
+                    var newUser = db.Users.FirstOrDefault(u => u.Username == un);
+                    if (newUser != null)
+                        sess.LoggedInUserId = newUser.UserID;
+                });
             }
         }
     }

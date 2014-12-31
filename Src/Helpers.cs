@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using RT.Util;
+using RT.Util.ExtensionMethods;
 using RT.Util.Json;
 using RT.Util.Serialization;
 
@@ -90,6 +93,24 @@ namespace LiBackgammon
                 match.FirstGame = game.PublicID;
 
             return new CreateNewMatchResult(game, match);
+        }
+
+        public static string CssEscape(this string input)
+        {
+            if (input == null)
+                throw new ArgumentNullException("input");
+            var sb = new StringBuilder();
+            var i = 0;
+            while (i < input.Length)
+            {
+                var codepoint = char.ConvertToUtf32(input, i);
+                if (codepoint < ' ' || codepoint == '\'' || codepoint == 0x2028 || codepoint == 0x2029)
+                    sb.Append(@"\{0:X} ".Fmt(codepoint));
+                else
+                    sb.Append(input.Substring(i, codepoint > 0xffff ? 2 : 1));
+                i += codepoint > 0xffff ? 2 : 1;
+            }
+            return sb.ToString();
         }
     }
 }

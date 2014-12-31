@@ -363,7 +363,7 @@ $(function ()
         if (newState)
         {
             state = newState;
-            removeClassPrefix(main, 'state-').removeClass('auto-0 auto-1 undoable committable');
+            LiBackgammon.removeClassPrefix(main, 'state-').removeClass('auto-0 auto-1 undoable committable');
             newState.split('_').forEach(function (cl) { main.addClass('state-' + cl); });
         }
         if (!main.hasClass('state-ToMove'))
@@ -662,7 +662,7 @@ $(function ()
 
     function sidebar(id)
     {
-        var hash = LiBackgammon.getHash().values;
+        var hash = LiBackgammon.hash.values;
         if (viewingHistory)
             historyLeaveAll();
 
@@ -743,59 +743,62 @@ $(function ()
             sendQueue.push(msg);
     }
 
-    function removeClassPrefix($obj, prefix)
-    {
-        return $obj.removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, prefix.length) === prefix; }).join(' '); });
-    }
-
     function hashChange()
     {
-        var hash = LiBackgammon.getHash(), hashValues = hash.values, pos = hashValues.indexOf('sidebar');
+        var values = LiBackgammon.hash.values, dict = LiBackgammon.hash.dict, c = values.length, pos;
 
-        var c = hashValues.length;
-        for (var a = hashValues.length - 1; a >= 0; a--)
+        for (var a = values.length - 1; a >= 0; a--)
         {
-            if (hashValues[a].length < 1)
-                hashValues.splice(a, 1);
+            if (values[a].length < 1)
+                values.splice(a, 1);
             else
-                for (var b = hashValues.length - 1; b > a; b--)
-                    if (hashValues[a] === hashValues[b])
-                        hashValues.splice(b, 1);
+                for (var b = values.length - 1; b > a; b--)
+                    if (values[a] === values[b])
+                        values.splice(b, 1);
         }
 
-        if (pos !== -1)
+        if ((pos = values.indexOf('translating')) !== -1 && !('translator' in dict))
+            values.splice(pos, 1);
+
+        if ((pos = values.indexOf('sidebar')) !== -1)
         {
             var sides = [];
             for (var i = 0; i < sidebars.length; i++)
-                if (hashValues.indexOf(sidebars[i]) !== -1)
+                if (values.indexOf(sidebars[i]) !== -1)
                     sides.push(sidebars[i]);
             if (sides.length === 0)
-                hashValues.splice(pos, 1);
+                values.splice(pos, 1);
             else
                 for (var i = 1; i < sides.length; i++)
-                    hashValues.splice(hashValues.indexOf(sides[i]), 1);
+                    values.splice(values.indexOf(sides[i]), 1);
         }
         else
             for (var i = 0; i < sidebars.length; i++)
-                if ((pos = hashValues.indexOf(sidebars[i])) !== -1)
-                    hashValues.splice(pos, 1);
-        if (hashValues.length !== c)
-            LiBackgammon.setHash(hashValues, hash.dict);
+                if ((pos = values.indexOf(sidebars[i])) !== -1)
+                    values.splice(pos, 1);
+        if (values.length !== c)
+            LiBackgammon.setHash(values, dict);
 
         onResize(true);
 
-        $('#settings-helpers-select').prop('checked', hashValues.indexOf('helpers') !== -1);
-        $('#settings-percentages-select').prop('checked', hashValues.indexOf('percentages') !== -1);
+        $('#settings-helpers-select').prop('checked', values.indexOf('helpers') !== -1);
+        $('#settings-percentages-select').prop('checked', values.indexOf('percentages') !== -1);
 
-        if (hashValues.indexOf('sidebar') !== -1 && hashValues.indexOf('translate') !== -1)
+        if (values.indexOf('sidebar') !== -1 && values.indexOf('translate') !== -1)
             socketSend({ getLanguages: 1 });
 
-        if (hashValues.indexOf('sidebar') !== -1 && hashValues.indexOf('translating') !== -1)
+        if (values.indexOf('sidebar') !== -1 && values.indexOf('settings') !== -1 && !settingsLoaded)
+        {
+            socketSend({ settings: 1 });
+            settingsLoaded = true;
+        }
+
+        if (values.indexOf('sidebar') !== -1 && values.indexOf('translating') !== -1 && 'translator' in dict)
         {
             var t = $('#translating').empty();
             if (!LiBackgammon.translation)
             {
-                socketSend({ translate: { hashName: hash.dict.lang, token: hash.dict.translator } });
+                socketSend({ translate: { hashName: dict.lang, token: dict.translator } });
                 t.append('<div>Loading...</div>');
             }
             else
@@ -850,7 +853,7 @@ $(function ()
 
     function submitTranslation()
     {
-        var hash = LiBackgammon.getHash().dict, i = $(this);
+        var hash = LiBackgammon.hash.dict, i = $(this);
         i.parent().removeClass('saved unsaved').addClass('submitting');
         socketSend({ translateSubmit: { hashName: hash.lang, token: hash.translator, sel: i.data('sel'), trans: i.val() } });
         LiBackgammon.translation.strings[i.data('sel')] = i.val();
@@ -862,7 +865,7 @@ $(function ()
         var rules = [];
         for (var sel in LiBackgammon.translation.strings)
             rules.push(sel + "{content:'" + LiBackgammon.translation.strings[sel] + "';}");
-        $('#translated-content').text(rules.join('\n'));
+        $('#translated-content-2').text(rules.join('\n'));
     }
 
     function focusTranslation()
@@ -887,8 +890,8 @@ $(function ()
         if (pos.GameValue !== null && pos.WhiteOwnsCube !== null)
             main.addClass(pos.WhiteOwnsCube ? 'history-cube-white' : 'history-cube-black');
         main.addClass(moves[i].Dice1 === moves[i].Dice2 ? 'history-dice-4' : 'history-dice-2');
-        removeClassPrefix($('#board>#dice-0'), 'history-val-').addClass('history-val-' + moves[i].Dice1);
-        removeClassPrefix($('#board>#dice-1,#board>#dice-2,#board>#dice-3'), 'history-val-').addClass('history-val-' + moves[i].Dice2);
+        LiBackgammon.removeClassPrefix($('#board>#dice-0'), 'history-val-').addClass('history-val-' + moves[i].Dice1);
+        LiBackgammon.removeClassPrefix($('#board>#dice-1,#board>#dice-2,#board>#dice-3'), 'history-val-').addClass('history-val-' + moves[i].Dice2);
         if (mode === '')
             setupPosition('SourceTongues' in move ? processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues) : pos);
         else
@@ -1019,8 +1022,8 @@ $(function ()
             h.append($('<div>')
                 .addClass('row move ' + (isWhite ? 'white' : 'black'))
                 .append(moves[i].Doubled ? $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(value)) : null)
-                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-0 val-' + moves[i].Dice1))
-                .append(removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
+                .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-0 val-' + moves[i].Dice1))
+                .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
                 .append($('<div>').addClass('move').text(moveStr))
                 .data('move', i)
                 .data('pos', origPos)
@@ -1110,7 +1113,7 @@ $(function ()
         on: function (args) { main.addClass('online-' + args); },
         off: function (args) { main.removeClass('online-' + args); },
         chatid: function (args) { $('#chat-token-' + json.chatid.token).attr('id', 'chat-' + json.chatid.id); },
-        rematch: function (args) { removeClassPrefix(main, 'rematch-').addClass('rematch-' + args); },
+        rematch: function (args) { LiBackgammon.removeClassPrefix(main, 'rematch-').addClass('rematch-' + args); },
 
         resync: function (args)
         {
@@ -1118,11 +1121,6 @@ $(function ()
             {
                 window.location.reload();
                 return true;
-            }
-            if (LiBackgammon.getHash().values.indexOf('settings') !== -1 && !settingsLoaded)
-            {
-                socketSend({ settings: 1 });
-                settingsLoaded = true;
             }
         },
 
@@ -1222,12 +1220,12 @@ $(function ()
 
         settings: function (args)
         {
-            ['style', 'language'].forEach(function (e)
+            ['style', 'lang'].forEach(function (e)
             {
-                var s = $('#settings-' + e + '-select').empty().append($('<option>').text('(default)'));
+                var s = $('#settings-' + e + '-select').empty().append($('<option value="">').text('(default)'));
                 for (var i in args[e])
                     s.append($('<option>').attr('value', i).text(args[e][i]));
-                s.val(LiBackgammon.getHash().dict[e] || '');
+                s.val(LiBackgammon.hash.dict[e] || '');
             });
         },
 
@@ -1426,7 +1424,17 @@ $(function ()
     $('#settings-helpers-select').change(function () { LiBackgammon[$('#settings-helpers-select:checked').length ? 'hashAdd' : 'hashRemove']('helpers'); });
     $('#settings-percentages-select').change(function () { LiBackgammon[$('#settings-percentages-select:checked').length ? 'hashAdd' : 'hashRemove']('percentages'); });
 
-    $('#settings-language-custom').click(function ()
+    $('#settings-lang-select').change(function ()
+    {
+        var lang = $(this).val();
+        if (lang === '')
+            LiBackgammon.hashRemove([], ['lang']);
+        else
+            LiBackgammon.hashAdd([], { lang: lang });
+        LiBackgammon.hashRemove([], ['translator']);
+    });
+
+    $('#settings-lang-custom').click(function ()
     {
         sidebar('translate');
         $('#translate-select').empty().append('<option>Loading...</option>');
@@ -1444,19 +1452,25 @@ $(function ()
     $('#translate-edit').click(function ()
     {
         $('#translate-error').hide();
-        socketSend({ translate: { hashName: $('#translate-select').val(), token: LiBackgammon.getHash().dict.translator } });
+        socketSend({ translate: { hashName: $('#translate-select').val(), token: LiBackgammon.hash.dict.translator } });
         return false;
     });
 
     $('#btn-settings').click(function ()
     {
         sidebar('settings');
-        if (!settingsLoaded)
-            socketSend({ settings: 1 });
         return false;
     });
 
     $('#leave-history').click(historyLeaveAll);
+
+    $('#translating-link').click(function ()
+    {
+        var hash = LiBackgammon.hash;
+        if ('translator' in hash.dict && 'lang' in hash.dict)
+            sidebar('translating');
+        return false;
+    });
 
     var chatToken = 0;
     $('#chat-msg').keypress(function (e)
@@ -1484,7 +1498,9 @@ $(function ()
     var vwRe = /(-?\b\d*\.?\d+)vw\b/g;
     for (var ss = 0; ss < document.styleSheets.length; ss++)
     {
-        var rules = document.styleSheets[ss].cssRules || document.styleSheets[ss].rules;
+        var rules;
+        try { rules = document.styleSheets[ss].cssRules || document.styleSheets[ss].rules; }
+        catch (exc) { continue; }
         for (var ruleix = 0; ruleix < rules.length; ruleix++)
         {
             if (!rules[ruleix].selectorText)

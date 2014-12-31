@@ -50,12 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Admin.cs" />
+    <Compile Include="Ajax.cs" />
+    <Compile Include="Auth.cs" />
     <Compile Include="ChatMessage.cs" />
     <Compile Include="DbAuthenticator.cs" />
     <Compile Include="DbSession.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="LanguageData.cs" />
-    <Compile Include="LanguageStatus.cs" />
     <Compile Include="MainWebSocket.cs" />
     <Compile Include="MainSocket.cs" />
     <Compile Include="PlayWebSocket.cs" />
@@ -135,6 +136,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Favicon.png" />
+    <Content Include="Resources\Admin.css" />
+    <Content Include="Resources\Admin.js" />
     <Content Include="Resources\FaviconDebug.png" />
     <Content Include="Resources\Play.js" />
     <Content Include="Resources\Main.js" />

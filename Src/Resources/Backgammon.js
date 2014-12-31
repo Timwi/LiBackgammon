@@ -1,66 +1,48 @@
 ﻿LiBackgammon = {
-    getHash: function ()
-    {
-        var values = [];
-        var dict = {};
-        var hash = window.location.hash.replace(/^#/, '').split('/');
-        for (var i = 0; i < hash.length; i++)
-            if (hash[i].length)
-            {
-                if (/^(.*)=(.*)$/.test(hash[i]))
-                    dict[RegExp.$1] = RegExp.$2;
-                else
-                    values.push(hash[i]);
-            }
-        return { values: values, dict: dict };
-    },
-
     hashAdd: function (vals, obj)
     {
         if (!(vals instanceof Array))
             vals = [vals];
-        var hash = LiBackgammon.getHash();
         for (var i = 0; i < vals.length; i++)
-            if (hash.values.indexOf(vals[i]) === -1)
-                hash.values.push(vals[i]);
+            if (LiBackgammon.hash.values.indexOf(vals[i]) === -1)
+                LiBackgammon.hash.values.push(vals[i]);
         if (typeof obj === "object")
             for (var i in obj)
-                hash.dict[i] = obj[i];
-        LiBackgammon.setHash(hash.values, hash.dict);
+                LiBackgammon.hash.dict[i] = obj[i];
+        LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
     hashRemove: function (vals, keys)
     {
         if (!(vals instanceof Array))
             vals = [vals];
-        var hash = LiBackgammon.getHash(), pos;
+        var pos;
         for (var i = 0; i < vals.length; i++)
-            while ((pos = hash.values.indexOf(vals[i])) !== -1)
-                hash.values.splice(pos, 1);
+            while ((pos = LiBackgammon.hash.values.indexOf(vals[i])) !== -1)
+                LiBackgammon.hash.values.splice(pos, 1);
         if (keys instanceof Array)
             for (var i = 0; i < keys.length; i++)
-                if (keys[i] in hash.dict)
-                    delete hash.dict[keys[i]];
-        LiBackgammon.setHash(hash.values, hash.dict);
+                if (keys[i] in LiBackgammon.hash.dict)
+                    delete LiBackgammon.hash.dict[keys[i]];
+        LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
     hashAddKeys: function (obj)
     {
-        var hash = LiBackgammon.getHash(), keys = Object.keys(obj);
+        var keys = Object.keys(obj);
         for (var i = 0; i < keys.length; i++)
-            hash.dict[keys[i]] = obj[keys[i]];
-        LiBackgammon.setHash(hash.values, hash.dict);
+            LiBackgammon.hash.dict[keys[i]] = obj[keys[i]];
+        LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
     hashRemoveKeys: function (keys)
     {
         if (!(keys instanceof Array))
             keys = [keys];
-        var hash = LiBackgammon.getHash();
         for (var i = 0; i < keys.length; i++)
-            if (keys[i] in hash.dict)
-                delete hash.dict[keys[i]];
-        LiBackgammon.setHash(hash.values, hash.dict);
+            if (keys[i] in LiBackgammon.hash.dict)
+                delete LiBackgammon.hash.dict[keys[i]];
+        LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
     setHash: function (values, dict)
@@ -72,8 +54,46 @@
         window.location.hash = elems.join('/');
     },
 
+    removeClassPrefix: function ($obj, prefix)
+    {
+        return $obj.removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, prefix.length) === prefix; }).join(' '); });
+    },
+
+    toCssRule: function (json, text)
+    {
+        text = text || json.text;
+        var str = '', pos, cssEsc = function (s) { return s.replace(/\\/g, '\\\\').replace(/'/g, '\\\''); };
+        while ((pos = text.indexOf("{")) !== -1)
+        {
+            str += " '" + cssEsc(text.substr(0, pos)) + "'";
+            if (text[pos + 1] === '{')
+            {
+                str += " '{'";
+                pos++;
+            }
+            else if (text[pos + 1] === '}')
+            {
+                str += " '}'";
+                pos++;
+            }
+            else
+            {
+                var pos2 = text.indexOf("}");
+                if (pos2 === -1 || pos2 < pos)
+                    break;
+                str += ' ' + json[text.substr(pos + 1, pos2 - pos - 1)];
+                pos = pos2;
+            }
+            text = text.substr(pos + 1);
+        }
+        return json.sel + '{content:' + str + " '" + cssEsc(text) + "'}";
+    },
+
     // Populated by the code that looks through the 'content' properties of the CSS
-    strings: {}
+    strings: {},
+
+    // Populated by hashChange
+    hash: null
 };
 
 $(function ()
@@ -98,11 +118,56 @@ $(function ()
                 body.removeClass('show-shortcuts');
         });
 
+    var translations = {};
+
     function hashChange()
     {
-        body
-            .removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, "hash-".length) === "hash-"; }).join(' '); })
-            .addClass(LiBackgammon.getHash().values.map(function (e) { return 'hash-' + e; }).join(' '));
+        // Decode window.location.hash
+        var values = [];
+        var dict = {};
+        var hash = window.location.hash.replace(/^#/, '').split('/');
+        for (var i = 0; i < hash.length; i++)
+            if (hash[i].length)
+            {
+                if (/^(.*)=(.*)$/.test(hash[i]))
+                    dict[RegExp.$1] = RegExp.$2;
+                else
+                    values.push(hash[i]);
+            }
+
+        // Set CSS classes hash-*
+        LiBackgammon.removeClassPrefix(body, "hash-");
+        for (var i = 0; i < values.length; i++)
+            body.addClass('hash-' + values[i]);
+        for (var j in dict)
+            body.addClass('hash-' + j);
+
+        // Set translated CSS
+        if ('lang' in dict)
+        {
+            var lang = dict.lang;   // for persistence in lambdas
+            var setTranslation = function ()
+            {
+                var css = [];
+                for (var i in translations[lang])
+                    if (translations[lang].hasOwnProperty(i) && i in LiBackgammon.strings)
+                        css.push(LiBackgammon.toCssRule(LiBackgammon.strings[i], translations[lang][i]));
+                $('#translated-content').text(css.join("\n"));
+            };
+            if (lang in translations)
+                setTranslation();
+            else
+                $.post(body.data('ajax') + '/lang', { data: JSON.stringify({ hashName: dict.lang }) }, function (resp)
+                {
+                    translations[lang] = resp.result;
+                    setTranslation();
+                }, 'json');
+        }
+
+        if (!('translator' in dict))
+            $('#translated-content-2').text('');
+
+        // Make every form and link use the same hash (URL fragment) as the current page
         $('form').each(function (_, f)
         {
             f = $(f);
@@ -120,6 +185,8 @@ $(function ()
                 a.attr('href', a.data('href') + window.location.hash);
             }
         });
+
+        LiBackgammon.hash = { values: values, dict: dict };
     }
 
     $(window)
@@ -139,43 +206,22 @@ $(function ()
         for (var propix = 0; propix < props.length; propix++)
         {
             var propName = props[propix].replace(/-value$/, '');
-            var val = props.getPropertyValue(propName);
             if (propName === 'content')
             {
+                var val = props.getPropertyValue(propName);
                 if (val[0] === "'" || val[0] === '"')
                     val = val.substr(1, val.length - 2).replace(/\\([0-9a-f]{1,6} ?|[\\'"])/g, function (_, m) { return m.length === 1 ? m : String.fromCharCode(parseInt(m.substr(1, m.length - 2), 16)); });
+                var selectorTextNormalized = rules[ruleix].selectorText.replace(/::(?=(before|after)\b)/g, ':');
                 if (val[0] === '{')
                 {
-                    var json = JSON.parse(val), text = json.text, str = '', pos;
+                    var json = JSON.parse(val);
+                    json.sel = rules[ruleix].selectorText;
                     if (!json.notranslate)
-                        LiBackgammon.strings[rules[ruleix].selectorText] = json;
-                    while ((pos = text.indexOf("{")) !== -1)
-                    {
-                        str += " '" + text.substr(0, pos).replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'";
-                        if (text[pos + 1] === '{')
-                        {
-                            str += " '{'";
-                            pos++;
-                        }
-                        else if (text[pos + 1] === '}')
-                        {
-                            str += " '}'";
-                            pos++;
-                        }
-                        else
-                        {
-                            var pos2 = text.indexOf("}");
-                            if (pos2 === -1 || pos2 < pos)
-                                break;
-                            str += ' ' + json[text.substr(pos + 1, pos2 - pos - 1)];
-                            pos = pos2;
-                        }
-                        text = text.substr(pos + 1);
-                    }
-                    contentCss.push(rules[ruleix].selectorText + '{content:' + str + " '" + text.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') + "'}");
+                        LiBackgammon.strings[selectorTextNormalized] = json;
+                    contentCss.push(LiBackgammon.toCssRule(json));
                 }
                 else if (val.length > 0)
-                    LiBackgammon.strings[rules[ruleix].selectorText] = { text: val };
+                    LiBackgammon.strings[selectorTextNormalized] = { text: val, sel: rules[ruleix].selectorText };
             }
         }
     }

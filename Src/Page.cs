@@ -12,7 +12,12 @@ namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private HttpResponse page(HttpRequest req, Tag body, params string[] jsPaths)
+        private HttpResponse page(HttpRequest req, Tag body, string extraJsPath, bool admin = false)
+        {
+            return page(req, body, new[] { extraJsPath }, admin);
+        }
+
+        private HttpResponse page(HttpRequest req, Tag body, string[] extraJsPaths, bool admin = false)
         {
 #if DEBUG
             var jquery = req.Url.WithParent("jquery").ToHref();
@@ -28,17 +33,19 @@ namespace LiBackgammon
 
                         // CSS must be above JS because the vh conversion might not trigger otherwise
                         new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
+                        admin ? new LINK { rel = "stylesheet", href = req.Url.WithParent("css/admin").ToHref() } : null,
 
                         new STYLE { id = "converted-css" },
                         new STYLE { id = "converted-content" },
                         new STYLE { id = "translated-content" },
+                        new STYLE { id = "translated-content-2" },
 
                         new SCRIPT { src = jquery },
                         new SCRIPT { src = req.Url.WithParent("js").ToHref() },
 
                         new META { name = "viewport", content = "width=device-width, user-scalable=no" },
-                        jsPaths.NullOr(jsp => jsp.Select(p => new SCRIPT { src = req.Url.WithParent(p).ToHref() }))),
-                    body));
+                        extraJsPaths.NullOr(jsp => jsp.Select(p => new SCRIPT { src = req.Url.WithParent(p).ToHref() }))),
+                    body.Data("ajax", req.Url.WithParent("ajax").ToHref())));
         }
     }
 }

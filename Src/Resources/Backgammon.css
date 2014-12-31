@@ -2067,7 +2067,7 @@ body.hash-settings > #main > #sidebar::after {
     content: 'Style';
 }
 
-#main > #sidebar > #settings > #settings-language::before {
+#main > #sidebar > #settings > #settings-lang::before {
     content: 'Language';
 }
 
@@ -2140,7 +2140,7 @@ body.hash-settings > #main > #sidebar::after {
         top: 12%;
     }
 
-    #main > #sidebar > #settings > .section > button#settings-language-custom::before {
+    #main > #sidebar > #settings > .section > button#settings-lang-custom::before {
         content: '{"text":"Become a translator!","notranslate":1}';
         right: 0;
         top: 2.2vw;
@@ -2672,6 +2672,25 @@ body.show-shortcuts .shortcut {
 #main.viewing-history > #board > .dice.history-val-4 .pip.e, #main.viewing-history > #board > .dice.history-val-4 .pip.g, #main.viewing-history > #board > .dice.history-val-5 .pip.b, #main.viewing-history > #board > .dice.history-val-5 .pip.e, #main.viewing-history > #board > .dice.history-val-6 .pip.g,
 #main.viewing-history > #board > .dice > .cross {
     visibility: hidden;
+}
+
+#main > #sidebar > #translating-link {
+    position: absolute;
+    top: 0;
+    right: 1vw;
+}
+
+body:not(.hash-translator) > #main > #sidebar > #translating-link,
+body:not(.hash-sidebar) > #main > #sidebar > #translating-link,
+body.hash-sidebar.hash-translating > #main > #sidebar > #translating-link {
+    display: none;
+}
+
+#main > #sidebar > #translating-link > a {
+    font-size: 1.5vw;
+    text-decoration: none;
+    color: hsl(0, 50%, 75%);
+    font-weight: bold;
 }
 
 @keyframes hypo-blink {

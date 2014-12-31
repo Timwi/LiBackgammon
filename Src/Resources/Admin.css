@@ -1,0 +1,53 @@
+﻿body {
+    background: hsl(27, 60%, 70%);
+}
+
+h1, h2 {
+    padding: .2em .6em;
+    background: hsl(27,60%,80%);
+    border-bottom: 2px solid hsl(27,30%,50%);
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: .2em .4em;
+    border: 1px solid hsl(27,30%,60%);
+    vertical-align: top;
+}
+
+th {
+    background: hsl(27,60%,75%);
+    text-align: left;
+}
+
+.lang-hashname {
+    font-weight: bold;
+    font-size: 200%;
+}
+
+.lang-name {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.lang-status {
+    margin-top: .5em;
+    font-style: italic;
+}
+
+.lang-lastchange {
+    margin-top: .5em;
+    font-size: 80%;
+}
+
+form.acc-rej-suggestion {
+    display: inline;
+    padding-left: .7em;
+}
+
+tr:not(.approved) > td {
+    color: hsl(27,20%,30%);
+}

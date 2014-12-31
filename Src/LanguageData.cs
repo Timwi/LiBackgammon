@@ -13,8 +13,17 @@ namespace LiBackgammon
         [ClassifyNotNull, ClassifyIgnoreIfEmpty, ClassifyIgnoreIfDefault]
         public Dictionary<string, string> Translations = new Dictionary<string, string>();
 
-        // Maps from Token to map from CSS selector to translated text
+        // Keys are the translator tokens
         [ClassifyNotNull, ClassifyIgnoreIfEmpty, ClassifyIgnoreIfDefault]
-        public Dictionary<string, Dictionary<string, string>> Suggestions = new Dictionary<string, Dictionary<string, string>>();
+        public Dictionary<string, LanguageSuggestion> Suggestions = new Dictionary<string, LanguageSuggestion>();
+    }
+
+    public sealed class LanguageSuggestion
+    {
+        public DateTime LastChange;
+
+        // Maps from CSS selector to translated text
+        [ClassifyNotNull, ClassifyIgnoreIfEmpty, ClassifyIgnoreIfDefault]
+        public Dictionary<string, string> Translations = new Dictionary<string, string>();
     }
 }

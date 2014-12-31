@@ -864,7 +864,8 @@ $(function ()
     {
         var rules = [];
         for (var sel in LiBackgammon.translation.strings)
-            rules.push(sel + "{content:'" + LiBackgammon.translation.strings[sel] + "';}");
+            if (LiBackgammon.translation.strings.hasOwnProperty(sel) && LiBackgammon.strings.hasOwnProperty(sel))
+                rules.push(LiBackgammon.toCssRule(LiBackgammon.strings[sel], LiBackgammon.translation.strings[sel]));
         $('#translated-content-2').text(rules.join('\n'));
     }
 

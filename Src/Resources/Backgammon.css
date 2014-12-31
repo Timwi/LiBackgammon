@@ -218,7 +218,7 @@ body {
 
     #waiting-games:empty::before {
         color: hsl(32, 50%, 30%);
-        content: 'No games waiting!\A Start a game of your own :)';
+        content: '{"text":"No games waiting!{newline}Start a game of your own :)","hint":"Leave “{newline}” in English. A newline will be inserted there.","newline":"\'\\\\A \'"}';
         display: block;
         font-size: 2vw;
         padding: 2vw 3vw;

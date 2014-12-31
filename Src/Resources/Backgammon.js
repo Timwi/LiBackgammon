@@ -163,6 +163,8 @@ $(function ()
                     setTranslation();
                 }, 'json');
         }
+        else
+            $('#translated-content').text('');
 
         if (!('translator' in dict))
             $('#translated-content-2').text('');

@@ -1110,7 +1110,13 @@ $(function ()
 
     var socketMethods = {
         nextUrl: function (args) { main.data('next-game', args).addClass('has-next-game'); },
-        state: function (args) { setState(args); },
+        state: function (args)
+        {
+            if (!main.hasClass('spectating') && args === (playerIsWhite ? 'White_ToRoll' : 'Black_ToRoll') && $('#settings-autoroll-select:checked').length)
+                socketSend({ roll: 1 });
+            else
+                setState(args);
+        },
         on: function (args) { main.addClass('online-' + args); },
         off: function (args) { main.removeClass('online-' + args); },
         chatid: function (args) { $('#chat-token-' + json.chatid.token).attr('id', 'chat-' + json.chatid.id); },

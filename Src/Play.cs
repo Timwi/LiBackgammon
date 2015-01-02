@@ -208,7 +208,9 @@ namespace LiBackgammon
                                                 new INPUT { id = "settings-helpers-select", type = itype.checkbox },
                                                 new LABEL { for_ = "settings-helpers-select", accesskey = "h" },
                                                 new INPUT { id = "settings-percentages-select", type = itype.checkbox },
-                                                new LABEL { for_ = "settings-percentages-select" })),
+                                                new LABEL { for_ = "settings-percentages-select" },
+                                                new INPUT { id = "settings-autoroll-select", type = itype.checkbox },
+                                                new LABEL { for_ = "settings-autoroll-select" })),
                                         new DIV { id = "translate", class_ = "sidebar-tab" }._(
                                             new DIV { id = "translate-existing", class_ = "section" }._(
                                                 new SELECT { id = "translate-select" },

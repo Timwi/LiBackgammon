@@ -2084,16 +2084,17 @@ body.hash-settings > #main > #sidebar::after {
     display: none;
 }
 
-#main > #sidebar > #settings > #settings-helpers > label::before {
-    content: '';
-    display: inline-block;
-    background: hsl(32, 50%, 90%);
-    width: 1em;
-    height: 1em;
-    vertical-align: middle;
-    margin-right: .5em;
-    box-shadow: .1vw .1vw .1vw rgba(255, 255, 255, .7) inset, -.1vw -.1vw .1vw rgba(0, 0, 0, .5) inset;
-}
+    #main > #sidebar > #settings > #settings-helpers > input + label {
+        padding-left: 1.3em;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="0"><stop style="stop-color:%23ffffff;stop-opacity:0.7;" offset="0" /><stop style="stop-color:%23f2e6d9;stop-opacity:0;" offset="1" /></linearGradient><linearGradient y2="1" x2="0" y1="0" x1="0" id="b"><stop style="stop-color:%23ffffff;stop-opacity:0.7;" offset="0" /><stop style="stop-color:%23f2e6d9;stop-opacity:0;" offset="1" /></linearGradient><linearGradient y2="0" x2="1" y1="0" x1="0" id="c"><stop style="stop-color:%23f2e6d9;stop-opacity:0;" offset="0" /><stop style="stop-color:%23000000;stop-opacity:0.5;" offset="1" /></linearGradient><linearGradient y2="1" x2="0" y1="0" x1="0" id="d"><stop style="stop-color:%23f2e6d9;stop-opacity:0;" offset="0" /><stop style="stop-color:%23000000;stop-opacity:0.5;" offset="1" /></linearGradient></defs><g><rect style="fill:%23f2e6d9;" width="10" height="10" x="0" y="0" /><rect style="fill:url(%23c)" width="2" height="10" x="8" y="0" /><rect style="fill:url(%23d)" width="10" height="2" x="0" y="8" /><rect style="fill:url(%23a)" width="2" height="10" x="0" y="0" /><rect style="fill:url(%23b)" width="10" height="2" x="0" y="0" /></g></svg>');
+        background-size: 1em 1em;
+        background-position: 0 .25em;
+        background-repeat: no-repeat;
+    }
+
+    #main > #sidebar > #settings > #settings-helpers > input:checked + label {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="0"><stop style="stop-color:%23000000;stop-opacity:0.5;" offset="0" /><stop style="stop-color:%23bf8440;stop-opacity:0;" offset="1" /></linearGradient><linearGradient y2="1" x2="0" y1="0" x1="0" id="b"><stop style="stop-color:%23000000;stop-opacity:0.5;" offset="0" /><stop style="stop-color:%23bf8440;stop-opacity:0;" offset="1" /></linearGradient><linearGradient y2="0" x2="1" y1="0" x1="0" id="c"><stop style="stop-color:%23bf8440;stop-opacity:0;" offset="0" /><stop style="stop-color:%23ffffff;stop-opacity:0.7;" offset="1" /></linearGradient><linearGradient y2="1" x2="0" y1="0" x1="0" id="d"><stop style="stop-color:%23bf8440;stop-opacity:0;" offset="0" /><stop style="stop-color:%23ffffff;stop-opacity:0.7;" offset="1" /></linearGradient></defs><g><rect style="fill:%23bf8440;" width="10" height="10" x="0" y="0" /><rect style="fill:url(%23c)" width="2" height="10" x="8" y="0" /><rect style="fill:url(%23d)" width="10" height="2" x="0" y="8" /><rect style="fill:url(%23a)" width="2" height="10" x="0" y="0" /><rect style="fill:url(%23b)" width="10" height="2" x="0" y="0" /></g><path style="fill:%23000000" d="M 8,1 5,9 6,9 9,2 z" /><path style="fill:%23000000" d="M 3,6 2,6 5,9 6,9 z" /></svg>');
+    }
 
 #main > #sidebar > #settings > #settings-helpers > label::after {
     vertical-align: middle;
@@ -2103,16 +2104,27 @@ body.hash-settings > #main > #sidebar::after {
     content: 'Show multi-move helpers';
 }
 
+#main > #sidebar > #settings > #settings-helpers > #settings-helpers-select + label::before {
+    content: 'Displays little green triangles that allow you to move several pieces to or from the same tongue simultaneously.';
+    top: 100%;
+}
+
 #main > #sidebar > #settings > #settings-helpers > #settings-percentages-select + label::after {
     content: 'Show opponent landing probabilities';
 }
 
-#main > #sidebar > #settings > #settings-helpers > input:checked + label::before {
-    content: '{"text":"✓","notranslate":1}';
-    background: hsl(32,50%,50%);
-    line-height: 1em;
-    box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
-    text-align: center;
+#main > #sidebar > #settings > #settings-helpers > #settings-percentages-select + label::before {
+    content: 'Displays, at the base of each tongue, the probability that the next player will be able to land a piece there.';
+    top: 100%;
+}
+
+#main > #sidebar > #settings > #settings-helpers > #settings-autoroll-select + label::after {
+    content: 'Automatically roll dice (no doubling)';
+}
+
+#main > #sidebar > #settings > #settings-helpers > #settings-autoroll-select + label::before {
+    content: 'Automatically roll the dice and do not offer to double. (This option is reset when you move on to the next game or reload the page.)';
+    top: 100%;
 }
 
 #main > #sidebar > #settings > .section > button {
@@ -2376,7 +2388,8 @@ body.show-shortcuts .shortcut {
 #main > #sidebar > #settings > .section > button::before,
 #newgame > .row > label::before, #waiting-games > li > .doubling-cube::before,
 #waiting-games > li > .playto::before, #waiting-games > li > .piece::before,
-#main > #sidebar > #info > #info-game-history > .totals > .dice-total::before {
+#main > #sidebar > #info > #info-game-history > .totals > .dice-total::before,
+#main > #sidebar > #settings > .section > input + label::before {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -2403,7 +2416,8 @@ body.show-shortcuts .shortcut {
 #main > #sidebar > #settings > .section > button:hover::before,
 #newgame > .row > label:hover::before, #waiting-games > li > .doubling-cube:hover::before,
 #waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before,
-#main > #sidebar > #info > #info-game-history > .totals > .dice-total:hover::before {
+#main > #sidebar > #info > #info-game-history > .totals > .dice-total:hover::before,
+#main > #sidebar > #settings > .section > input + label:hover::before {
     opacity: 1;
     visibility: visible;
 }

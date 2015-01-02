@@ -1564,65 +1564,65 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
         background-repeat: no-repeat;
     }
 
-    #main > #infobar > .mini-button#btn-chat, #main > #infobar > .mini-button#btn-settings {
-        left: 94.75vw;
-    }
+#main > #infobar > #btn-chat, #main > #infobar > #btn-settings {
+    left: 94.75vw;
+}
 
-    #main > #infobar > .mini-button#btn-resign, #main > #infobar > .mini-button#btn-settings {
-        top: 4.75vw;
-    }
+#main > #infobar > #btn-resign, #main > #infobar > #btn-settings {
+    top: 4.75vw;
+}
 
-    #main > #infobar > .mini-button#btn-info::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
-    }
+#main > #infobar > #btn-info::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
+}
 
-    #main > #infobar > .mini-button#btn-chat::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
-    }
+#main > #infobar > #btn-chat::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
+}
 
-    #main > #infobar > .mini-button#btn-resign::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
-    }
+#main > #infobar > #btn-resign::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
+}
 
-    #main > #infobar > .mini-button#btn-settings::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
-    }
+#main > #infobar > #btn-settings::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23d9b58c" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+}
 
-    #main > #infobar > .mini-button#btn-info::before {
-        content: 'Game info';
-    }
+#main > #infobar > #btn-info::before {
+    content: 'Game info';
+}
 
-    #main > #infobar > .mini-button#btn-info:hover::after, #main > #infobar > .mini-button#btn-info:active::after, #main > #infobar > .mini-button#btn-info:focus::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
-    }
+#main > #infobar > #btn-info:hover::after, #main > #infobar > #btn-info:active::after, #main > #infobar > #btn-info:focus::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 582 745 410 745 C 409 720 409 705 409 700 409 644 418 598 437 562 455 526 492 485 548 440 603 395 636 366 647 352 664 330 672 306 672 279 672 242 657 210 628 184 598 158 558 145 508 145 460 145 420 158 388 186 355 213 333 255 321 311 L 146 290 C 151 209 186 141 249 85 313 28 397 0 500 0 609 0 696 29 760 86 825 142 857 209 857 284 857 326 845 366 822 403 798 441 747 492 670 556 630 589 605 616 595 636 586 657 581 693 582 745 z M 410 1000 410 811 600 811 600 1000 z"/></svg>');
+}
 
-    #main > #infobar > .mini-button#btn-chat::before {
-        content: 'Chat';
-    }
+#main > #infobar > #btn-chat::before {
+    content: 'Chat';
+}
 
-    #main > #infobar > .mini-button#btn-chat:hover::after, #main > #infobar > .mini-button#btn-chat:active::after, #main > #infobar > .mini-button#btn-chat:focus::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
-    }
+#main > #infobar > #btn-chat:hover::after, #main > #infobar > #btn-chat:active::after, #main > #infobar > #btn-chat:focus::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 1000 351 C 1000 448 944 535 854 599 809 631 755 656 695 674 665 683 634 690 601 694 557 859 411 979 251 1000 356 957 407 817 399 694 367 689 335 683 305 674 246 656 192 630 146 599 56 535 0 447 0 351 0 157 224 0 500 0 776 0 1000 157 1000 351 z"/></svg>');
+}
 
-    #main > #infobar > .mini-button#btn-settings::before {
-        content: 'Settings';
-    }
+#main > #infobar > #btn-settings::before {
+    content: 'Settings';
+}
 
-    #main > #infobar > .mini-button#btn-settings:hover::after, #main > #infobar > .mini-button#btn-settings:active::after, #main > #infobar > .mini-button#btn-settings:focus::after {
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
-    }
+#main > #infobar > #btn-settings:hover::after, #main > #infobar > #btn-settings:active::after, #main > #infobar > #btn-settings:focus::after {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+}
 
-#main:not(.state-Won):not(.state-Waiting):not(.spectating) > #infobar > .mini-button#btn-resign::before {
+#main:not(.state-Won):not(.state-Waiting):not(.spectating) > #infobar > #btn-resign::before {
     content: 'Resign this game';
 }
 
-#main:not(.state-Won) > #infobar > .mini-button#btn-resign:hover::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:active::after, #main:not(.state-Won) > #infobar > .mini-button#btn-resign:focus::after {
+#main:not(.state-Won) > #infobar > #btn-resign:hover::after, #main:not(.state-Won) > #infobar > #btn-resign:active::after, #main:not(.state-Won) > #infobar > #btn-resign:focus::after {
     background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><path style="fill:%23f0d9b5" d="M 100 0 0 25 225 1000 300 975 211 539 C 244 510 301 475 375 475 525 475 525 550 525 550 525 550 525 600 550 600 591 600 662 550 750 550 875 550 900 625 900 625 L 1000 175 C 1000 175 925 100 775 100 625 100 575 125 575 125 575 125 600 25 375 25 288 25 177 61 117 83 z"/></svg>');
 }
 
-#main.state-Waiting > #infobar > .mini-button#btn-resign,
-#main.state-Won > #infobar > .mini-button#btn-resign,
-#main.spectating > #infobar > .mini-button#btn-resign {
+#main.state-Waiting > #infobar > #btn-resign,
+#main.state-Won > #infobar > #btn-resign,
+#main.spectating > #infobar > #btn-resign {
     opacity: .2;
 }
 
@@ -2244,25 +2244,37 @@ body.hash-translate > #main > #sidebar::after, body.hash-translating > #main > #
         margin-bottom: 1em;
     }
 
-    #main > #sidebar > #translating > .translatable {
+    #main > #sidebar > #translating .translatable {
         margin-bottom: .2em;
     }
 
-        #main > #sidebar > #translating > .translatable > .orig {
+        #main > #sidebar > #translating .translatable > .orig {
             font-weight: bold;
             font-size: 90%;
         }
 
-        #main > #sidebar > #translating > .translatable > .hint {
+        #main > #sidebar > #translating .translatable > .hint {
             font-size: 70%;
             margin-left: 1em;
         }
 
-        #main > #sidebar > #translating > .translatable > .trans > input {
+        #main > #sidebar > #translating .translatable > .trans > input {
             width: 100%;
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
+        }
+
+    #main > #sidebar > #translating > .missing {
+        background: hsl(16,50%,70%);
+        margin: 0 -.5em;
+        padding: .3em .7em;
+    }
+
+        #main > #sidebar > #translating > .missing > .title {
+            font-weight: bold;
+            text-align: center;
+            font-size: 150%;
         }
 
 #main > #sidebar > select.translating {
@@ -2281,7 +2293,7 @@ body.hash-translating > #main > #sidebar > select.translating {
     display: block;
 }
 
-#main > #sidebar > #translating > .translatable > .trans::after {
+#main > #sidebar > #translating .translatable > .trans::after {
     content: '{"text":"\a0 ","notranslate":1}';
     display: block;
     text-align: right;
@@ -2289,29 +2301,29 @@ body.hash-translating > #main > #sidebar > select.translating {
     opacity: .7;
 }
 
-#main > #sidebar > #translating > .translatable > .trans.saved::after {
+#main > #sidebar > #translating .translatable > .trans.saved::after {
     content: '{"text":"saved","notranslate":1}';
     color: green;
 }
 
-#main > #sidebar > #translating > .translatable > .trans.saved > input {
+#main > #sidebar > #translating .translatable > .trans.saved > input {
     background: hsl(60,52%,80%);
 }
 
-#main > #sidebar > #translating > .translatable > .trans.unsaved::after {
+#main > #sidebar > #translating .translatable > .trans.unsaved::after {
     content: '{"text":"unsaved","notranslate":1}';
     color: red;
 }
 
-#main > #sidebar > #translating > .translatable > .trans.unsaved > input {
+#main > #sidebar > #translating .translatable > .trans.unsaved > input {
     background: white;
 }
 
-#main > #sidebar > #translating > .translatable > .trans.submitting::after {
+#main > #sidebar > #translating .translatable > .trans.submitting::after {
     content: '{"text":"submitting...","notranslate":1}';
 }
 
-#main > #sidebar > #translating > .translatable > .trans.submitting > input {
+#main > #sidebar > #translating .translatable > .trans.submitting > input {
     background: hsl(180,52%,80%);
 }
 

@@ -826,21 +826,31 @@ $(function ()
                     s.append($('<option>').attr('value', opts[i]).text(opts[i]));
                 $('#sidebar').append(s);
                 t.append($('<div class="important">').text('Thank you for volunteering to translate! Please bookmark the URL of this page so that you can come back and continue translating later.'));
+                var u = $('<div class="missing"><div class="title">Missing translations:</div></div>').appendTo(t), ua = false;
                 for (var selector in LiBackgammon.strings)
                 {
-                    var inf = LiBackgammon.strings[selector];
-                    t.append(
+                    var inf = LiBackgammon.strings[selector], translation = LiBackgammon.translation && LiBackgammon.translation.strings && LiBackgammon.translation.strings[selector], obj;
+                    if (translation)
+                        obj = t;
+                    else
+                    {
+                        obj = u;
+                        ua = true;
+                    }
+                    obj.append(
                         $('<div class="translatable">')
                             .append($('<div class="orig">').text(inf.text))
                             .append(inf.hint ? $('<div class="hint">').text(inf.hint) : null)
                             .append($('<div class="trans">')
                                 .append($('<input type="text">')
                                     .data({ sel: selector, orig: inf.text })
-                                    .val(LiBackgammon.translation && LiBackgammon.translation.strings && LiBackgammon.translation.strings[selector])
+                                    .val(translation)
                                     .change(submitTranslation)
                                     .focus(focusTranslation)
                                     .blur(blurTranslation))));
                 }
+                if (!ua)
+                    u.remove();
                 updateTranslation();
             }
         }
@@ -1270,7 +1280,7 @@ $(function ()
 
         translationSaved: function (args)
         {
-            var i = $('#translating>.translatable>.trans>input').filter(function (_, e) { return $(e).data('sel') === args.sel; });
+            var i = $('#translating .translatable>.trans>input').filter(function (_, e) { return $(e).data('sel') === args.sel; });
             if (i.length)
                 i.parent().removeClass('unsaved submitting').addClass('saved');
             if (args.removed)

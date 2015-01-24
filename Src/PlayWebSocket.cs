@@ -276,6 +276,24 @@ namespace LiBackgammon
             }
         }
 
+        [SocketMethod]
+        private MessageInfo[] chatSeen(List<int> ids)
+        {
+            if (ids == null || ids.Count == 0 || Player == Player.Spectator)
+                return null;
+
+            using (var tr = Program.NewTransaction())
+            using (var db = new Db())
+            {
+                var chatMsgs = db.ChatMessages.Where(ch => ids.Contains(ch.ID) && ch.Player != Player).ToArray();
+                foreach (var msg in chatMsgs)
+                    msg.Seen = true;
+                db.SaveChanges();
+                tr.Complete();
+                return null;
+            }
+        }
+
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] settings()
         {
@@ -610,7 +628,8 @@ namespace LiBackgammon
                 { "id", msg.ID },
                 { "msg", msg.Message },
                 { "player", msg.Player.ToString() },
-                { "time", msg.Time.ToIsoString(format: IsoDateFormat.Iso8601) + "Z" }
+                { "time", msg.Time.ToIsoString(format: IsoDateFormat.Iso8601) + "Z" },
+                { "seen", msg.Seen }
             };
         }
     }

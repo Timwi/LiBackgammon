@@ -673,6 +673,18 @@ $(function ()
             LiBackgammon.hashRemove(sidebars);
             LiBackgammon.hashAdd(['sidebar', id]);
         }
+
+        if (id === 'chat')
+        {
+            if (!main.hasClass('spectating'))
+            {
+                var unseenIds = $('.chat-msg:not(.seen)').get().map(function (e) { return $(e).data('id'); });
+                if (unseenIds.length > 0)
+                    socketSend({ chatSeen: { ids: unseenIds } });
+                $('.chat-msg:not(.seen)').addClass('seen');
+                $('#btn-chat>.notification').removeClass('shown');
+            }
+        }
     }
 
     function processSocketQueue()
@@ -1129,7 +1141,7 @@ $(function ()
         },
         on: function (args) { main.addClass('online-' + args); },
         off: function (args) { main.removeClass('online-' + args); },
-        chatid: function (args) { $('#chat-token-' + json.chatid.token).attr('id', 'chat-' + json.chatid.id); },
+        chatid: function (args) { $('#chat-token-' + args.token).attr('id', 'chat-' + args.id); },
         rematch: function (args) { LiBackgammon.removeClassPrefix(main, 'rematch-').addClass('rematch-' + args); },
 
         resync: function (args)
@@ -1220,19 +1232,35 @@ $(function ()
         chat: function (args)
         {
             var chatList = args instanceof Array ? args : [args];
+            var chatOpen = $('body.hash-sidebar.hash-chat').length > 0;
+            var justSeenIds = [];
             for (var i = 0; i < chatList.length; i++)
             {
                 var msg = chatList[i];
+                var ownMsg = msg.player == (playerIsWhite ? 'White' : 'Black');
+                if (chatOpen && !ownMsg && !msg.seen)
+                    justSeenIds.push(msg.id);
+                if (chatOpen || ownMsg)
+                    msg.seen = true;
                 var obj = $('#chat-' + msg.id);
                 if (!obj.length)
-                    obj = $('<div><div class="time"></div><div class="msg"></div></div>').attr('id', 'chat-' + msg.id).addClass('chat-msg').appendTo('#chat-msgs');
-                obj.removeClass('Black White').addClass(msg.player);
+                    obj = $('<div><div class="time"></div><div class="msg"></div></div>').attr('id', 'chat-' + msg.id).data('id', msg.id).addClass('chat-msg').appendTo('#chat-msgs');
+                obj.removeClass('Black White seen').addClass(msg.player);
+                if (msg.seen)
+                    obj.addClass('seen');
                 var d = new Date(msg.time);
                 obj.find('.time').text(d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes())
                     .attr('title', d.toLocaleFormat ? d.toLocaleFormat('%a %d %b %Y, %H:%M:%S') : msg.time);
                 obj.find('.msg').text(msg.msg);
             }
             onResize();
+
+            if (!main.hasClass('spectating') && justSeenIds.length > 0)
+                socketSend({ chatSeen: { ids: justSeenIds } });
+
+            var unseenMsgs = $('.chat-msg:not(.seen)').length;
+            $('#btn-chat>.notification>.notification-inner').text(unseenMsgs);
+            $('#btn-chat>.notification')[unseenMsgs ? 'addClass' : 'removeClass']('shown');
         },
 
         settings: function (args)

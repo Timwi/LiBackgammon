@@ -54,6 +54,7 @@ namespace LiBackgammon
                 var nextGame = game.NextGame.NullOr(ng => db.Games.FirstOrDefault(g => g.PublicID == ng));
 
                 var history = match.NullOr(m => db.Games.Where(g => g.Match == m.ID).OrderBy(g => g.GameInMatch).ToList());
+                var unreadChatMsgs = player == Player.Spectator ? 0 : db.ChatMessages.Where(ch => ch.GameID == publicId && ch.Player != player && !ch.Seen).Count();
 
                 // Keyboard Shortcuts
                 // ────────────
@@ -151,7 +152,8 @@ namespace LiBackgammon
                                         new A { href = "#", class_ = "mini-button", accesskey = "g", id = "btn-resign" },
                                         new A { href = "#", class_ = "mini-button", accesskey = "s", id = "btn-settings" },
                                         new A { href = "#", class_ = "mini-button", accesskey = "i", id = "btn-info" },
-                                        new A { href = "#", class_ = "mini-button", accesskey = "t", id = "btn-chat" }),
+                                        new A { href = "#", class_ = "mini-button", accesskey = "t", id = "btn-chat" }._(
+                                            new SPAN { class_ = "notification" + (unreadChatMsgs > 0 ? " shown" : "") }._(new SPAN { class_ = "notification-inner" }._(unreadChatMsgs)))),
                                     new DIV { id = "win", class_ = "dialog" }._(
                                         new DIV { class_ = "piece" },
                                         new DIV { class_ = "points" + (points == 1 ? " singular" : " plural") }._(

@@ -1133,7 +1133,7 @@ $(function ()
             moves[moves.length - 1].TargetTongues = args.targetTongues;
 
             position = processMove(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, { mode: main.hasClass('viewing-history') ? null : 'animate' });
-            setTimeout(processSocketQueue, main.hasClass('viewing-history') ? 100 : args.auto ? 1000 : 'auto' in args ? 2000 : 400 * args.sourceTongues.length);
+            setTimeout(processSocketQueue, main.hasClass('viewing-history') ? 100 : 'auto' in args ? 1600 : 400 * args.sourceTongues.length);
             updateGameHistory();
             return true;
         },

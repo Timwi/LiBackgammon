@@ -241,13 +241,10 @@ $(function ()
                     }
                 });
         }
-        if (mode === 'animate')
-        {
-            if (animationQueue.length > 0)
-                processAnimationQueue();
-            else if (callback)
-                setTimeout(callback, 100);
-        }
+        if (mode === 'animate' && animationQueue.length > 0)
+            processAnimationQueue();
+        else if (callback)
+            setTimeout(callback, 100);
         return newPos;
     }
 
@@ -375,7 +372,8 @@ $(function ()
                     ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
                     : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
             allValidRestMoves = allValidMoves;
-            deselectPiece();
+            if (!main.hasClass('viewing-history'))
+                deselectPiece();
         }
     }
 
@@ -613,8 +611,8 @@ $(function ()
             // If the aspect ratio has changed, move all the pieces into the right place
             var v = viewingHistory;
             if (v !== null)
-                afterViewingHistoryAnimationCallback(function () { setHistory(v, ''); }, null);
-            else
+                addHistoryViewingAnimationQueue(function () { setHistory(v, ''); });
+            else if (!main.hasClass('viewing-history'))
             {
                 setupPosition(position);
 
@@ -901,6 +899,25 @@ $(function ()
         $(this).parent().removeClass('unsaved');
     }
 
+    var historyViewingAnimationQueue = [];
+    var historyViewingAnimation = false;
+
+    function processHistoryViewingAnimationQueue()
+    {
+        historyViewingAnimation = true;
+        if (historyViewingAnimationQueue.length > 0)
+            historyViewingAnimationQueue.shift()();
+        else
+            historyViewingAnimation = false;
+    }
+
+    function addHistoryViewingAnimationQueue(fnc)
+    {
+        historyViewingAnimationQueue.push(fnc);
+        if (!historyViewingAnimation)
+            processHistoryViewingAnimationQueue();
+    }
+
     function setHistory(e, mode)
     {
         deselectPiece(true);
@@ -916,61 +933,37 @@ $(function ()
         LiBackgammon.removeClassPrefix($('#board>#dice-0'), 'history-val-').addClass('history-val-' + moves[i].Dice1);
         LiBackgammon.removeClassPrefix($('#board>#dice-1,#board>#dice-2,#board>#dice-3'), 'history-val-').addClass('history-val-' + moves[i].Dice2);
         if (mode === '')
+        {
             setupPosition('SourceTongues' in move ? processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues) : pos);
+            processHistoryViewingAnimationQueue();
+        }
         else
         {
             setupPosition(pos);
             var newPos = pos;
             if ('SourceTongues' in move)
-            {
-                if (move === 'animate')
-                    viewingHistoryAnimationCallback = function () { };
-                newPos = processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues, {
-                    mode: mode,
-                    callback: function ()
-                    {
-                        if (viewingHistoryAnimationCallback)
-                        {
-                            var oldCallback = viewingHistoryAnimationCallback;
-                            viewingHistoryAnimationCallback = null;
-                            oldCallback();
-                        }
-                    }
-                });
-            }
+                newPos = processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues, { mode: mode, callback: processHistoryViewingAnimationQueue });
+            else
+                processHistoryViewingAnimationQueue();
             return newPos;
         }
     }
 
-    function afterViewingHistoryAnimationCallback(fnc, th)
-    {
-        if (viewingHistoryAnimationCallback)
-        {
-            var oldCallback = viewingHistoryAnimationCallback;
-            viewingHistoryAnimationCallback = function ()
-            {
-                if (oldCallback)
-                    oldCallback();
-                fnc.apply(th);
-            };
-        }
-        else
-            fnc.apply(th);
-    }
-
     function historyEnter()
     {
-        afterViewingHistoryAnimationCallback(function ()
+        var t = $(this);
+        addHistoryViewingAnimationQueue(function ()
         {
-            if ($(this).is(viewingHistory))
-                return;
-            setHistory($(this), 'indicate');
-        }, this);
+            if (!t.is(viewingHistory))
+                setHistory(t, 'indicate');
+            else
+                processHistoryViewingAnimationQueue();
+        });
     }
 
     function historyLeave()
     {
-        afterViewingHistoryAnimationCallback(function ()
+        addHistoryViewingAnimationQueue(function ()
         {
             $('#board>.piece.hypo-target, #board>.arrow').remove();
             if (viewingHistory !== null)
@@ -980,13 +973,14 @@ $(function ()
                 main.removeClass('viewing-history');
                 setupPosition(position);
                 deselectPiece(false);
+                processHistoryViewingAnimationQueue();
             }
-        }, this);
+        });
     }
 
     function historyLeaveAll()
     {
-        afterViewingHistoryAnimationCallback(function ()
+        addHistoryViewingAnimationQueue(function ()
         {
             viewingHistory = null;
             $('#board>.piece.hypo-target, #board>.arrow').remove();
@@ -994,17 +988,19 @@ $(function ()
             $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
             setupPosition(position);
             deselectPiece(false);
-        }, this);
+            processHistoryViewingAnimationQueue();
+        });
     }
 
     function historyClick()
     {
-        afterViewingHistoryAnimationCallback(function ()
+        var t = $(this);
+        addHistoryViewingAnimationQueue(function ()
         {
-            var t = $(this), newPos = setHistory(t, 'animate');
+            var newPos = setHistory(t, 'animate');
             $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
             viewingHistory = t.addClass('current');
-        }, this);
+        });
     }
 
     function updateGameHistory()
@@ -1089,7 +1085,6 @@ $(function ()
     var translationNotes = {};
     var reconnectInterval = 0;
     var viewingHistory = null;
-    var viewingHistoryAnimationCallback = false;
 
     var windowTitleFlash = false;
     window.setInterval(function ()
@@ -1097,7 +1092,7 @@ $(function ()
         windowTitleFlash = !windowTitleFlash;
         document.title =
             main.hasClass('debug') ? '(𝐃𝐄𝐁𝐔𝐆) LiBackgammon' :
-            ((main.hasClass('player-white') && main.hasClass('state-White')) || (main.hasClass('player-black') && main.hasClass('state-Black'))) && (main.hasClass('state-ToMove') || main.hasClass('state-ToRoll') || main.hasClass('state-ToConfirmDouble'))
+            ((main.hasClass('player-white') && main.hasClass('state-White')) || (main.hasClass('player-black') && main.hasClass('state-Black'))) && (main.hasClass('state-ToMove') || main.hasClass('state-ToRoll') || main.hasClass('state-ToConfirmDouble')) && !main.hasClass('auto-0') && !main.hasClass('auto-1')
                 ? (windowTitleFlash ? "▲▼▲▼ Your turn" : "▼▲▼▲ Your turn")
                 : 'LiBackgammon';
     }, 750);
@@ -1161,17 +1156,20 @@ $(function ()
 
         move: function (args)
         {
-            deselectPiece(true);
-            if ('auto' in args)
-                main.addClass('auto-' + args.auto);
+            if (!main.hasClass('viewing-history'))
+            {
+                deselectPiece(true);
+                if ('auto' in args)
+                    main.addClass('auto-' + args.auto);
+            }
 
             moves[moves.length - 1].SourceTongues = args.sourceTongues;
             moves[moves.length - 1].TargetTongues = args.targetTongues;
             position = processMove(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, {
-                mode: 'animate',
+                mode: main.hasClass('viewing-history') ? null : 'animate',
                 callback: function ()
                 {
-                    if ('auto' in args)
+                    if ('auto' in args && !main.hasClass('viewing-history'))
                         setTimeout(processSocketQueue, args.auto ? 1000 : 2000);
                     else
                         processSocketQueue();
@@ -1326,7 +1324,7 @@ $(function ()
         deselectPiece();
         $('#board>.piece').click(function ()
         {
-            if (!isPlayerToMove())
+            if (!isPlayerToMove() || main.hasClass('viewing-history'))
                 return false;
 
             // Only allow clicking on a piece of the player’s color
@@ -1382,13 +1380,18 @@ $(function ()
 
         $(document).keydown(function (e)
         {
-            if (e.keyCode === 27 && selectedPiece !== null)
-                deselectPiece();
+            if (e.keyCode === 27)
+            {
+                if (viewingHistory)
+                    historyLeaveAll();
+                else if (selectedPiece !== null)
+                    deselectPiece();
+            }
         });
 
         $('#undo').click(function ()
         {
-            if (main.hasClass('spectating'))
+            if (main.hasClass('spectating') || main.hasClass('viewing-history'))
                 return false;
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)

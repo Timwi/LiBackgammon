@@ -592,6 +592,7 @@ $(function ()
 
     function setupPosition(pos)
     {
+        $('#board>.piece').stop();
         var whites = $('#board>.piece.white'), blacks = $('#board>.piece.black');
         var whiteIndex = 0, blackIndex = 0;
         for (var tng = 0; tng < Tongue.NumTongues; tng++)
@@ -609,10 +610,10 @@ $(function ()
         if (force || wasWide !== lastWide)
         {
             // If the aspect ratio has changed, move all the pieces into the right place
-            var v = viewingHistory;
-            if (v !== null)
-                addHistoryViewingAnimationQueue(function () { setHistory(v, ''); });
-            else if (!main.hasClass('viewing-history'))
+            var hist = $('#main>#sidebar>#info>#info-game-history>.move.current');
+            if (hist.length)
+                setHistory(hist, '');
+            else
             {
                 setupPosition(position);
 
@@ -661,7 +662,7 @@ $(function ()
     function sidebar(id)
     {
         var hash = LiBackgammon.hash.values;
-        if (viewingHistory)
+        if ($('#main>#sidebar>#info>#info-game-history>.move.current').length)
             historyLeaveAll();
 
         if (hash.indexOf('sidebar') !== -1 && hash.indexOf(id) !== -1)
@@ -899,29 +900,14 @@ $(function ()
         $(this).parent().removeClass('unsaved');
     }
 
-    var historyViewingAnimationQueue = [];
-    var historyViewingAnimation = false;
-
-    function processHistoryViewingAnimationQueue()
-    {
-        historyViewingAnimation = true;
-        if (historyViewingAnimationQueue.length > 0)
-            historyViewingAnimationQueue.shift()();
-        else
-            historyViewingAnimation = false;
-    }
-
-    function addHistoryViewingAnimationQueue(fnc)
-    {
-        historyViewingAnimationQueue.push(fnc);
-        if (!historyViewingAnimation)
-            processHistoryViewingAnimationQueue();
-    }
-
     function setHistory(e, mode)
     {
         deselectPiece(true);
         var i = e.data('move'), move = moves[i], pos = e.data('pos');
+        if (!pos)
+        {
+            alert('interesting');
+        }
         main.addClass('viewing-history');
         main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black');
         main.addClass((moves[0].Dice1 > moves[0].Dice2) ^ (i % 2 === 0) ? 'history-black' : 'history-white');
@@ -933,79 +919,59 @@ $(function ()
         LiBackgammon.removeClassPrefix($('#board>#dice-0'), 'history-val-').addClass('history-val-' + moves[i].Dice1);
         LiBackgammon.removeClassPrefix($('#board>#dice-1,#board>#dice-2,#board>#dice-3'), 'history-val-').addClass('history-val-' + moves[i].Dice2);
         if (mode === '')
-        {
             setupPosition('SourceTongues' in move ? processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues) : pos);
-            processHistoryViewingAnimationQueue();
-        }
         else
         {
             setupPosition(pos);
-            var newPos = pos;
-            if ('SourceTongues' in move)
-                newPos = processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues, { mode: mode, callback: processHistoryViewingAnimationQueue });
-            else
-                processHistoryViewingAnimationQueue();
-            return newPos;
+            if (!('SourceTongues' in move))
+                return pos;
+            return processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues, { mode: mode });
         }
     }
 
     function historyEnter()
     {
-        var t = $(this);
-        addHistoryViewingAnimationQueue(function ()
+        if (!$(this).hasClass('current'))
         {
-            if (!t.is(viewingHistory))
-                setHistory(t, 'indicate');
-            else
-                processHistoryViewingAnimationQueue();
-        });
+            $('#board>.piece').stop();
+            setHistory($(this), 'indicate');
+        }
     }
 
     function historyLeave()
     {
-        addHistoryViewingAnimationQueue(function ()
+        $('#board>.piece.hypo-target, #board>.arrow').remove();
+        var hist = $('#main>#sidebar>#info>#info-game-history>.move.current');
+        if (hist.length)
+            setHistory(hist, '');
+        else
         {
-            $('#board>.piece.hypo-target, #board>.arrow').remove();
-            if (viewingHistory !== null)
-                setHistory(viewingHistory, '');
-            else
-            {
-                main.removeClass('viewing-history');
-                setupPosition(position);
-                deselectPiece(false);
-                processHistoryViewingAnimationQueue();
-            }
-        });
+            main.removeClass('viewing-history');
+            setupPosition(position);
+            deselectPiece(false);
+        }
     }
 
     function historyLeaveAll()
     {
-        addHistoryViewingAnimationQueue(function ()
-        {
-            viewingHistory = null;
-            $('#board>.piece.hypo-target, #board>.arrow').remove();
-            main.removeClass('viewing-history');
-            $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
-            setupPosition(position);
-            deselectPiece(false);
-            processHistoryViewingAnimationQueue();
-        });
+        $('#board>.piece.hypo-target, #board>.arrow').remove();
+        main.removeClass('viewing-history');
+        $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
+        setupPosition(position);
+        deselectPiece(false);
     }
 
     function historyClick()
     {
-        var t = $(this);
-        addHistoryViewingAnimationQueue(function ()
-        {
-            var newPos = setHistory(t, 'animate');
-            $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
-            viewingHistory = t.addClass('current');
-        });
+        var newPos = setHistory($(this), 'animate');
+        $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
+        $(this).addClass('current');
     }
 
     function updateGameHistory()
     {
-        var h = $('#info-game-history').empty();
+        var hist = $('#main>#sidebar>#info>#info-game-history>.move.current').data('move');
+        var h = $('#main>#sidebar>#info>#info-game-history').empty();
         var value = 1;
         var isWhite = moves.length > 0 && moves[0].Dice1 > moves[0].Dice2;
         var diceTotals = { white: 0, black: 0 };
@@ -1038,8 +1004,8 @@ $(function ()
                 }
                 pos = processMove(pos, isWhite, moves[i].SourceTongues, moves[i].TargetTongues);
             }
-            h.append($('<div>')
-                .addClass('row move ' + (isWhite ? 'white' : 'black'))
+            var r = $('<div>')
+                .addClass('row move' + (isWhite ? ' white' : ' black') + (i === hist ? ' current' : ''))
                 .append(moves[i].Doubled ? $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(value)) : null)
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-0 val-' + moves[i].Dice1))
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
@@ -1049,7 +1015,8 @@ $(function ()
                 .data('isWhite', isWhite)
                 .mouseenter(historyEnter)
                 .mouseleave(historyLeave)
-                .click(historyClick));
+                .click(historyClick)
+                .appendTo(h);
             diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2;
             isWhite = !isWhite;
         }
@@ -1084,7 +1051,6 @@ $(function ()
     var settingsLoaded = false;
     var translationNotes = {};
     var reconnectInterval = 0;
-    var viewingHistory = null;
 
     var windowTitleFlash = false;
     window.setInterval(function ()
@@ -1165,16 +1131,9 @@ $(function ()
 
             moves[moves.length - 1].SourceTongues = args.sourceTongues;
             moves[moves.length - 1].TargetTongues = args.targetTongues;
-            position = processMove(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, {
-                mode: main.hasClass('viewing-history') ? null : 'animate',
-                callback: function ()
-                {
-                    if ('auto' in args && !main.hasClass('viewing-history'))
-                        setTimeout(processSocketQueue, args.auto ? 1000 : 2000);
-                    else
-                        processSocketQueue();
-                }
-            });
+
+            position = processMove(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, { mode: main.hasClass('viewing-history') ? null : 'animate' });
+            setTimeout(processSocketQueue, main.hasClass('viewing-history') ? 100 : args.auto ? 1000 : 'auto' in args ? 2000 : 400 * args.sourceTongues.length);
             updateGameHistory();
             return true;
         },
@@ -1235,7 +1194,7 @@ $(function ()
             for (var i = 0; i < chatList.length; i++)
             {
                 var msg = chatList[i];
-                var ownMsg = msg.player == (playerIsWhite ? 'White' : 'Black');
+                var ownMsg = msg.player === (playerIsWhite ? 'White' : 'Black');
                 if (chatOpen && !ownMsg && !msg.seen)
                     justSeenIds.push(msg.id);
                 if (chatOpen || ownMsg)
@@ -1382,7 +1341,7 @@ $(function ()
         {
             if (e.keyCode === 27)
             {
-                if (viewingHistory)
+                if ($('#main>#sidebar>#info>#info-game-history>.move.current').length)
                     historyLeaveAll();
                 else if (selectedPiece !== null)
                     deselectPiece();
@@ -1396,6 +1355,7 @@ $(function ()
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)
             {
+                $('#board>.piece').stop(true, true);
                 deselectPiece(true);
                 position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], {
                     mode: 'animate',

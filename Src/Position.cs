@@ -44,16 +44,16 @@ namespace LiBackgammon
 
         public int GetWinMultiplier(bool whiteWon)
         {
+            // Single
+            if (NumPiecesPerTongue[whiteWon ? Tongues.BlackHome : Tongues.WhiteHome] > 0)
+                return 1;
+
             // Backgammon
             if (Enumerable.Range(whiteWon ? 18 : 0, 6).Any(i => NumPiecesPerTongue[i] > 0 && IsWhitePerTongue[i] == !whiteWon))
                 return 3;
 
             // Gammon
-            if (NumPiecesPerTongue[whiteWon ? Tongues.BlackHome : Tongues.WhiteHome] == 0)
-                return 2;
-
-            // Single
-            return 1;
+            return 2;
         }
     }
 }

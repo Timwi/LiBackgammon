@@ -794,6 +794,7 @@ $(function ()
 
         $('#settings-helpers-select').prop('checked', values.indexOf('helpers') !== -1);
         $('#settings-percentages-select').prop('checked', values.indexOf('percentages') !== -1);
+        $('#info-game-history-flip').prop('checked', values.indexOf('fliphistory') !== -1);
 
         if (values.indexOf('sidebar') !== -1 && values.indexOf('translate') !== -1)
             socketSend({ getLanguages: 1 });
@@ -971,11 +972,14 @@ $(function ()
     function updateGameHistory()
     {
         var hist = $('#main>#sidebar>#info>#info-game-history>.move.current').data('move');
-        var h = $('#main>#sidebar>#info>#info-game-history').empty();
+        var controls = $('#main>#sidebar>#info>#info-game-history>#info-game-history-controls');
+        controls.siblings().remove();
+        var h = $('#main>#sidebar>#info>#info-game-history');
         var value = 1;
         var isWhite = moves.length > 0 && moves[0].Dice1 > moves[0].Dice2;
         var diceTotals = { white: 0, black: 0 };
         var pos = main.data('initial');
+        var append = $('#info-game-history-flip:checked').length ? function (x) { controls.after(x); } : function (x) { h.append(x); };
         var tongueName = function (t)
         {
             if (t === Tongue.BlackPrison || t === Tongue.WhitePrison)
@@ -1004,8 +1008,8 @@ $(function ()
                 }
                 pos = processMove(pos, isWhite, moves[i].SourceTongues, moves[i].TargetTongues);
             }
-            var r = $('<div>')
-                .addClass('row move' + (isWhite ? ' white' : ' black') + (i === hist ? ' current' : ''))
+            append($('<div>')
+                .addClass('row move' + (isWhite ? ' white' : ' black') + (i === hist ? ' current' : '') + (i === 0 ? ' first-move' : ''))
                 .append(moves[i].Doubled ? $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(value)) : null)
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-0 val-' + moves[i].Dice1))
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
@@ -1015,12 +1019,13 @@ $(function ()
                 .data('isWhite', isWhite)
                 .mouseenter(historyEnter)
                 .mouseleave(historyLeave)
-                .click(historyClick)
-                .appendTo(h);
+                .click(historyClick));
             diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2;
             isWhite = !isWhite;
         }
-        h.append('<hr>').append($('<div>')
+
+        append('<hr>');
+        append($('<div>')
             .addClass('row totals')
             .append(position.GameValue === null ? null : $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(value)))
             .append($('<div>').addClass('white dice-total').append($('<div>').text(diceTotals.white)))
@@ -1497,6 +1502,12 @@ $(function ()
             }
             $('#chat-msg').val('');
         }
+    });
+
+    $('#info-game-history-flip').change(function ()
+    {
+        LiBackgammon[$('#info-game-history-flip:checked').length ? 'hashAdd' : 'hashRemove']('fliphistory')
+        updateGameHistory();
     });
 
     // Add extra CSS

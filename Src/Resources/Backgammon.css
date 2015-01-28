@@ -111,7 +111,6 @@ body {
 
     #newgame > .row > input:checked + label, #main > #sidebar > #info > #info-match-playto > .content, #main > #sidebar > #info > #info-match-cube > .content {
         background-image: linear-gradient(180deg, hsl(32, 50%, 45%), hsl(32, 50%, 55%));
-        border-color: hsl(32, 50%, 80%);
         box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
     }
 
@@ -1855,6 +1854,7 @@ body.hash-info > #main > #sidebar::after {
 }
 
 #main > #sidebar > #info > .section {
+    position: relative;
     text-align: right;
 }
 
@@ -1867,6 +1867,23 @@ body.hash-info > #main > #sidebar::after {
             right: 0;
             width: 20vw;
         }
+
+    #main > #sidebar > #info > .section > .controls {
+        position: absolute;
+        top: .5vw;
+        right: 0;
+    }
+
+#main > #sidebar > #info > #info-game-history > #info-game-history-controls > #info-game-history-flip + label::after {
+    content: 'Current order: Earliest move first. Toggle to flip.';
+    top: 100%;
+    right: 0;
+    width: 8em;
+}
+
+#main > #sidebar > #info > #info-game-history > #info-game-history-controls > #info-game-history-flip:checked + label::after {
+    content: 'Current order: Latest move first. Toggle to flip.';
+}
 
 #main > #sidebar > #info > #info-game-history::before {
     content: 'Game history';
@@ -2398,9 +2415,9 @@ select, input {
     padding: .3vw .7vw;
 }
 
-input {
-    cursor: text;
-}
+    input[type='text'], textarea {
+        cursor: text;
+    }
 
 /* Shortcuts */
 .shortcut {
@@ -2435,7 +2452,8 @@ body.show-shortcuts .shortcut {
 #newgame > .row > label::before, #waiting-games > li > .doubling-cube::before,
 #waiting-games > li > .playto::before, #waiting-games > li > .piece::before,
 #main > #sidebar > #info > #info-game-history > .totals > .dice-total::before,
-#main > #sidebar > #settings > .section > input + label::before {
+#main > #sidebar > #settings > .section > input + label::before,
+#main > #sidebar > #info > .section > .controls > input + label::after {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -2463,7 +2481,8 @@ body.show-shortcuts .shortcut {
 #newgame > .row > label:hover::before, #waiting-games > li > .doubling-cube:hover::before,
 #waiting-games > li > .playto:hover::before, #waiting-games > li > .piece:hover::before,
 #main > #sidebar > #info > #info-game-history > .totals > .dice-total:hover::before,
-#main > #sidebar > #settings > .section > input + label:hover::before {
+#main > #sidebar > #settings > .section > input + label:hover::before,
+#main > #sidebar > #info > .section > .controls > input + label:hover::after {
     opacity: 1;
     visibility: visible;
 }
@@ -2485,8 +2504,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice,
 #main.viewing-history.history-dice-start > #board > #dice-0,
-#main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 {
     background-image: linear-gradient(135deg, #fff, #ddd);
 }
 
@@ -2494,8 +2513,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice,
 #main.viewing-history.history-dice-start > #board > #dice-1,
-#main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 {
     background-image: linear-gradient(135deg, #444, #222);
 }
 
@@ -2522,8 +2541,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .face,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .face,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .face {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .face,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .face {
     background-image: linear-gradient(135deg, #ddd, #fff);
 }
 
@@ -2531,8 +2550,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .face,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .face,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .face {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .face,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .face {
     background-image: linear-gradient(135deg, #222, #444);
 }
 
@@ -2552,8 +2571,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.n,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.n,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.n {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.n,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.n {
     background-image: linear-gradient(0deg, #fff, #ccc);
 }
 
@@ -2561,8 +2580,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.n,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.n,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.n {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.n,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.n {
     background-image: linear-gradient(0deg, #444, #222);
 }
 
@@ -2577,8 +2596,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.w,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.w,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.w {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.w,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.w {
     background-image: linear-gradient(-90deg, #fff, #ccc);
 }
 
@@ -2586,8 +2605,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.w,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.w,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.w {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.w,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.w {
     background-image: linear-gradient(-90deg, #444, #222);
 }
 
@@ -2600,8 +2619,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.s,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.s,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.s {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.s,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.s {
     background-image: linear-gradient(0deg, #888, #eee);
 }
 
@@ -2609,8 +2628,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.s,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.s,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.s {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.s,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.s {
     background-image: linear-gradient(0deg, #000, #333);
 }
 
@@ -2625,8 +2644,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.e,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.e,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .razor > .side.e {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.e,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.e {
     background-image: linear-gradient(-90deg, #888, #eee);
 }
 
@@ -2634,8 +2653,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.e,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.e,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .razor > .side.e {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.e,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.e {
     background-image: linear-gradient(-90deg, #000, #333);
 }
 
@@ -2650,8 +2669,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .pip,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .pip,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .pip,
-#main > #sidebar > #info > #info-game-history > .move.white:not(:first-child) > .dice > .pip,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-0 > .pip {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .pip,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .pip {
     background: black;
     box-shadow: .075vw .075vw 0 white;
 }
@@ -2660,8 +2679,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .pip,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .pip,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .pip,
-#main > #sidebar > #info > #info-game-history > .move.black:not(:first-child) > .dice > .pip,
-#main > #sidebar > #info > #info-game-history > .move:first-child > .dice-1 > .pip {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .pip,
+#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .pip {
     background: #ddd;
     box-shadow: -.075vw -.075vw 0 black;
 }
@@ -2752,6 +2771,36 @@ body.hash-sidebar.hash-translating > #main > #sidebar > #translating-link {
     color: hsl(0, 50%, 75%);
     font-weight: bold;
 }
+
+input.toggle {
+    display: none;
+}
+
+    input.toggle + label {
+        position: relative;
+        width: 3.5vw;
+        height: 2vw;
+        display: inline-block;
+        border-radius: 1vw;
+        background-image: linear-gradient(180deg, hsl(32, 50%, 45%), hsl(32, 50%, 55%));
+        box-shadow: .1vw .1vw .1vw rgba(0, 0, 0, .5) inset, -.1vw -.1vw .1vw rgba(255, 255, 255, .7) inset;
+    }
+
+        input.toggle + label::before {
+            content: '';
+            width: 1.7vw;
+            height: 1.7vw;
+            position: absolute;
+            left: .15vw;
+            top: .15vw;
+            border-radius: .85vw;
+            background: hsl(32, 50%, 80%);
+            box-shadow: .1vw .1vw .1vw rgba(255, 255, 255, .9) inset, -.1vw -.1vw .1vw rgba(0, 0, 0, .4) inset;
+        }
+
+    input.toggle:checked + label::before {
+        left: 1.65vw;
+    }
 
 @keyframes hypo-blink {
     from {

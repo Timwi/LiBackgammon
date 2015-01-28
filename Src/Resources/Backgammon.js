@@ -98,6 +98,11 @@
 
 $(function ()
 {
+    window.onerror = function (msg, url, l, c)
+    {
+        alert('Error: ' + msg + "\nFile: " + url + "\nLine: " + l + "\nColumn: " + c);
+    };
+
     var body = $(document.body);
 
     // Keyboard shortcut handling

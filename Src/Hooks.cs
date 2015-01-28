@@ -36,12 +36,12 @@ AjaxHandlerOptions.ReturnExceptionsWithoutMessages
                 new UrlMapping(path: "/join", handler: join),
                 new UrlMapping(path: "/admin", handler: admin),
                 new UrlMapping(path: "/auth", handler: authenticate),
-                new UrlMapping(path: "/css", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.css", "text/css", HttpResponse.Css(Regex.Replace(Resources.Css, @"\s+", " ", RegexOptions.Singleline).ToUtf8()))),
-                new UrlMapping(path: "/css/admin", specificPath: true, handler: getFileResourceHandler(@"Resources\Admin.css", "text/css", HttpResponse.Css(Regex.Replace(Resources.CssAdmin, @"\s+", " ", RegexOptions.Singleline).ToUtf8()))),
-                new UrlMapping(path: "/js", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.Js).ToUtf8()))),
-                new UrlMapping(path: "/js/play", specificPath: true, handler: getFileResourceHandler(@"Resources\Play.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.JsPlay).ToUtf8()))),
-                new UrlMapping(path: "/js/main", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.JsMain).ToUtf8()))),
-                new UrlMapping(path: "/js/admin", specificPath: true, handler: getFileResourceHandler(@"Resources\Admin.js", "text/javascript", HttpResponse.JavaScript(JsonValue.Fmt(Resources.JsAdmin).ToUtf8()))),
+                new UrlMapping(path: "/css", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.css", "text/css", Resources.Css, javascript: false)),
+                new UrlMapping(path: "/css/admin", specificPath: true, handler: getFileResourceHandler(@"Resources\Admin.css", "text/css", Resources.CssAdmin, javascript: false)),
+                new UrlMapping(path: "/js", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.js", "text/javascript", Resources.Js, javascript: true)),
+                new UrlMapping(path: "/js/play", specificPath: true, handler: getFileResourceHandler(@"Resources\Play.js", "text/javascript", Resources.JsPlay, javascript: true)),
+                new UrlMapping(path: "/js/main", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.js", "text/javascript", Resources.JsMain, javascript: true)),
+                new UrlMapping(path: "/js/admin", specificPath: true, handler: getFileResourceHandler(@"Resources\Admin.js", "text/javascript", Resources.JsAdmin, javascript: true)),
                 new UrlMapping(path: "/ajax", handler: req => ajax.Handle(req, ajaxObj)),
 
 #if DEBUG
@@ -53,6 +53,15 @@ AjaxHandlerOptions.ReturnExceptionsWithoutMessages
 #endif
                 //
             );
+        }
+
+        private static Func<HttpRequest, HttpResponse> getFileResourceHandler(string path, string contentType, string releaseResponseText, bool javascript)
+        {
+            var releaseResponse = javascript
+                //? HttpResponse.JavaScript(JsonValue.Fmt(releaseResponseText).ToUtf8())
+                ? HttpResponse.JavaScript(releaseResponseText.ToUtf8())
+                : HttpResponse.Css(Regex.Replace(releaseResponseText, @"\s+", " ", RegexOptions.Singleline).ToUtf8());
+            return getFileResourceHandler(path, contentType, releaseResponse);
         }
 
         private static Func<HttpRequest, HttpResponse> getFileResourceHandler(string path, string contentType, HttpResponse releaseResponse)

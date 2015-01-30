@@ -181,15 +181,12 @@ namespace LiBackgammon
                                             new LABEL { for_ = "chat-msg", accesskey = "," },
                                             new INPUT { id = "chat-msg", type = itype.text }),
                                         new DIV { id = "info", class_ = "sidebar-tab" }._(
-                                            new DIV { id = "info-game-history", class_ = "section" }._(
-                                                new DIV { id = "info-game-history-controls", class_ = "controls" }._(
-                                                    new INPUT { id = "info-game-history-flip", class_ = "toggle", type = itype.checkbox },
-                                                    new LABEL { for_ = "info-game-history-flip" })),
+                                            new DIV { id = "info-game-history", class_ = "section" },
                                             new DIV { id = "info-match-history", class_ = "section match" }._(
                                                 history.NullOr(h => Ut.NewArray<object>(
-                                                    h.Select(g => new A
+                                                    h.Select((g, i) => new A
                                                     {
-                                                        class_ = "row game " + (g.HasDoublingCube ? "cube" : "no-cube"),
+                                                        class_ = "row game" + (g.HasDoublingCube ? " cube" : " no-cube") + (i == 0 ? " first" : "") + (i == history.Count - 1 ? " last" : ""),
                                                         href = g.PublicID == publicId ? null :
                                                             req.Url.WithParent("play/" + g.PublicID + (player == Player.White ? g.WhiteToken : player == Player.Black ? g.BlackToken : null)).ToFull()
                                                     }._(

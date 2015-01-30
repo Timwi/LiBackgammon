@@ -1874,15 +1874,33 @@ body.hash-info > #main > #sidebar::after {
         right: 0;
     }
 
-#main > #sidebar > #info > #info-game-history > #info-game-history-controls > #info-game-history-flip + label::after {
-    content: 'Current order: Earliest move first. Toggle to flip.';
-    top: 100%;
-    right: 0;
-    width: 8em;
+#main > #sidebar > #info > #info-game-history > .game-graph > svg > .move {
+    fill: transparent;
 }
 
-#main > #sidebar > #info > #info-game-history > #info-game-history-controls > #info-game-history-flip:checked + label::after {
-    content: 'Current order: Latest move first. Toggle to flip.';
+    #main > #sidebar > #info > #info-game-history > .game-graph > svg > .move:hover {
+        fill: hsla(32, 50%, 30%, .25);
+    }
+
+    #main > #sidebar > #info > #info-game-history > .game-graph > svg > .move.current {
+        fill: hsla(32, 50%, 30%, .5);
+    }
+
+#main > #sidebar > #info > #info-game-history > .game-graph::before {
+    text-align: left;
+    display: block;
+    font-size: 2vw;
+    color: hsl(32, 50%, 30%);
+    text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
+    font-weight: bold;
+}
+
+#main > #sidebar > #info > #info-game-history > #graph-pips::before {
+    content: 'Pips';
+}
+
+#main > #sidebar > #info > #info-game-history > #graph-dicetotals::before {
+    content: 'Dice totals';
 }
 
 #main > #sidebar > #info > #info-game-history::before {
@@ -1916,42 +1934,89 @@ body.hash-info > #main > #sidebar::after {
     margin: 1vw 0;
 }
 
-#main > #sidebar > #info > #info-match-history > .game[href] {
-    cursor: pointer;
+#main > #sidebar > #info > #info-match-history > .game[href]:hover {
+    background: hsl(32, 50%, 70%);
 }
 
 #main > #sidebar > #info > #info-match-history > .game:not([href]) {
     background: hsl(32, 50%, 60%);
 }
 
-#main > #sidebar > #info > #info-match-history > .row, #main > #sidebar > #info > #info-game-history > .row {
+#main > #sidebar > #info > .section > .row {
     display: block;
     background: hsl(32, 50%, 80%);
     position: relative;
     text-align: center;
     color: black;
     text-decoration: none;
-    border-radius: 2vw;
 }
 
-    #main > #sidebar > #info > #info-game-history > .row.current {
-        background: hsl(32,50%,50%);
+    #main > #sidebar > #info > .section > .row.first, #main > #sidebar > #info > .section > .row.totals {
+        border-top-left-radius: 2vw;
+        border-top-right-radius: 2vw;
     }
+
+    #main > #sidebar > #info > .section > .row.last, #main > #sidebar > #info > .section > .row.totals {
+        border-bottom-left-radius: 2vw;
+        border-bottom-right-radius: 2vw;
+    }
+
+#main > #sidebar > #info > #info-game-history > .move:hover {
+    background: hsl(32,50%,70%);
+}
+
+#main > #sidebar > #info > #info-game-history > .move.current {
+    background: hsl(32,50%,60%);
+}
+
+#main > #sidebar > #info > #info-game-history > .row {
+    height: 3.2vw;
+}
 
 #main > #sidebar > #info > #info-match-history > .row {
     counter-increment: section;
     padding: .5vw 1vw;
-    margin-bottom: .5vw;
 }
 
-#main > #sidebar > #info > #info-game-history > .row {
-    padding: .2vw .5vw .2vw 13vw;
-    margin-bottom: .2vw;
-    height: 2.5vw;
-}
+    #main > #sidebar > #info > #info-match-history > .row::before, #main > #sidebar > #info > #info-match-history > .game::after {
+        display: block;
+    }
 
-#main > #sidebar > #info > #info-match-history > .row::before, #main > #sidebar > #info > #info-match-history > .game::after {
+#main > #sidebar > #info > .section > .expand-collapse {
+    text-align: center;
     display: block;
+    text-decoration: none;
+    color: hsl(32, 50%, 30%);
+    width: 75%;
+    margin: 0 auto;
+    background-image: linear-gradient(hsla(32,50%,90%,0) 0%, hsl(32,50%,90%) 100%);
+    font-size: 1vw;
+}
+
+    #main > #sidebar > #info > .section > .expand-collapse::before {
+        content: '{"text":"▲ ","notranslate":1}';
+    }
+
+    #main > #sidebar > #info > .section > .expand-collapse::after {
+        content: 'Expand';
+    }
+
+#main > #sidebar > #info > .section.expanded > .expand-collapse {
+    background: hsl(32,50%,80%);
+    border-top-left-radius: .8vw;
+    border-top-right-radius: .8vw;
+}
+
+    #main > #sidebar > #info > .section.expanded > .expand-collapse::before {
+        content: '{"text":"▼ ","notranslate":1}';
+    }
+
+    #main > #sidebar > #info > .section.expanded > .expand-collapse::after {
+        content: 'Collapse';
+    }
+
+#main > #sidebar > #info > .section:not(.expanded) > .expandable {
+    display: none;
 }
 
 #main > #sidebar > #info > #info-match-history > .game::before {
@@ -2419,6 +2484,10 @@ select, input {
         cursor: text;
     }
 
+a[href] {
+    cursor: pointer;
+}
+
 /* Shortcuts */
 .shortcut {
     opacity: 0;
@@ -2504,8 +2573,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice,
 #main.viewing-history.history-dice-start > #board > #dice-0,
-#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first) > .dice,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-0 {
     background-image: linear-gradient(135deg, #fff, #ddd);
 }
 
@@ -2513,8 +2582,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice,
 #main.viewing-history.history-dice-start > #board > #dice-1,
-#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first) > .dice,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-1 {
     background-image: linear-gradient(135deg, #444, #222);
 }
 
@@ -2541,8 +2610,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .face,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .face,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .face {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first) > .dice > .razor > .face,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-0 > .razor > .face {
     background-image: linear-gradient(135deg, #ddd, #fff);
 }
 
@@ -2550,8 +2619,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .face,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .face,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .face,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .face {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first) > .dice > .razor > .face,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-1 > .razor > .face {
     background-image: linear-gradient(135deg, #222, #444);
 }
 
@@ -2571,8 +2640,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.n,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.n,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.n {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first) > .dice > .razor > .side.n,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-0 > .razor > .side.n {
     background-image: linear-gradient(0deg, #fff, #ccc);
 }
 
@@ -2580,8 +2649,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.n,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.n,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.n,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.n {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first) > .dice > .razor > .side.n,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-1 > .razor > .side.n {
     background-image: linear-gradient(0deg, #444, #222);
 }
 
@@ -2596,8 +2665,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.w,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.w,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.w {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first) > .dice > .razor > .side.w,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-0 > .razor > .side.w {
     background-image: linear-gradient(-90deg, #fff, #ccc);
 }
 
@@ -2605,8 +2674,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.w,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.w,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.w,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.w {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first) > .dice > .razor > .side.w,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-1 > .razor > .side.w {
     background-image: linear-gradient(-90deg, #444, #222);
 }
 
@@ -2619,8 +2688,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.s,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.s,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.s {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first) > .dice > .razor > .side.s,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-0 > .razor > .side.s {
     background-image: linear-gradient(0deg, #888, #eee);
 }
 
@@ -2628,8 +2697,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.s,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.s,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.s,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.s {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first) > .dice > .razor > .side.s,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-1 > .razor > .side.s {
     background-image: linear-gradient(0deg, #000, #333);
 }
 
@@ -2644,8 +2713,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .razor > .side.e,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .razor > .side.e,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .razor > .side.e {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first) > .dice > .razor > .side.e,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-0 > .razor > .side.e {
     background-image: linear-gradient(-90deg, #888, #eee);
 }
 
@@ -2653,8 +2722,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .razor > .side.e,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .razor > .side.e,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .razor > .side.e,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .razor > .side.e {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first) > .dice > .razor > .side.e,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-1 > .razor > .side.e {
     background-image: linear-gradient(-90deg, #000, #333);
 }
 
@@ -2669,8 +2738,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-0 > .pip,
 #main.viewing-history.history-white:not(.history-dice-start) > #board > .dice > .pip,
 #main.viewing-history.history-dice-start > #board > #dice-0 > .pip,
-#main > #sidebar > #info > #info-game-history > .move.white:not(.first-move) > .dice > .pip,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-0 > .pip {
+#main > #sidebar > #info > #info-game-history > .move.white:not(.first) > .dice > .pip,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-0 > .pip {
     background: black;
     box-shadow: .075vw .075vw 0 white;
 }
@@ -2679,8 +2748,8 @@ body.show-shortcuts .shortcut {
 #main.dice-start:not(.viewing-history) > #board > #dice-1 > .pip,
 #main.viewing-history.history-black:not(.history-dice-start) > #board > .dice > .pip,
 #main.viewing-history.history-dice-start > #board > #dice-1 > .pip,
-#main > #sidebar > #info > #info-game-history > .move.black:not(.first-move) > .dice > .pip,
-#main > #sidebar > #info > #info-game-history > .move.first-move > .dice-1 > .pip {
+#main > #sidebar > #info > #info-game-history > .move.black:not(.first) > .dice > .pip,
+#main > #sidebar > #info > #info-game-history > .move.first > .dice-1 > .pip {
     background: #ddd;
     box-shadow: -.075vw -.075vw 0 black;
 }

@@ -171,6 +171,10 @@ $(function ()
         else
             $('#translated-content').text('');
 
+        if ('style' in dict) { }
+        else
+            $('#')
+
         if (!('translator' in dict))
             $('#translated-content-2').text('');
 

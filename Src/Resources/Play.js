@@ -982,13 +982,13 @@ $(function ()
         $('#info-game-history>.game-graph>svg>.column').filter(function () { return $(this).data('index') === move; }).attr('class', 'column current');
     }
 
-    function createSvgGraph(datas, moves, height, id)
+    function createSvgGraph(datas, widthInMoves, moves, height, ticks, id)
     {
-        var virtMoves = Math.max(50, moves), moveWidth = 7;
-        var svg = '<svg width="100%" viewBox="-3 -3 ' + (virtMoves * moveWidth + 6) + ' ' + (height + 6) + '" xmlns="http://www.w3.org/2000/svg" style="display: inline;">';
+        var moveWidth = 7;
+        var svg = '<svg width="100%" viewBox="-3 -3 ' + (widthInMoves * moveWidth + 6) + ' ' + (height + 6) + '" xmlns="http://www.w3.org/2000/svg" style="display: inline;">';
         svg += '<defs><filter id="d"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
         for (var i = 25; i < height; i += 25)
-            svg += '<path d="M 0,' + (height - i) + ' ' + (virtMoves * moveWidth) + ',' + (height - i) + '" style="fill:none;stroke:rgba(0,0,0,.2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" />';
+            svg += '<path d="M 0,' + (height - i) + ' ' + (widthInMoves * moveWidth) + ',' + (height - i) + '" style="fill:none;stroke:rgba(0,0,0,.2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" />';
         for (var i = 0; i < datas.length; i++)
         {
             var d = 'M';
@@ -999,7 +999,7 @@ $(function ()
         }
         for (var i = 0; i < moves; i++)
             svg += '<rect class="column" data-index="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
-        svg += '<path d="M 0,0 0,' + height + ' ' + (virtMoves * moveWidth) + ',' + height + '" style="fill:none;stroke:hsl(32, 50%, 30%);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;" />';
+        svg += '<path d="M 0,0 0,' + height + ' ' + (widthInMoves * moveWidth) + ',' + height + '" style="fill:none;stroke:hsl(32, 50%, 30%);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;" />';
         svg += '</svg>';
         return $('<div>').attr('id', id).addClass('game-graph').append(svg);
     }
@@ -1080,8 +1080,8 @@ $(function ()
                 .append(position.GameValue === null ? null : $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(gameValue)))
                 .append($('<div>').addClass('white dice-total').append($('<div>').text(diceTotals.white)))
                 .append($('<div>').addClass('black dice-total').append($('<div>').text(diceTotals.black))))
-            .append(createSvgGraph([{ d: pips.whiteData, f: '#fff' }, { d: pips.blackData, f: '#000' }], moves.length, pips.max, 'graph-pips'))
-            .append(createSvgGraph([{ d: diceTotals.whiteData, f: '#fff' }, { d: diceTotals.blackData, f: '#000' }], moves.length, diceTotals.max, 'graph-dicetotals'));
+            .append(createSvgGraph([{ d: pips.whiteData, f: '#fff' }, { d: pips.blackData, f: '#000' }], Math.max(50, moves.length), moves.length, pips.max, 25, 'graph-pips'))
+            .append(createSvgGraph([{ d: diceTotals.whiteData, f: '#fff' }, { d: diceTotals.blackData, f: '#000' }], Math.max(50, moves.length), moves.length, diceTotals.max, 25, 'graph-dicetotals'));
 
         $('#info-game-history>.game-graph>svg>.column')
             .click(historyClick)
@@ -1092,22 +1092,28 @@ $(function ()
     function updateMatchGraph()
     {
         $('#info-match-history>.game-graph').remove();
-        var white = [0], black = [0], max = 0, w = 0, b = 0, games = $('#info-match-history>.game'), mult = 100 / +$('#info-match-playto>.content').text(), cur;
+        var white = [0], black = [0], max = 0, w = 0, b = 0, games = $('#info-match-history>.game'), cur;
         games.each(function (i, e)
         {
             if (!$(e).hasClass('last'))
             {
-                white.push(w += mult * +$(e).find('.piece.white>.number').text());
-                black.push(b += mult * +$(e).find('.piece.black>.number').text());
+                white.push(w += +$(e).find('.piece.white>.number').text());
+                black.push(b += +$(e).find('.piece.black>.number').text());
                 max = Math.max(Math.max(w, b), max);
             }
             if (!$(e).attr('href'))
                 cur = i;
         });
-        $('#info-match-history').append(createSvgGraph([{ d: white, f: '#fff' }, { d: black, f: '#000' }], games.length, Math.max(max, 100), 'graph-match'))
-        var columns = $('#info-match-history>.game-graph>svg>.column').click(function () { window.location.href = $(games[$(this).data('index')]).attr('href'); });
-        if (cur)
-            $(columns[cur]).attr('class', 'column current');
+        var ratio = 4 * games.length / max;
+        for (var i = 0; i < white.length; i++)
+        {
+            white[i] *= ratio;
+            black[i] *= ratio;
+        }
+        $('#info-match-history').append(createSvgGraph([{ d: white, f: '#fff' }, { d: black, f: '#000' }], games.length, games.length, 4 * games.length, 25 * ratio, 'graph-match'))
+        var columns = $('#info-match-history>.game-graph>svg>.column');
+        columns.not(columns[cur]).click(function () { window.location.href = $(games[$(this).data('index')]).attr('href'); return false; });
+        $(columns[cur]).attr('class', 'column current');
     }
 
     var main = $('#main');

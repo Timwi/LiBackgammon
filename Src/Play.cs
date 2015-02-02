@@ -147,8 +147,8 @@ namespace LiBackgammon
                                             new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-white" }._(pipsWhite)),
                                             new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "pipcount-black" }._(pipsBlack))),
                                         game.Match == null ? null : new DIV { class_ = "infobox", id = "info-match-score" }._(
-                                            new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number matchscore-white", id = "matchscore-white" }._(whiteMatchScore)),
-                                            new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number matchscore-black", id = "matchscore-black" }._(blackMatchScore))),
+                                            new DIV { class_ = "infobox-inner infobox-white" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-white" }._(whiteMatchScore)),
+                                            new DIV { class_ = "infobox-inner infobox-black" }._(new DIV { class_ = "piece" }, new DIV { class_ = "number", id = "matchscore-black" }._(blackMatchScore))),
                                         new A { href = "#", class_ = "mini-button", accesskey = "g", id = "btn-resign" },
                                         new A { href = "#", class_ = "mini-button", accesskey = "s", id = "btn-settings" },
                                         new A { href = "#", class_ = "mini-button", accesskey = "i", id = "btn-info" },
@@ -182,8 +182,8 @@ namespace LiBackgammon
                                             new INPUT { id = "chat-msg", type = itype.text }),
                                         new DIV { id = "info", class_ = "sidebar-tab" }._(
                                             new DIV { id = "info-game-history", class_ = "section" },
-                                            new DIV { id = "info-match-history", class_ = "section match" }._(
-                                                history.NullOr(h => Ut.NewArray<object>(
+                                            history.NullOr(h => Ut.NewArray<object>(
+                                                new DIV { id = "info-match-history", class_ = "section" }._(
                                                     h.Select((g, i) => new A
                                                     {
                                                         class_ = "row game" + (g.HasDoublingCube ? " cube" : " no-cube") + (i == 0 ? " first" : "") + (i == history.Count - 1 ? " last" : ""),
@@ -195,9 +195,9 @@ namespace LiBackgammon
                                                     new HR(),
                                                     new DIV { class_ = "row totals" }._(
                                                         new DIV { class_ = "piece white" }._(new DIV { class_ = "number" }._(history.Sum(g => g.WhiteScore))),
-                                                        new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(history.Sum(g => g.BlackScore))))))),
-                                            new DIV { id = "info-match-playto", class_ = "section match" }._(new DIV { class_ = "content" }._(match.NullOr(m => m.MaxScore))),
-                                            new DIV { id = "info-match-cube", class_ = "section match" + match.NullOr(m => " " + m.DoublingCubeRules) }._(new DIV { class_ = "content" })),
+                                                        new DIV { class_ = "piece black" }._(new DIV { class_ = "number" }._(history.Sum(g => g.BlackScore))))),
+                                                new DIV { id = "info-match-playto", class_ = "section" }._(new DIV { class_ = "content" }._(match.MaxScore)),
+                                                new DIV { id = "info-match-cube", class_ = "section " + match.DoublingCubeRules }._(new DIV { class_ = "content" })))),
                                         new DIV { id = "settings", class_ = "sidebar-tab" }._(
                                             new DIV { id = "settings-style", class_ = "section" }._(
                                                 new LABEL { for_ = "settings-style-select", accesskey = "w" },

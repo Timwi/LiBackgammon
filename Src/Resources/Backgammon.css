@@ -20,19 +20,33 @@ body {
         cursor: inherit;
     }
 
-    body#main-page::before {
-        content: 'Backgammon';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 10vw;
-        color: hsl(32, 50%, 20%);
-        text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
-        font-weight: bold;
-        z-index: 1;
+select, input {
+    background: hsl(32, 50%, 90%);
+    border: none;
+    padding: .3vw .7vw;
+}
+
+    input[type='text'], input:not([type]), textarea {
+        cursor: text;
     }
+
+a[href] {
+    cursor: pointer;
+}
+
+body#main-page::before {
+    content: 'Backgammon';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10vw;
+    color: hsl(32, 50%, 20%);
+    text-shadow: .2vw .2vw .5vw rgba(0,0,0,.2);
+    font-weight: bold;
+    z-index: 1;
+}
 
 #newgame, #waiting-games {
     -moz-box-sizing: border-box;
@@ -988,7 +1002,8 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     visibility: hidden;
     top: 36vw;
     left: 15vw;
-    right: 15vw;
+    width: 60vw;
+    box-sizing: border-box;
     border: .7vw solid hsl(32, 50%, 20%);
     background: hsl(32, 50%, 70%);
     padding: 0 3vw;
@@ -1664,10 +1679,6 @@ body.hash-sidebar > #main {
     width: 130vw;
 }
 
-    body.hash-sidebar > #main > .dialog {
-        right: 45vw;
-    }
-
 #main > #sidebar {
     left: 100vw;
     top: 0;
@@ -1849,10 +1860,6 @@ body.hash-info > #main > #sidebar::after {
     content: 'Game info';
 }
 
-#main:not(.in-match) > #sidebar > #info > .section.match {
-    display: none;
-}
-
 #main > #sidebar > #info > .section {
     position: relative;
     text-align: right;
@@ -1874,17 +1881,17 @@ body.hash-info > #main > #sidebar::after {
         right: 0;
     }
 
-#main > #sidebar > #info > #info-game-history > .game-graph > svg > .move {
-    fill: transparent;
-}
-
-    #main > #sidebar > #info > #info-game-history > .game-graph > svg > .move:hover {
-        fill: hsla(32, 50%, 30%, .25);
+    #main > #sidebar > #info > .section > .game-graph > svg > .column {
+        fill: transparent;
     }
 
-    #main > #sidebar > #info > #info-game-history > .game-graph > svg > .move.current {
-        fill: hsla(32, 50%, 30%, .5);
-    }
+        #main > #sidebar > #info > .section > .game-graph > svg > .column:hover {
+            fill: hsla(32, 50%, 30%, .25);
+        }
+
+        #main > #sidebar > #info > .section > .game-graph > svg > .column.current {
+            fill: hsla(32, 50%, 30%, .5);
+        }
 
 #main > #sidebar > #info > #info-game-history > .game-graph::before {
     text-align: left;
@@ -2473,20 +2480,6 @@ button {
     button:active {
         background-image: linear-gradient(hsl(32, 52%, 32%), hsl(32, 52%, 54%));
     }
-
-select, input {
-    background: hsl(32, 50%, 90%);
-    border: none;
-    padding: .3vw .7vw;
-}
-
-    input[type='text'], textarea {
-        cursor: text;
-    }
-
-a[href] {
-    cursor: pointer;
-}
 
 /* Shortcuts */
 .shortcut {

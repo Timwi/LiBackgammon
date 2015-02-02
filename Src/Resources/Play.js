@@ -621,7 +621,7 @@ $(function ()
         if (force || wasWide !== lastWide)
         {
             // If the aspect ratio has changed, move all the pieces into the right place
-            var hist = $('#main>#sidebar>#info>#info-game-history>.move.current');
+            var hist = $('#info-game-history>.move.current');
             if (hist.length)
                 setHistory(hist.data('move'), '');
             else
@@ -673,7 +673,7 @@ $(function ()
     function sidebar(id)
     {
         var hash = LiBackgammon.hash.values;
-        if ($('#main>#sidebar>#info>#info-game-history>.move.current').length)
+        if ($('#info-game-history>.move.current').length)
             historyLeaveAll();
 
         if (hash.indexOf('sidebar') !== -1 && hash.indexOf(id) !== -1)
@@ -914,7 +914,7 @@ $(function ()
     function setHistory(i, mode)
     {
         deselectPiece(true);
-        var e = $('#main>#sidebar>#info>#info-game-history>.move').filter(function () { return $(this).data('move') === i; }).first(), move = moves[i], pos = e.data('pos');
+        var e = $('#info-game-history>.move').filter(function () { return $(this).data('index') === i; }).first(), move = moves[i], pos = e.data('pos');
         main.addClass('viewing-history');
         main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black');
         main.addClass((moves[0].Dice1 > moves[0].Dice2) ^ (i % 2 === 0) ? 'history-black' : 'history-white');
@@ -941,16 +941,16 @@ $(function ()
         if (!$(this).hasClass('current'))
         {
             $('#board>.piece').stop();
-            setHistory($(this).data('move'), 'indicate');
+            setHistory($(this).data('index'), 'indicate');
         }
     }
 
     function historyLeave()
     {
         $('#board>.piece.hypo-target, #board>.arrow').remove();
-        var hist = $('#main>#sidebar>#info>#info-game-history>.move.current');
+        var hist = $('#info-game-history>.move.current');
         if (hist.length)
-            setHistory(hist.data('move'), '');
+            setHistory(hist.data('index'), '');
         else
         {
             main.removeClass('viewing-history');
@@ -965,8 +965,8 @@ $(function ()
         main.removeClass('viewing-history');
 
         // jQuery’s .addClass() / .removeClass() don’t work on SVG elements :(
-        $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
-        $('#main>#sidebar>#info>#info-game-history>.game-graph>svg>.move.current').attr('class', 'move');
+        $('#info-game-history>.move.current').removeClass('current');
+        $('#info-game-history>.game-graph>svg>.column.current').attr('class', 'column');
         setupPosition(position);
         deselectPiece(false);
     }
@@ -974,17 +974,17 @@ $(function ()
     function historyClick()
     {
         // jQuery’s .addClass() / .removeClass() don’t work on SVG elements :(
-        $('#main>#sidebar>#info>#info-game-history>.move.current').removeClass('current');
-        $('#main>#sidebar>#info>#info-game-history>.game-graph>svg>.move.current').attr('class', 'move');
-        var move = $(this).data('move');
+        $('#info-game-history>.move.current').removeClass('current');
+        $('#info-game-history>.game-graph>svg>.column.current').attr('class', 'column');
+        var move = $(this).data('index');
         var newPos = setHistory(move, 'animate');
-        $('#main>#sidebar>#info>#info-game-history>.move').filter(function () { return $(this).data('move') === move; }).addClass('current');
-        $('#main>#sidebar>#info>#info-game-history>.game-graph>svg>.move').filter(function () { return $(this).data('move') === move; }).attr('class', 'move current');
+        $('#info-game-history>.move').filter(function () { return $(this).data('index') === move; }).addClass('current');
+        $('#info-game-history>.game-graph>svg>.column').filter(function () { return $(this).data('index') === move; }).attr('class', 'column current');
     }
 
-    function createSvgGraph(datas, moveWidth, moves, height, id)
+    function createSvgGraph(datas, moves, height, id)
     {
-        var virtMoves = Math.max(50, moves);
+        var virtMoves = Math.max(50, moves), moveWidth = 7;
         var svg = '<svg width="100%" viewBox="-3 -3 ' + (virtMoves * moveWidth + 6) + ' ' + (height + 6) + '" xmlns="http://www.w3.org/2000/svg" style="display: inline;">';
         svg += '<defs><filter id="d"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
         for (var i = 25; i < height; i += 25)
@@ -998,7 +998,7 @@ $(function ()
             svg += '<path d="' + d + '" style="fill:none;stroke:' + datas[i].f + ';stroke-width:3;stroke-linecap:round;stroke-linejoin:round;filter:url(#d);" />';
         }
         for (var i = 0; i < moves; i++)
-            svg += '<rect class="move" data-move="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
+            svg += '<rect class="column" data-index="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
         svg += '<path d="M 0,0 0,' + height + ' ' + (virtMoves * moveWidth) + ',' + height + '" style="fill:none;stroke:hsl(32, 50%, 30%);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;" />';
         svg += '</svg>';
         return $('<div>').attr('id', id).addClass('game-graph').append(svg);
@@ -1006,14 +1006,13 @@ $(function ()
 
     function updateGameHistory()
     {
-        var hist = $('#main>#sidebar>#info>#info-game-history>.move.current').data('move'),
-            h = $('#main>#sidebar>#info>#info-game-history').empty(),
+        var hist = $('#info-game-history>.move.current').data('move'),
+            h = $('#info-game-history').empty(),
             gameValue = 1,
             isWhite = moves.length > 0 && moves[0].Dice1 > moves[0].Dice2,
             diceTotals = { white: 0, whiteData: [0], black: 0, blackData: [0], max: 0 },
             pips = { whiteData: [167], blackData: [167], max: 167 },
             pos = main.data('initial'),
-            moveWidth = 7,
             maxCollapsed = 4;
 
         function tongueName(t)
@@ -1062,7 +1061,7 @@ $(function ()
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-0 val-' + moves[i].Dice1))
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
                 .append($('<div>').addClass('move').text(moveStr))
-                .data('move', i)
+                .data('index', i)
                 .data('pos', origPos)
                 .data('isWhite', isWhite)
                 .mouseenter(historyEnter)
@@ -1081,13 +1080,34 @@ $(function ()
                 .append(position.GameValue === null ? null : $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(gameValue)))
                 .append($('<div>').addClass('white dice-total').append($('<div>').text(diceTotals.white)))
                 .append($('<div>').addClass('black dice-total').append($('<div>').text(diceTotals.black))))
-            .append(createSvgGraph([{ d: pips.whiteData, f: '#fff' }, { d: pips.blackData, f: '#000' }], moveWidth, moves.length, pips.max, 'graph-pips'))
-            .append(createSvgGraph([{ d: diceTotals.whiteData, f: '#fff' }, { d: diceTotals.blackData, f: '#000' }], moveWidth, moves.length, diceTotals.max, 'graph-dicetotals'));
+            .append(createSvgGraph([{ d: pips.whiteData, f: '#fff' }, { d: pips.blackData, f: '#000' }], moves.length, pips.max, 'graph-pips'))
+            .append(createSvgGraph([{ d: diceTotals.whiteData, f: '#fff' }, { d: diceTotals.blackData, f: '#000' }], moves.length, diceTotals.max, 'graph-dicetotals'));
 
-        $('#main>#sidebar>#info>#info-game-history>.game-graph>svg>.move')
+        $('#info-game-history>.game-graph>svg>.column')
             .click(historyClick)
             .mouseenter(historyEnter)
             .mouseleave(historyLeave);
+    }
+
+    function updateMatchGraph()
+    {
+        $('#info-match-history>.game-graph').remove();
+        var white = [0], black = [0], max = 0, w = 0, b = 0, games = $('#info-match-history>.game'), mult = 100 / +$('#info-match-playto>.content').text(), cur;
+        games.each(function (i, e)
+        {
+            if (!$(e).hasClass('last'))
+            {
+                white.push(w += mult * +$(e).find('.piece.white>.number').text());
+                black.push(b += mult * +$(e).find('.piece.black>.number').text());
+                max = Math.max(Math.max(w, b), max);
+            }
+            if (!$(e).attr('href'))
+                cur = i;
+        });
+        $('#info-match-history').append(createSvgGraph([{ d: white, f: '#fff' }, { d: black, f: '#000' }], games.length, Math.max(max, 100), 'graph-match'))
+        var columns = $('#info-match-history>.game-graph>svg>.column').click(function () { window.location.href = $(games[$(this).data('index')]).attr('href'); });
+        if (cur)
+            $(columns[cur]).attr('class', 'column current');
     }
 
     var main = $('#main');
@@ -1237,9 +1257,9 @@ $(function ()
             $('#win>.points').removeClass('singular plural').addClass(args.score === 1 ? "singular" : "plural");
 
             if ('whiteMatchScore' in args)
-                $('.matchscore-white,#info-match-history>.totals>.white>.number').text(args.whiteMatchScore);
+                $('#matchscore-white,#info-match-history>.totals>.white>.number').text(args.whiteMatchScore);
             if ('blackMatchScore' in args)
-                $('.matchscore-black,#info-match-history>.totals>.black>.number').text(args.blackMatchScore);
+                $('#matchscore-black,#info-match-history>.totals>.black>.number').text(args.blackMatchScore);
             if ('matchOver' in args)
                 main.addClass('end-of-match');
             if ('nextGame' in args)
@@ -1249,6 +1269,7 @@ $(function ()
                     .addClass('row game last ' + (args.nextGame.cube ? 'cube' : 'no-cube'))
                     .attr('href', main.data('next-game') + window.location.hash)
                     .insertBefore('#info-match-history>hr');
+                updateMatchGraph();
             }
         },
 
@@ -1407,7 +1428,7 @@ $(function ()
         {
             if (e.keyCode === 27)
             {
-                if ($('#main>#sidebar>#info>#info-game-history>.move.current').length)
+                if ($('#info-game-history>.move.current').length)
                     historyLeaveAll();
                 else if (selectedPiece !== null)
                     deselectPiece();
@@ -1497,6 +1518,15 @@ $(function ()
     $('#goto-next-game').click(function () { if (main.data('next-game')) window.location.href = main.data('next-game') + window.location.hash; return false; });
     $('#settings-helpers-select').change(function () { LiBackgammon[$('#settings-helpers-select:checked').length ? 'hashAdd' : 'hashRemove']('helpers'); });
     $('#settings-percentages-select').change(function () { LiBackgammon[$('#settings-percentages-select:checked').length ? 'hashAdd' : 'hashRemove']('percentages'); });
+
+    $('#settings-style-select').change(function ()
+    {
+        var style = $(this).val();
+        if (style === '')
+            LiBackgammon.hashRemove([], ['style']);
+        else
+            LiBackgammon.hashAdd([], { style: style });
+    });
 
     $('#settings-lang-select').change(function ()
     {
@@ -1644,4 +1674,6 @@ $(function ()
     reconnect();
     hashChange();
     updateGameHistory();
+    updateMatchGraph();
+
 });

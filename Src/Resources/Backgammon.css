@@ -1885,12 +1885,71 @@ body.hash-info > #main > #sidebar::after {
         fill: transparent;
     }
 
+        #main > #sidebar > #info > .section > .game-graph > svg > .column.crossover {
+            fill: hsla(0, 100%, 50%, .1);
+        }
+
         #main > #sidebar > #info > .section > .game-graph > svg > .column:hover {
             fill: hsla(32, 50%, 30%, .25);
         }
 
         #main > #sidebar > #info > .section > .game-graph > svg > .column.current {
             fill: hsla(32, 50%, 30%, .5);
+        }
+
+    #main > #sidebar > #info > .section > .game-graph > svg path {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+        #main > #sidebar > #info > .section > .game-graph > svg path.data, #main > #sidebar > #info > .section > .game-graph > svg path.axes {
+            stroke-width: 3;
+        }
+
+            #main > #sidebar > #info > .section > .game-graph > svg path.data.white {
+                stroke: hsl(32,50%,95%);
+            }
+
+            #main > #sidebar > #info > .section > .game-graph > svg path.data.black {
+                stroke: hsl(32,50%,10%);
+            }
+
+        #main > #sidebar > #info > .section > .game-graph > svg path.axes {
+            stroke: hsl(32, 50%, 30%);
+        }
+
+        #main > #sidebar > #info > .section > .game-graph > svg path.grid {
+            stroke: rgba(0,0,0,.2);
+            stroke-width: 2;
+        }
+
+        #main > #sidebar > #info > .section > .game-graph > svg path.label {
+            stroke: none;
+        }
+
+            #main > #sidebar > #info > .section > .game-graph > svg path.label.white {
+                fill: hsl(32,50%,95%);
+            }
+
+            #main > #sidebar > #info > .section > .game-graph > svg path.label.black {
+                fill: hsl(32,50%,10%);
+            }
+
+    #main > #sidebar > #info > .section > .game-graph > svg > text {
+        font-size: 15px;
+        line-height: 100%;
+        font-family: 'Roboto', 'Calibri';
+        text-align: center;
+        text-anchor: middle;
+    }
+
+        #main > #sidebar > #info > .section > .game-graph > svg > text.white {
+            fill: hsl(32,50%,10%);
+        }
+
+        #main > #sidebar > #info > .section > .game-graph > svg > text.black {
+            fill: hsl(32,50%,95%);
         }
 
 #main > #sidebar > #info > #info-game-history > .game-graph::before {

@@ -623,7 +623,7 @@ $(function ()
             // If the aspect ratio has changed, move all the pieces into the right place
             var hist = $('#info-game-history>.move.current');
             if (hist.length)
-                setHistory(hist.data('move'), '');
+                setHistory(hist.data('index'), '');
             else
             {
                 setupPosition(position);
@@ -982,26 +982,79 @@ $(function ()
         $('#info-game-history>.game-graph>svg>.column').filter(function () { return $(this).data('index') === move; }).attr('class', 'column current');
     }
 
-    function createSvgGraph(datas, widthInMoves, moves, height, ticks, id)
+    function createSvgGraph(datas, widthInMoves, moves, crossOverMove, height, ticks, id)
     {
         var moveWidth = 7;
-        var svg = '<svg width="100%" viewBox="-3 -3 ' + (widthInMoves * moveWidth + 6) + ' ' + (height + 6) + '" xmlns="http://www.w3.org/2000/svg" style="display: inline;">';
-        svg += '<defs><filter id="d"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+        var svg = '<defs><filter id="d"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+        var viewbox = { x1: -3, y1: -3, x2: widthInMoves * moveWidth + 3, y2: height + 3 };
         for (var i = 25; i < height; i += 25)
-            svg += '<path d="M 0,' + (height - i) + ' ' + (widthInMoves * moveWidth) + ',' + (height - i) + '" style="fill:none;stroke:rgba(0,0,0,.2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" />';
+            svg += '<path d="M 0,' + (height - i) + ' ' + (widthInMoves * moveWidth) + ',' + (height - i) + '" class="grid" />';
+        svg += '<path d="M 0,0 0,' + height + ' ' + (widthInMoves * moveWidth) + ',' + height + '" class="axes" />';
         for (var i = 0; i < datas.length; i++)
         {
             var d = 'M';
             for (var j = 0; j < datas[i].d.length; j++)
                 if (datas[i].d[j] !== null)
-                    d += ' ' + (moveWidth * j) + ',' + (height - datas[i].d[j]);
-            svg += '<path d="' + d + '" style="fill:none;stroke:' + datas[i].f + ';stroke-width:3;stroke-linecap:round;stroke-linejoin:round;filter:url(#d);" />';
+                {
+                    var n = datas[i].d[j], x = moveWidth * j, y = height - n;
+                    if (typeof datas[i].d[j] === 'object')
+                    {
+                        n = datas[i].d[j].n;
+                        y = height - n;
+                        r = datas[i].d[j].d ? " rotate(180)" : "";
+                        svg += '<g style="filter:url(#d)">';
+                        svg += '<path class="label ' + datas[i].c + '" d="M 0,0 C 0,0 0,-5 5,-10 10,-15 10,-15 10,-20 10,-25 5,-30 0,-30 -5,-30 -10,-25 -10,-20 -10,-15 -10,-15 -5,-10 0,-5 0,0 0,0 z" transform="translate(' + x + ',' + y + ')' + r + '" />';
+                        svg += '</g>';
+                        svg += '<text class="' + datas[i].c + '" x="' + x + '" y="' + (datas[i].d[j].d ? y + 24 : y - 13) + '"><tspan>' + datas[i].d[j].l + '</tspan></text>';
+                        viewbox.x1 = Math.min(viewbox.x1, x - 13);
+                        viewbox.x2 = Math.max(viewbox.x2, x + 13);
+                        viewbox.y1 = Math.min(viewbox.y1, datas[i].d[j].d ? y - 3 : y - 33);
+                        viewbox.y2 = Math.max(viewbox.y2, datas[i].d[j].d ? y + 33 : y + 3);
+                    }
+                    d += ' ' + x + ',' + y;
+                }
+            svg += '<path class="data ' + datas[i].c + '" d="' + d + '" style="filter:url(#d);" />';
         }
         for (var i = 0; i < moves; i++)
-            svg += '<rect class="column" data-index="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
-        svg += '<path d="M 0,0 0,' + height + ' ' + (widthInMoves * moveWidth) + ',' + height + '" style="fill:none;stroke:hsl(32, 50%, 30%);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;" />';
-        svg += '</svg>';
+            svg += '<rect class="column' + (i === crossOverMove ? ' crossover' : '') + '" data-index="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
+        svg = '<svg width="100%" viewBox="' + viewbox.x1 + ' ' + viewbox.y1 + ' ' + (viewbox.x2 - viewbox.x1) + ' ' + (viewbox.y2 - viewbox.y1) + '" xmlns="http://www.w3.org/2000/svg" style="display: inline;">' + svg + '</svg>';
         return $('<div>').attr('id', id).addClass('game-graph').append(svg);
+    }
+
+    function getWinMultiplier(pos, whiteWon)
+    {
+        // Single
+        if (pos.NumPiecesPerTongue[whiteWon ? Tongue.BlackHome : Tongue.WhiteHome] > 0)
+            return 1;
+
+        // Backgammon
+        if (pos.NumPiecesPerTongue[whiteWon ? Tongue.BlackPrison : Tongue.WhitePrison] > 0)
+            return 3;
+        for (var i = 0; i < 6; i++)
+        {
+            var j = whiteWon ? 18 + i : i;
+            if (pos.NumPiecesPerTongue[j] > 0 && pos.IsWhitePerTongue[j] === !whiteWon)
+                return 3;
+        }
+
+        // Gammon
+        return 2;
+    }
+
+    function isCrossedOver(pos)
+    {
+        if (pos.NumPiecesPerTongue[Tongue.WhitePrison] > 0 || pos.NumPiecesPerTongue[Tongue.BlackPrison] > 0)
+            return false;
+        var firstWhite = null, lastBlack = null;
+        for (var i = 0; i < 24; i++)
+            if (pos.NumPiecesPerTongue[i] > 0)
+            {
+                if (!pos.IsWhitePerTongue[i])
+                    lastBlack = i;
+                else if (firstWhite === null)
+                    firstWhite = i;
+            }
+        return firstWhite > lastBlack;
     }
 
     function updateGameHistory()
@@ -1013,6 +1066,8 @@ $(function ()
             diceTotals = { white: 0, whiteData: [0], black: 0, blackData: [0], max: 0 },
             pips = { whiteData: [167], blackData: [167], max: 167 },
             pos = main.data('initial'),
+            prevWinMult = { white: 3, black: 3 },
+            crossover = null,
             maxCollapsed = 4;
 
         function tongueName(t)
@@ -1031,6 +1086,11 @@ $(function ()
         {
             gameValue *= moves[i].Doubled ? 2 : 1;
             var moveStr = '', origPos = pos;
+            var dt = (diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2);
+            diceTotals.whiteData.push(isWhite ? dt : null);
+            diceTotals.blackData.push(isWhite ? null : dt);
+            diceTotals.max = Math.max(diceTotals.max, dt);
+
             if ('SourceTongues' in moves[i])
             {
                 if (moves[i].SourceTongues.length === 0)
@@ -1045,8 +1105,20 @@ $(function ()
                     }
                 }
                 pos = processMove(pos, isWhite, moves[i].SourceTongues, moves[i].TargetTongues);
+                if (crossover === null && isCrossedOver(pos))
+                    crossover = i;
                 var pp = getPipCounts(pos);
                 pips.max = Math.max(pips.max, Math.max(pp.white, pp.black));
+
+                for (var wh = 0; wh < 2; wh++)
+                {
+                    var winMult = getWinMultiplier(pos, wh === 1);
+                    var wb = wh ? 'white' : 'black';
+                    if (winMult !== prevWinMult[wb])
+                        pp[wb] = { n: pp[wb], l: winMult, d: pp[wb] < pp[wh ? 'black' : 'white'] };
+                    prevWinMult[wb] = winMult;
+                }
+
                 pips.whiteData.push(pp.white);
                 pips.blackData.push(pp.black);
             }
@@ -1067,10 +1139,6 @@ $(function ()
                 .mouseenter(historyEnter)
                 .mouseleave(historyLeave)
                 .click(historyClick));
-            var dt = (diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2);
-            diceTotals.whiteData.push(isWhite ? dt : null);
-            diceTotals.blackData.push(isWhite ? null : dt);
-            diceTotals.max = Math.max(diceTotals.max, dt);
             isWhite = !isWhite;
         }
 
@@ -1080,8 +1148,8 @@ $(function ()
                 .append(position.GameValue === null ? null : $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(gameValue)))
                 .append($('<div>').addClass('white dice-total').append($('<div>').text(diceTotals.white)))
                 .append($('<div>').addClass('black dice-total').append($('<div>').text(diceTotals.black))))
-            .append(createSvgGraph([{ d: pips.whiteData, f: '#fff' }, { d: pips.blackData, f: '#000' }], Math.max(50, moves.length), moves.length, pips.max, 25, 'graph-pips'))
-            .append(createSvgGraph([{ d: diceTotals.whiteData, f: '#fff' }, { d: diceTotals.blackData, f: '#000' }], Math.max(50, moves.length), moves.length, diceTotals.max, 25, 'graph-dicetotals'));
+            .append(createSvgGraph([{ d: pips.whiteData, c: 'white' }, { d: pips.blackData, c: 'black' }], Math.max(50, moves.length), moves.length, crossover, pips.max, 25, 'graph-pips'))
+            .append(createSvgGraph([{ d: diceTotals.whiteData, c: 'white' }, { d: diceTotals.blackData, c: 'black' }], Math.max(50, moves.length), moves.length, crossover, diceTotals.max, 25, 'graph-dicetotals'));
 
         $('#info-game-history>.game-graph>svg>.column')
             .click(historyClick)
@@ -1110,7 +1178,7 @@ $(function ()
             white[i] *= ratio;
             black[i] *= ratio;
         }
-        $('#info-match-history').append(createSvgGraph([{ d: white, f: '#fff' }, { d: black, f: '#000' }], games.length, games.length, 4 * games.length, 25 * ratio, 'graph-match'))
+        $('#info-match-history').append(createSvgGraph([{ d: white, c: 'white' }, { d: black, c: 'black' }], Math.max(games.length, 20), games.length, null, 4 * games.length, 25 * ratio, 'graph-match'))
         var columns = $('#info-match-history>.game-graph>svg>.column');
         columns.not(columns[cur]).click(function () { window.location.href = $(games[$(this).data('index')]).attr('href'); return false; });
         $(columns[cur]).attr('class', 'column current');

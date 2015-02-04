@@ -124,6 +124,7 @@ $(function ()
         });
 
     var translations = {};
+    var styles = {};
 
     function hashChange()
     {
@@ -171,9 +172,21 @@ $(function ()
         else
             $('#translated-content').text('');
 
-        if ('style' in dict) { }
+        if ('style' in dict)
+        {
+            var style = dict.style;   // for persistence in lambdas
+            var setStyle = function (css) { $('#style-css').text(styles[style] || ''); };
+            if (style in styles)
+                setStyle();
+            else
+                $.post(body.data('ajax') + '/style', { data: JSON.stringify({ hashName: dict.style }) }, function (resp)
+                {
+                    styles[style] = resp.result;
+                    setStyle();
+                }, 'json');
+        }
         else
-            $('#')
+            $('#style-css').text('');
 
         if (!('translator' in dict))
             $('#translated-content-2').text('');

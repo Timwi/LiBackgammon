@@ -35,6 +35,7 @@ namespace LiBackgammon
                         new LINK { rel = "stylesheet", href = req.Url.WithParent("css").ToHref() },
                         admin ? new LINK { rel = "stylesheet", href = req.Url.WithParent("css/admin").ToHref() } : null,
 
+                        new STYLE { id = "style-css" },
                         new STYLE { id = "converted-css" },
                         new STYLE { id = "converted-content" },
                         new STYLE { id = "translated-content" },

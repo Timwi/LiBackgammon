@@ -49,7 +49,8 @@ namespace LiBackgammon
                 return 1;
 
             // Backgammon
-            if (Enumerable.Range(whiteWon ? 18 : 0, 6).Any(i => NumPiecesPerTongue[i] > 0 && IsWhitePerTongue[i] == !whiteWon))
+            if (NumPiecesPerTongue[whiteWon ? Tongues.BlackPrison : Tongues.WhitePrison] > 0 ||
+                Enumerable.Range(whiteWon ? 18 : 0, 6).Any(i => NumPiecesPerTongue[i] > 0 && IsWhitePerTongue[i] == !whiteWon))
                 return 3;
 
             // Gammon

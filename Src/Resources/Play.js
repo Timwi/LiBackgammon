@@ -985,7 +985,7 @@ $(function ()
     function createSvgGraph(datas, widthInMoves, moves, crossOverMove, height, ticks, id)
     {
         var moveWidth = 7;
-        var svg = '<defs><filter id="d"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+        var svg = '<defs><filter id="d" x="-1000%" y="-1000%" width="2100%" height="2100%"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
         var viewbox = { x1: -3, y1: -3, x2: widthInMoves * moveWidth + 3, y2: height + 3 };
         for (var i = 25; i < height; i += 25)
             svg += '<path d="M 0,' + (height - i) + ' ' + (widthInMoves * moveWidth) + ',' + (height - i) + '" class="grid" />';

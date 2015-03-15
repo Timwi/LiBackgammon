@@ -1215,6 +1215,7 @@ $(function ()
         windowTitleFlash = !windowTitleFlash;
         document.title =
             main.hasClass('debug') ? '(𝐃𝐄𝐁𝐔𝐆) LiBackgammon' :
+            main.hasClass('state-Won') ? '(Game over) LiBackgammon' :
             ((main.hasClass('player-white') && main.hasClass('state-White')) || (main.hasClass('player-black') && main.hasClass('state-Black'))) && (main.hasClass('state-ToMove') || main.hasClass('state-ToRoll') || main.hasClass('state-ToConfirmDouble')) && !main.hasClass('auto-0') && !main.hasClass('auto-1')
                 ? (windowTitleFlash ? "▲▼▲▼ Your turn" : "▼▲▼▲ Your turn")
                 : 'LiBackgammon';
@@ -1290,7 +1291,7 @@ $(function ()
             moves[moves.length - 1].TargetTongues = args.targetTongues;
 
             position = processMove(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, { mode: main.hasClass('viewing-history') ? null : 'animate' });
-            setTimeout(processSocketQueue, main.hasClass('viewing-history') ? 100 : 'auto' in args ? 1600 : 400 * args.sourceTongues.length);
+            setTimeout(processSocketQueue, main.hasClass('viewing-history') ? 100 : 'auto' in args ? 1800 : 200 + 400 * args.sourceTongues.length);
             updateGameHistory();
             return true;
         },

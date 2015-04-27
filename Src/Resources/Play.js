@@ -411,7 +411,7 @@ $(function ()
 
             // Highlight all the auto-move targets
             var autoSourceMoves = {}, autoTargetMoves = {};
-            var processTongue = function (tongue, tongueInfos)
+            var processTongue = function (j, tongue, tongueInfos)
             {
                 if (tongue in tongueInfos)
                 {
@@ -425,22 +425,24 @@ $(function ()
             {
                 for (var tongue in tongueInfos)
                     if (tongueInfos[tongue].num > 1)
-                        if (!autoMoves[tongue] ||
-                            autoMoves[tongue].num < tongueInfos[tongue].num ||
-                            (autoMoves[tongue].num === tongueInfos[tongue].num && autoMoves[tongue].numOthers > tongueInfos[tongue].numOthers))
-                        {
-                            var index = tongueInfos[tongue].num + tongueInfos[tongue].numOthers;
+                    {
+                        if (autoMoves[tongue] && (autoMoves[tongue].num > tongueInfos[tongue].num || (autoMoves[tongue].num === tongueInfos[tongue].num && autoMoves[tongue].numOthers < tongueInfos[tongue].numOthers)))
+                            continue;
+
+                        if (!autoMoves[tongue] || (autoMoves[tongue].num < tongueInfos[tongue].num || (autoMoves[tongue].num === tongueInfos[tongue].num && autoMoves[tongue].numOthers > tongueInfos[tongue].numOthers)))
                             autoMoves[tongue] = {
                                 num: tongueInfos[tongue].num,
                                 numOthers: tongueInfos[tongue].numOthers,
-                                move: {
-                                    SourceTongues: move.SourceTongues.slice(0, index),
-                                    TargetTongues: move.TargetTongues.slice(0, index),
-                                    DiceSequence: move.DiceSequence.slice(0, index),
-                                    OpponentPieceTaken: move.OpponentPieceTaken.slice(0, index)
-                                }
+                                moves: []
                             };
-                        }
+
+                        autoMoves[tongue].moves.push({
+                            SourceTongues: move.SourceTongues,
+                            TargetTongues: move.TargetTongues,
+                            DiceSequence: move.DiceSequence,
+                            OpponentPieceTaken: move.OpponentPieceTaken
+                        });
+                    }
             };
             var tongueCssClass = function (tongue)
             {
@@ -464,21 +466,32 @@ $(function ()
                 var sourceTongues = {}, targetTongues = {};
                 for (var j = 0; j < move.SourceTongues.length; j++)
                 {
-                    processTongue(move.SourceTongues[j], sourceTongues);
-                    processTongue(move.TargetTongues[j], targetTongues);
+                    processTongue(j, move.SourceTongues[j], sourceTongues);
+                    processTongue(j, move.TargetTongues[j], targetTongues);
                 }
                 considerAutoMove(sourceTongues, autoSourceMoves, move);
                 considerAutoMove(targetTongues, autoTargetMoves, move);
+            }
+            function selectBestAutoMove(inf)
+            {
+                if (inf.moves.length === 1)
+                    return inf.moves[0];
+                return {
+                    SourceTongues: inf.moves[0].SourceTongues.slice(0, inf.num + inf.numOthers),
+                    TargetTongues: inf.moves[0].TargetTongues.slice(0, inf.num + inf.numOthers),
+                    DiceSequence: inf.moves[0].DiceSequence.slice(0, inf.num + inf.numOthers),
+                    OpponentPieceTaken: inf.moves[0].OpponentPieceTaken.slice(0, inf.num + inf.numOthers)
+                };
             }
             for (var tongue in autoSourceMoves)
                 if (position.NumPiecesPerTongue[tongue] > 1)
                     $('<div>')
                         .addClass('automove source ' + tongueCssClass(+tongue))
-                        .data('move', autoSourceMoves[tongue].move)
+                        .data('move', selectBestAutoMove(autoSourceMoves[tongue]))
                         .css('top', convertFromVw(topFromTongue(tongue, position.NumPiecesPerTongue[tongue] - 1, position.NumPiecesPerTongue[tongue])))
                         .appendTo('#board');
             for (var tongue in autoTargetMoves)
-                $('<div>').addClass('automove target ' + tongueCssClass(+tongue)).data('move', autoTargetMoves[tongue].move).appendTo('#board');
+                $('<div>').addClass('automove target ' + tongueCssClass(+tongue)).data('move', selectBestAutoMove(autoTargetMoves[tongue])).appendTo('#board');
 
             // Calculate probabilities
             var landedPerTongue = calculateProbabilities(position, playerIsWhite);

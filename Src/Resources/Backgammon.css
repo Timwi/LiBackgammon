@@ -2,7 +2,7 @@
     font-family: 'Lato';
     font-style: normal;
     font-weight: 900;
-    src: local('Lato Black'), local('Lato-Black'), url(http://fonts.gstatic.com/s/lato/v10/BVtM30trf7q_jfqYeHfjtA.woff) format('woff');
+    src: local('Lato Black'), local('Lato-Black'), url(//fonts.gstatic.com/s/lato/v10/BVtM30trf7q_jfqYeHfjtA.woff) format('woff');
 }
 
 body, select, input, textarea {
@@ -851,7 +851,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     }
 
     #main > #board > #accept::before {
-        content: 'Accept';
+        content: 'Double';
     }
 
     #main > #board > #leave-history::before {
@@ -864,7 +864,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 }
 
     #main > #board > #reject::before {
-        content: 'Reject';
+        content: 'Resign';
     }
 
 #main > #board > #roll, #main > #board > #resign-confirm {

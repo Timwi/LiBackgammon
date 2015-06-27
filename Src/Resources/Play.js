@@ -1537,8 +1537,9 @@ $(function ()
 
         $('#board').on('click', '.tongue.selectable, .home.selectable, .automove', function ()
         {
+            var move = $(this).data('move');
             deselectPiece(true);
-            executeMove($(this).data('move'));
+            executeMove(move);
         });
 
         $(document).keydown(function (e)

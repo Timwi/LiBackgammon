@@ -555,12 +555,8 @@ $(function ()
         return ret;
     }
 
-    function selectPiece(tongue)
+    function getTargetMoves(tongue)
     {
-        deselectPiece(true);
-        selectedPiece = topPieceOfTongue(tongue).addClass('selected');
-
-        // Find valid target tongues
         var targetMoves = {};
         for (var i = 0; i < allValidRestMoves.length; i++)
         {
@@ -591,7 +587,15 @@ $(function ()
                     };
                 }
         }
+        return targetMoves;
+    }
 
+    function selectPiece(tongue)
+    {
+        deselectPiece(true);
+        selectedPiece = topPieceOfTongue(tongue).addClass('selected');
+
+        var targetMoves = getTargetMoves(tongue);
         Object.keys(targetMoves).map(function (i)
         {
             var rawTongueElem = $('.tongue-' + i);
@@ -600,6 +604,23 @@ $(function ()
                 : $('<div>').addClass('selectable ' + (+i === Tongue.WhiteHome ? 'white home' : 'black home'));
             selectable.data('move', targetMoves[i]).insertBefore('#overlay-bottom');
         });
+    }
+
+    function executeMove(move)
+    {
+        position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate', callback: deselectPiece });
+        for (var i = 0; i < move.DiceSequence.length; i++)
+        {
+            moveSoFar.DiceSequence.push(move.DiceSequence[i]);
+            moveSoFar.SourceTongues.push(move.SourceTongues[i]);
+            moveSoFar.TargetTongues.push(move.TargetTongues[i]);
+            moveSoFar.OpponentPieceTaken.push(move.OpponentPieceTaken[i]);
+            $('#board>.dice:not(.crossed).val-' + move.DiceSequence[i]).first().addClass('crossed');
+        }
+        main.addClass('undoable');
+        if (moveSoFar.DiceSequence.length === allValidMoves[0].DiceSequence.length)
+            main.addClass('committable');
+        recomputeValidRestMoves();
     }
 
     function convertFromVw(val)
@@ -1456,13 +1477,14 @@ $(function ()
     else
     {
         deselectPiece();
-        $('#board>.piece').click(function ()
+
+        function processClickOrDblclick(isWhite, tongue, isDblClick)
         {
             if (!isPlayerToMove() || main.hasClass('viewing-history'))
                 return false;
 
             // Only allow clicking on a piece of the player’s color
-            if ($(this).hasClass('white') !== playerIsWhite)
+            if (isWhite !== playerIsWhite)
                 return false;
 
             // See if the player has any valid moves (or they’ve already entered their move)
@@ -1471,16 +1493,36 @@ $(function ()
                 return false;
 
             // Only allow clicking on a tongue that is a valid source tongue
-            var tongue = $(this).data('tongue');
             if (clickableTongues.indexOf(tongue) === -1)
                 return false;
 
-            if (topPieceOfTongue(tongue).is(selectedPiece))
+            if (isDblClick)
+            {
+                deselectPiece(true);
+                var targetMoves = getTargetMoves(tongue);
+                if ((Tongue.BlackHome in targetMoves) || (Tongue.WhiteHome in targetMoves))
+                    executeMove(targetMoves[Tongue.BlackHome] || targetMoves[Tongue.WhiteHome]);
+                else
+                {
+                    for (var i = (playerIsWhite ? 23 : 0) ; playerIsWhite ? (i >= 0) : (i < 24) ; playerIsWhite ? i-- : i++)
+                    {
+                        if (i in targetMoves)
+                        {
+                            executeMove(targetMoves[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (topPieceOfTongue(tongue).is(selectedPiece))
                 deselectPiece();
             else
                 selectPiece(tongue);
-            return false;
-        });
+        }
+
+        $('#board>.piece')
+            .click(function () { processClickOrDblclick($(this).hasClass('white'), $(this).data('tongue'), false); return false; })
+            .dblclick(function () { processClickOrDblclick($(this).hasClass('white'), $(this).data('tongue'), true); return false; });
 
         $('#board').on('mouseenter', '.tongue.selectable, .home.selectable, .automove', function ()
         {
@@ -1495,21 +1537,8 @@ $(function ()
 
         $('#board').on('click', '.tongue.selectable, .home.selectable, .automove', function ()
         {
-            var move = $(this).data('move');
             deselectPiece(true);
-            position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate', callback: deselectPiece });
-            for (var i = 0; i < move.DiceSequence.length; i++)
-            {
-                moveSoFar.DiceSequence.push(move.DiceSequence[i]);
-                moveSoFar.SourceTongues.push(move.SourceTongues[i]);
-                moveSoFar.TargetTongues.push(move.TargetTongues[i]);
-                moveSoFar.OpponentPieceTaken.push(move.OpponentPieceTaken[i]);
-                $('#board>.dice:not(.crossed).val-' + move.DiceSequence[i]).first().addClass('crossed');
-            }
-            main.addClass('undoable');
-            if (moveSoFar.DiceSequence.length === allValidMoves[0].DiceSequence.length)
-                main.addClass('committable');
-            recomputeValidRestMoves();
+            executeMove($(this).data('move'));
         });
 
         $(document).keydown(function (e)

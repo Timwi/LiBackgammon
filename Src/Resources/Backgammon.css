@@ -381,6 +381,7 @@ body#main-page::before {
 
         #main > #board > .shadow {
             box-shadow: .3vw .3vw .5vw rgba(0, 0, 0, .3) inset;
+            pointer-events: none;
         }
 
         #main > #board > .main-area {

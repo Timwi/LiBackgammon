@@ -949,8 +949,10 @@ $(function ()
     {
         deselectPiece(true);
         var e = $('#info-game-history>.move').filter(function () { return $(this).data('index') === i; }).first(), move = moves[i], pos = e.data('pos');
+        main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black viewing-history-hover');
         main.addClass('viewing-history');
-        main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black');
+        if (mode === 'indicate')
+            main.addClass('viewing-history-hover');
         main.addClass((moves[0].Dice1 > moves[0].Dice2) ^ (i % 2 === 0) ? 'history-black' : 'history-white');
         if (i === 0)
             main.addClass('history-dice-start');

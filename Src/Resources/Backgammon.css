@@ -920,7 +920,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
 #main.resigning:not(.viewing-history) > #board > #resign-confirm,
 #main.resigning:not(.viewing-history) > #board > #resign-cancel,
-#main.viewing-history > #board > #leave-history {
+#main.viewing-history:not(.viewing-history-hover) > #board > #leave-history {
     opacity: 1;
     visibility: visible;
     pointer-events: all;

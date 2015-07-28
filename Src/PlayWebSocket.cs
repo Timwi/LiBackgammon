@@ -592,21 +592,22 @@ namespace LiBackgammon
                 // Roll the dice
                 var newMove = new Move { Dice1 = Rnd.Next(1, 7), Dice2 = Rnd.Next(1, 7), Doubled = acceptedDouble && firstIteration };
                 moves.Add(newMove);
-                yield return new MessageInfo(new JsonDict { { "dice", new JsonDict {
-                    { "dice1", newMove.Dice1 },
-                    { "dice2", newMove.Dice2 },
-                    { "doubled", newMove.Doubled },
-                    { "state", (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString() } } } });
                 firstIteration = false;
 
                 // Generate all possible moves
                 var validMoves = pos.GetAllValidMoves(whiteToPlay, newMove.Dice1, newMove.Dice2).GroupBy(move => move.EndPosition, new PossiblePosition.Comparer()).ToList();
 
+                yield return new MessageInfo(new JsonDict { { "dice", new JsonDict {
+                    { "dice1", newMove.Dice1 },
+                    { "dice2", newMove.Dice2 },
+                    { "doubled", newMove.Doubled },
+                    { "skipHighlight", validMoves.Count < 2 },
+                    { "state", (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString() } } } });
+
                 if (validMoves.Count > 1)
                 {
-                    // Player must make a move
+                    // Player must make a choice
                     game.State = whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove;
-                    yield return new MessageInfo(new JsonDict { { "state", game.State.ToString() } });
                     break;
                 }
 

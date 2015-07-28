@@ -60,11 +60,12 @@ namespace LiBackgammon
                 lock (ActivePlaySockets)
                     if (ActivePlaySockets.TryGetValue(publicId, out sockets))
                     {
-                        var send = new JsonList
-                        {
-                            new JsonDict { { "dice", new JsonDict { { "dice1", initialDice1 }, { "dice2", initialDice2 }, { "state", game.State.ToString() } } } },
-                            new JsonDict { { "state", game.State.ToString() } }
-                        }.ToString().ToUtf8();
+                        var send = new JsonDict { { "dice", new JsonDict {
+                            { "dice1", initialDice1 },
+                            { "dice2", initialDice2 },
+                            { "state", game.State.ToString() },
+                            { "skipHighlight", false }
+                        } } }.ToString().ToUtf8();
                         foreach (var socket in sockets)
                         {
                             if (socket.Player != Player.Spectator)

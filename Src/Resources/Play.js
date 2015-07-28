@@ -371,14 +371,25 @@ $(function ()
             LiBackgammon.removeClassPrefix(main, 'state-').removeClass('auto-0 auto-1 undoable committable');
             newState.split('_').forEach(function (cl) { main.addClass('state-' + cl); });
         }
-        if (!main.hasClass('state-ToMove'))
-            main.removeClass('dice-start dice-2 dice-4');
         if (isPlayerToMove() && !skipHighlight)
         {
-            allValidMoves = getAllMoves(position, playerIsWhite,
-                lastMove.Dice1 === lastMove.Dice2
-                    ? [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]
-                    : [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
+            if (lastMove.Dice1 === lastMove.Dice2)
+            {
+                allValidMoves = getAllMoves(position, playerIsWhite, [[lastMove.Dice1, lastMove.Dice1, lastMove.Dice1, lastMove.Dice1]]);
+                for (var k = 0; k < 4 - allValidMoves[0].DiceSequence.length; k++)
+                    $('#board>.dice:not(.crossed)').last().addClass('crossed');
+            }
+            else
+            {
+                allValidMoves = getAllMoves(position, playerIsWhite, [[lastMove.Dice1, lastMove.Dice2], [lastMove.Dice2, lastMove.Dice1]]);
+                if (allValidMoves[0].DiceSequence.length < 2)
+                {
+                    $('#board>.dice').addClass('crossed');
+                    for (var i = 0; i < allValidMoves.length; i++)
+                        for (var j = 0; j < allValidMoves[i].DiceSequence.length; j++)
+                            $('#board>.dice.val-' + allValidMoves[i].DiceSequence[j]).removeClass('crossed');
+                }
+            }
             allValidRestMoves = allValidMoves;
             if (!main.hasClass('viewing-history'))
                 deselectPiece();
@@ -1220,6 +1231,19 @@ $(function ()
         $(columns[cur]).attr('class', 'column current');
     }
 
+    function stopAnimations()
+    {
+        var anim = $('#board>.piece:animated');
+        if (anim.length)
+        {
+            anim.stop(
+                true,   // clearQueue: remove all queued animations from the same element
+                false   // jumpToEnd: important because we also don’t want callback functions called
+            );
+            setupPosition(position);
+        }
+    }
+
     var main = $('#main');
 
     // Special tongues
@@ -1334,18 +1358,23 @@ $(function ()
 
         dice: function (args)
         {
-            setState(args.state, true);
             moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
             moves.push({ Dice1: args.dice1, Dice2: args.dice2, Doubled: args.doubled });
             lastMove = moves[moves.length - 1];
             updateGameHistory();
 
             main
-                .removeClass('dice-2 dice-4 dice-start')
+                .removeClass('dice-2 dice-4 dice-start dice-white dice-black white-starts black-starts')
                 .addClass((lastMove.Dice1 === lastMove.Dice2 ? 'dice-4' : 'dice-2') + (moves.length === 1 ? ' dice-start' : ''));
             $('#board>.dice').removeClass('val-1 val-2 val-3 val-4 val-5 val-6 crossed');
             $('#board>#dice-0').addClass('val-' + lastMove.Dice1);
             $('#board>#dice-1,#board>#dice-2,#board>#dice-3').addClass('val-' + lastMove.Dice2);
+
+            setState(args.state, args.skipHighlight);
+
+            main.addClass(moves.length > 1
+                ? (main.hasClass('state-White') ? 'dice-white' : 'dice-black')
+                : (main.hasClass('state-White') ? 'white-starts' : 'black-starts'));
         },
 
         cube: function (args)
@@ -1500,6 +1529,7 @@ $(function ()
 
             if (isDblClick)
             {
+                stopAnimations();
                 deselectPiece(true);
                 var targetMoves = getTargetMoves(tongue);
                 if ((Tongue.BlackHome in targetMoves) || (Tongue.WhiteHome in targetMoves))
@@ -1562,7 +1592,7 @@ $(function ()
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)
             {
-                $('#board>.piece').stop(true, true);
+                stopAnimations();
                 deselectPiece(true);
                 position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], {
                     mode: 'animate',

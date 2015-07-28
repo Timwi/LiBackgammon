@@ -94,7 +94,7 @@ namespace LiBackgammon
                                 class_ =
                                     game.State.ToString().Split('_').Select(cl => "state-" + cl).JoinString(" ")
                                     + ((game.State == GameState.Black_ToMove || game.State == GameState.White_ToMove)
-                                            ? (moves.Count == 1 ? " dice-start" + (moves[0].Dice1 > moves[0].Dice2 ? " white-starts" : " black-starts") : "")
+                                            ? (moves.Count == 1 ? " dice-start" + (moves[0].Dice1 > moves[0].Dice2 ? " white-starts" : " black-starts") : game.State == GameState.Black_ToMove ? " dice-black" : " dice-white")
                                                 + (lastMove.Dice1 == lastMove.Dice2 ? " dice-4" : " dice-2")
                                             : "")
                                     + (pos.GameValue == null ? " no-cube" : pos.WhiteOwnsCube == null ? "" : pos.WhiteOwnsCube.Value ? " cube-white" : " cube-black")

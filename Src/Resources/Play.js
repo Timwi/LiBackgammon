@@ -1740,6 +1740,7 @@ $(function ()
                 obj.find('.time').text('Sending...');
                 obj.find('.msg').text(msg);
                 socketSend({ chat: { msg: msg, token: tk } });
+                onResize();
             }
             $('#chat-msg').val('');
         }

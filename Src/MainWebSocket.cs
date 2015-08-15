@@ -10,7 +10,7 @@ using RT.Util.Serialization;
 
 namespace LiBackgammon
 {
-    sealed class MainWebSocket : WebSocket
+    public sealed class MainWebSocket : WebSocket
     {
         private LiBackgammonPropellerModule _server;
         private IHttpUrl _url;
@@ -34,16 +34,13 @@ namespace LiBackgammon
                         .ToJsonList(inf => getJson(inf.Game, inf.Match))
                     }
                 });
-
-                lock (_server.ActiveMainSockets)
-                    _server.ActiveMainSockets.Add(this);
+                _server.AddMainSocket(this);
             }
         }
 
         protected override void onEndConnection()
         {
-            lock (_server.ActiveMainSockets)
-                _server.ActiveMainSockets.Remove(this);
+            _server.RemoveMainSocket(this);
         }
 
         public void AddGame(Game game, Match match)

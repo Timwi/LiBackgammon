@@ -1815,6 +1815,10 @@ body.hash-chat > #main > #sidebar::after {
                     margin-left: 3.5vw;
                 }
 
+                #main > #sidebar > #chat > #chat-msgs-outer > #chat-msgs > .chat-msg.other-game {
+                    opacity: .5;
+                }
+
     #main > #sidebar > #chat > label {
         position: absolute;
         left: 0;

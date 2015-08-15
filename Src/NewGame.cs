@@ -34,11 +34,7 @@ namespace LiBackgammon
                 var result = db.CreateNewMatch(
                     black ? CreateNewGameOption.BlackWaits : CreateNewGameOption.WhiteWaits,
                     playTo, cubeRules, visibility, req.Post["playas"].Value == "random");
-
-                lock (ActiveMainSockets)
-                    foreach (var socket in ActiveMainSockets)
-                        socket.AddGame(result.Game, result.Match);
-
+                NotifySocketsAddGame(result.Game, result.Match);
                 db.SaveChanges();
                 tr.Complete();
                 return HttpResponse.Redirect(req.Url.WithParent("play/" + result.Game.PublicID + (black ? result.Game.BlackToken : result.Game.WhiteToken)));

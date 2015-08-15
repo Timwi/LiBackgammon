@@ -85,7 +85,7 @@
     <Compile Include="Position.cs" />
     <Compile Include="PossibleMove.cs" />
     <Compile Include="PossiblePosition.cs" />
-    <Compile Include="Privates.cs" />
+    <Compile Include="SocketsTracking.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PropellerModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -51,28 +51,23 @@ namespace LiBackgammon
                 tr.Complete();
 
                 // Notify all the existing WebSockets
-                List<PlayWebSocket> sockets;
-
-                lock (ActiveMainSockets)
-                    foreach (var socket in ActiveMainSockets)
-                        socket.RemoveGame(game.PublicID);
-
-                lock (ActivePlaySockets)
-                    if (ActivePlaySockets.TryGetValue(publicId, out sockets))
+                NotifySocketsRemoveGame(game);
+                var sockets = GetSocketsByGame(publicId);
+                if (sockets != null)
+                {
+                    var send = new JsonDict { { "dice", new JsonDict {
+                        { "dice1", initialDice1 },
+                        { "dice2", initialDice2 },
+                        { "state", game.State.ToString() },
+                        { "skipHighlight", false }
+                    } } }.ToString().ToUtf8();
+                    foreach (var socket in sockets)
                     {
-                        var send = new JsonDict { { "dice", new JsonDict {
-                            { "dice1", initialDice1 },
-                            { "dice2", initialDice2 },
-                            { "state", game.State.ToString() },
-                            { "skipHighlight", false }
-                        } } }.ToString().ToUtf8();
-                        foreach (var socket in sockets)
-                        {
-                            if (socket.Player != Player.Spectator)
-                                socket.SendMessage(new JsonDict { { "player", socket.Player.ToString() } });
-                            socket.SendMessage(1, send);
-                        }
+                        if (socket.Player != Player.Spectator)
+                            socket.SendMessage(new JsonDict { { "player", socket.Player.ToString() } });
+                        socket.SendMessage(1, send);
                     }
+                }
 
                 return HttpResponse.Redirect(req.Url.WithParent("play/" + publicId + newToken));
             }

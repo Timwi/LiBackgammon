@@ -11,65 +11,71 @@ using RT.Util.Serialization;
 
 namespace LiBackgammon
 {
-    sealed class PlayWebSocket : WebSocket
+    public sealed class PlayWebSocket : WebSocket
     {
-        private string _gameId;
+        public string GameId { get; private set; }
+        public int? MatchId { get; private set; }
         private Player _player;
         private LiBackgammonPropellerModule _server;
         private IHttpUrl _url;
 
         public Player Player { get { return _player; } }
 
-        public PlayWebSocket(LiBackgammonPropellerModule server, string gameId, Player player, IHttpUrl url)
+        public PlayWebSocket(LiBackgammonPropellerModule server, string gameId, int? matchId, Player player, IHttpUrl url)
         {
             _server = server;
-            _gameId = gameId;
+            GameId = gameId;
+            MatchId = matchId;
             _player = player;
             _url = url;
         }
 
         protected override void onBeginConnection()
         {
-            lock (_server.ActivePlaySockets)
+            _server.AddGameSocket(this);
+            var sockets = _server.GetSocketsByGame(GameId);
+
+            if (sockets != null)
             {
-                _server.ActivePlaySockets.AddSafe(_gameId, this);
-                foreach (var socket in _server.ActivePlaySockets[_gameId])
+                foreach (var socket in sockets)
                 {
                     if (_player != Player.Spectator)
                         socket.SendMessage(new JsonDict { { "on", _player.ToString() } });
                     if (socket.Player != Player.Spectator)
                         SendMessage(new JsonDict { { "on", socket.Player.ToString() } });
                 }
+            }
 
-                using (var tr = Program.NewTransaction())
-                using (var db = new Db())
-                {
-                    var chatList = db.ChatMessages
-                        .Where(cm => cm.GameID == _gameId)
-                        .OrderBy(cm => cm.Time)
-                        .AsEnumerable()
-                        .Select(chatMessageJson)
-                        .ToJsonList();
-                    if (chatList.Count > 0)
-                        SendMessage(new JsonDict { { "chat", chatList } });
-                }
+            using (var tr = Program.NewTransaction())
+            using (var db = new Db())
+            {
+                IQueryable<ChatMessage> chatMsgs;
+                if (MatchId != null)
+                    chatMsgs = from cm in db.ChatMessages
+                               join g in db.Games on cm.GameID equals g.PublicID
+                               where g.Match != null && g.Match == MatchId.Value
+                               select cm;
+                else
+                    chatMsgs = db.ChatMessages.Where(cm => cm.GameID == GameId);
+
+                var chatList = chatMsgs.OrderBy(cm => cm.Time).AsEnumerable().Select(chatMessageJson).ToJsonList();
+                if (chatList.Count > 0)
+                    SendMessage(new JsonDict { { "chat", chatList } });
             }
         }
 
         protected override void onEndConnection()
         {
-            lock (_server.ActivePlaySockets)
+            _server.RemoveGameSocket(this);
+
+            if (_player != Player.Spectator)
             {
-                _server.ActivePlaySockets.RemoveSafe(_gameId, this);
-                if (_player != Player.Spectator)
+                var sockets = _server.GetSocketsByGame(GameId);
+                if (sockets != null && !sockets.Any(s => s.Player == _player))
                 {
-                    List<PlayWebSocket> sockets;
-                    if (_server.ActivePlaySockets.TryGetValue(_gameId, out sockets) && !sockets.Any(s => s.Player == _player))
-                    {
-                        var info = new JsonDict { { "off", _player.ToString() } }.ToString().ToUtf8();
-                        foreach (var socket in sockets)
-                            socket.SendMessage(1, info);
-                    }
+                    var info = new JsonDict { { "off", _player.ToString() } }.ToString().ToUtf8();
+                    foreach (var socket in sockets)
+                        socket.SendMessage(1, info);
                 }
             }
         }
@@ -88,10 +94,13 @@ namespace LiBackgammon
         {
             public JsonDict Message { get; private set; }
             public Func<PlayWebSocket, bool> Predicate { get; private set; }
-            public MessageInfo(JsonDict message, Func<PlayWebSocket, bool> predicate = null)
+            public bool SendToAllGamesInMatch { get; private set; }
+
+            public MessageInfo(JsonDict message, Func<PlayWebSocket, bool> predicate = null, bool sendToAllGamesInMatch = false)
             {
                 Message = message;
                 Predicate = predicate;
+                SendToAllGamesInMatch = sendToAllGamesInMatch;
             }
         }
 
@@ -258,7 +267,7 @@ namespace LiBackgammon
         }
 
         [SocketMethod]
-        private MessageInfo[] chat(string msg, JsonValue token)
+        private MessageInfo[] chat(string msg, long token)
         {
             msg = msg.Trim();
             if (msg.Length == 0)
@@ -267,12 +276,12 @@ namespace LiBackgammon
             using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
-                var chatMsgObj = new ChatMessage { GameID = _gameId, Player = _player, Time = DateTime.UtcNow, Message = msg };
+                var chatMsgObj = new ChatMessage { GameID = GameId, Player = _player, Time = DateTime.UtcNow, Message = msg };
                 db.ChatMessages.Add(chatMsgObj);
                 db.SaveChanges();
                 tr.Complete();
                 SendMessage(new JsonDict { { "chatid", new JsonDict { { "token", token }, { "id", chatMsgObj.ID } } } });
-                return new[] { new MessageInfo(new JsonDict { { "chat", chatMessageJson(chatMsgObj) } }) };
+                return new[] { new MessageInfo(new JsonDict { { "chat", chatMessageJson(chatMsgObj) } }, sendToAllGamesInMatch: true) };
             }
         }
 
@@ -481,14 +490,25 @@ namespace LiBackgammon
 
             // Send all the WebSocket messages
             // (We do this at the end so that we don’t send /any/ messages if any part of the above code throws an exception)
-            List<PlayWebSocket> sockets;
             if (toSend != null && toSend.Length > 0)
-                lock (_server.ActivePlaySockets)
-                    if (_server.ActivePlaySockets.TryGetValue(_gameId, out sockets))
-                        foreach (var socket in sockets)
+            {
+                var gameSockets = _server.GetSocketsByGame(GameId);
+                if (gameSockets != null)
+                    foreach (var socket in gameSockets)
+                        foreach (var sendMsg in toSend)
+                            if ((MatchId == null || !sendMsg.SendToAllGamesInMatch) && (sendMsg.Predicate == null || sendMsg.Predicate(socket)))
+                                socket.SendMessage(sendMsg.Message);
+
+                if (MatchId != null && toSend.Any(m => m.SendToAllGamesInMatch))
+                {
+                    var matchSockets = _server.GetSocketsByMatch(MatchId.Value);
+                    if (matchSockets != null)
+                        foreach (var socket in matchSockets)
                             foreach (var sendMsg in toSend)
-                                if (sendMsg.Predicate == null || sendMsg.Predicate(socket))
+                                if (sendMsg.SendToAllGamesInMatch && (sendMsg.Predicate == null || sendMsg.Predicate(socket)))
                                     socket.SendMessage(sendMsg.Message);
+                }
+            }
         }
 
         private T processGameState<T>(Func<Db, Game, Position, bool, List<Move>, T> func)
@@ -496,7 +516,7 @@ namespace LiBackgammon
             using (var tr = Program.NewTransaction())
             using (var db = new Db())
             {
-                var game = db.Games.FirstOrDefault(g => g.PublicID == _gameId);
+                var game = db.Games.FirstOrDefault(g => g.PublicID == GameId);
                 if (game == null)
                     throw new InvalidOperationException("game is null");
 
@@ -627,6 +647,7 @@ namespace LiBackgammon
             return new JsonDict 
             {
                 { "id", msg.ID },
+                { "game", msg.GameID },
                 { "msg", msg.Message },
                 { "player", msg.Player.ToString() },
                 { "time", msg.Time.ToIsoString(format: IsoDateFormat.Iso8601) + "Z" },

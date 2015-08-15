@@ -31,7 +31,7 @@ namespace LiBackgammon
                     return HttpResponse.Redirect(req.Url.WithParent("play/" + game.PublicID));
                 var player = playerToken == game.WhiteToken ? Player.White : playerToken == game.BlackToken ? Player.Black : Player.Spectator;
 
-                return new PlayWebSocket(this, publicId, player, req.Url);
+                return new PlayWebSocket(this, publicId, game.Match, player, req.Url);
             }
         }
     }

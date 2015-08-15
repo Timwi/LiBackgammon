@@ -1430,6 +1430,8 @@ $(function ()
                 if (!obj.length)
                     obj = $('<div><div class="time"></div><div class="msg"></div></div>').attr('id', 'chat-' + msg.id).data('id', msg.id).addClass('chat-msg').appendTo('#chat-msgs');
                 obj.removeClass('Black White seen').addClass(msg.player);
+                if (chatList[i].game !== main.data('game-id'))
+                    obj.addClass('other-game');
                 if (msg.seen)
                     obj.addClass('seen');
                 var d = new Date(msg.time);

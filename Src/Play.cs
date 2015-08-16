@@ -42,7 +42,7 @@ namespace LiBackgammon
                 var lastMove = moves.LastOrDefault();
                 var points =
                     game.State == GameState.Black_Won_Finished || game.State == GameState.White_Won_Finished ? (pos.GameValue ?? 1) * pos.GetWinMultiplier(game.State == GameState.White_Won_Finished) :
-                    game.State == GameState.Black_Won_RejectedDouble || game.State == GameState.White_Won_RejectedDouble ? pos.GameValue ?? 1 :
+                    game.State == GameState.Black_Won_DeclinedDouble || game.State == GameState.White_Won_DeclinedDouble ? pos.GameValue ?? 1 :
                     game.State == GameState.Black_Won_Resignation || game.State == GameState.White_Won_Resignation ? (pos.GameValue ?? 1) * pos.GetWinMultiplier(game.State == GameState.White_Won_Resignation) : 0;
 
                 var pipsWhite = Enumerable.Range(0, 24).Sum(t => pos.IsWhitePerTongue[t] ? (24 - t) * pos.NumPiecesPerTongue[t] : 0) + 25 * pos.NumPiecesPerTongue[Tongues.WhitePrison];
@@ -61,8 +61,8 @@ namespace LiBackgammon
                 // B = Accept rematch
                 // C = Commit
                 // D = Double
-                // E = Reject double
-                // F = Reject rematch
+                // E = Decline double
+                // F = Decline rematch
                 // G = Resign
                 // H = Show/hide move helpers
                 // I = Match info, rules and help
@@ -124,7 +124,7 @@ namespace LiBackgammon
                                     new BUTTON { accesskey = "r", id = "roll" },
                                     new BUTTON { accesskey = "d", id = "double" },
                                     new BUTTON { accesskey = "a", id = "accept" },
-                                    new BUTTON { accesskey = "e", id = "reject" },
+                                    new BUTTON { accesskey = "e", id = "decline" },
                                     new BUTTON { accesskey = "y", id = "resign-confirm" },
                                     new BUTTON { accesskey = "n", id = "resign-cancel" },
                                     new BUTTON { accesskey = "k", id = "leave-history" },

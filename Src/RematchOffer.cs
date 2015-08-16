@@ -12,7 +12,7 @@ namespace LiBackgammon
         White = 1,
         Black = 2,
         Accepted = 3,
-        WhiteRejected = 4,
-        BlackRejected = 5
+        WhiteDeclined = 4,
+        BlackDeclined = 5
     }
 }

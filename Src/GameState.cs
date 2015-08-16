@@ -18,8 +18,8 @@ namespace LiBackgammon
         Black_ToMove = 7,
         White_Won_Finished = 8,
         Black_Won_Finished = 9,
-        White_Won_RejectedDouble = 10,
-        Black_Won_RejectedDouble = 11,
+        White_Won_DeclinedDouble = 10,
+        Black_Won_DeclinedDouble = 11,
         White_Won_Resignation = 12,
         Black_Won_Resignation = 13,
         Random_Waiting = 14

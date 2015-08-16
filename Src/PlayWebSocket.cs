@@ -177,15 +177,15 @@ namespace LiBackgammon
         }
 
         [SocketMethod]
-        private MessageInfo[] reject()
+        private MessageInfo[] decline()
         {
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 // Make sure it’s this player’s turn to respond to a double, and the game is played with a doubling cube
                 if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
                     return null;
-                game.State = _player == Player.White ? GameState.Black_Won_RejectedDouble : GameState.White_Won_RejectedDouble;
-                return gameOver(db, game, pos, game.State == GameState.White_Won_RejectedDouble, useMultiplier: false).ToArray();
+                game.State = _player == Player.White ? GameState.Black_Won_DeclinedDouble : GameState.White_Won_DeclinedDouble;
+                return gameOver(db, game, pos, game.State == GameState.White_Won_DeclinedDouble, useMultiplier: false).ToArray();
             });
         }
 
@@ -195,8 +195,8 @@ namespace LiBackgammon
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 // You can’t resign if the game is already over
-                if (game.State == GameState.Black_Won_Finished || game.State == GameState.Black_Won_RejectedDouble || game.State == GameState.Black_Won_Resignation ||
-                    game.State == GameState.White_Won_Finished || game.State == GameState.White_Won_RejectedDouble || game.State == GameState.White_Won_Resignation)
+                if (game.State == GameState.Black_Won_Finished || game.State == GameState.Black_Won_DeclinedDouble || game.State == GameState.Black_Won_Resignation ||
+                    game.State == GameState.White_Won_Finished || game.State == GameState.White_Won_DeclinedDouble || game.State == GameState.White_Won_Resignation)
                     return null;
                 game.State = _player == Player.White ? GameState.Black_Won_Resignation : GameState.White_Won_Resignation;
                 return gameOver(db, game, pos, game.State == GameState.White_Won_Resignation, useMultiplier: true).ToArray();
@@ -209,16 +209,16 @@ namespace LiBackgammon
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 if (game.RematchOffer != RematchOffer.None &&
-                    !(game.RematchOffer == RematchOffer.WhiteRejected && _player == Player.White) &&
-                    !(game.RematchOffer == RematchOffer.BlackRejected && _player == Player.Black))
+                    !(game.RematchOffer == RematchOffer.WhiteDeclined && _player == Player.White) &&
+                    !(game.RematchOffer == RematchOffer.BlackDeclined && _player == Player.Black))
                     return null;
 
                 var isMatchOver = (
                         game.State == GameState.Black_Won_Finished ||
-                        game.State == GameState.Black_Won_RejectedDouble ||
+                        game.State == GameState.Black_Won_DeclinedDouble ||
                         game.State == GameState.Black_Won_Resignation ||
                         game.State == GameState.White_Won_Finished ||
-                        game.State == GameState.White_Won_RejectedDouble ||
+                        game.State == GameState.White_Won_DeclinedDouble ||
                         game.State == GameState.White_Won_Resignation
                     ) && (
                         game.Match == null ||
@@ -261,7 +261,7 @@ namespace LiBackgammon
                 if ((_player == Player.White && game.RematchOffer != RematchOffer.Black) ||
                     (_player == Player.Black && game.RematchOffer != RematchOffer.White))
                     return null;
-                game.RematchOffer = _player == Player.White ? RematchOffer.WhiteRejected : RematchOffer.BlackRejected;
+                game.RematchOffer = _player == Player.White ? RematchOffer.WhiteDeclined : RematchOffer.BlackDeclined;
                 return new[] { new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }) };
             });
         }

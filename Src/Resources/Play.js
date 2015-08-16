@@ -884,8 +884,8 @@ $(function ()
                     'Black_ToMove',
                     'White_Won_Finished',
                     'Black_Won_Finished',
-                    'White_Won_RejectedDouble',
-                    'Black_Won_RejectedDouble',
+                    'White_Won_DeclinedDouble',
+                    'Black_Won_DeclinedDouble',
                     'White_Won_Resignation',
                     'Black_Won_Resignation'
                 ];
@@ -1506,7 +1506,7 @@ $(function ()
     };
 
     if (main.hasClass('spectating'))
-        $('#undo,#commit,#roll,#double,#accept,#reject,#btn-resign,#resign-confirm,#resign-cancel,#offer-rematch,#accept-rematch,#cancel-rematch').click(function () { return false; });
+        $('#undo,#commit,#roll,#double,#accept,#decline,#btn-resign,#resign-confirm,#resign-cancel,#offer-rematch,#accept-rematch,#cancel-rematch').click(function () { return false; });
     else
     {
         deselectPiece();
@@ -1644,7 +1644,7 @@ $(function ()
         $('#roll').click(getGeneralisedButtonClick({ roll: 1 }, function () { return $('#main.state-ToRoll').length > 0; }));
         $('#double').click(getGeneralisedButtonClick({ double: 1 }));
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
-        $('#reject').click(getGeneralisedButtonClick({ reject: 1 }));
+        $('#decline').click(getGeneralisedButtonClick({ decline: 1 }));
         $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function () { return $('#main.resigning:not(.state-Won)').length > 0; }, 'resigning'));
         $('#resign-cancel').click(function () { main.removeClass('resigning'); return false; });
         $('#btn-resign').click(function () { if (!$('#main.state-Won,#main.state-Waiting').length) main.addClass('resigning'); return false; });
@@ -1654,10 +1654,10 @@ $(function ()
             function ()
             {
                 return $(
-                    '#main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating),' +
-                    '#main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating),' +
-                    '#main.rematch-WhiteRejected.player-white,' +
-                    '#main.rematch-BlackRejected.player-black').length > 0;
+                    '#main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteDeclined):not(.rematch-BlackDeclined):not(.rematch-Accepted):not(.spectating),' +
+                    '#main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteDeclined):not(.rematch-BlackDeclined):not(.rematch-Accepted):not(.spectating),' +
+                    '#main.rematch-WhiteDeclined.player-white,' +
+                    '#main.rematch-BlackDeclined.player-black').length > 0;
             }));
         var rematchAcceptable = function () { return $('#main.rematch-White.player-black, #main.rematch-Black.player-white').length > 0; };
         $('#accept-rematch').click(getGeneralisedButtonClick({ acceptRematch: 1 }, rematchAcceptable));

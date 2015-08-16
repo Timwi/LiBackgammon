@@ -861,12 +861,12 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
         content: 'Go back to the game';
     }
 
-#main > #board > #reject {
+#main > #board > #decline {
     font-size: 1.8vw;
     left: 22vw;
 }
 
-    #main > #board > #reject::before {
+    #main > #board > #decline::before {
         content: 'Resign';
     }
 
@@ -904,7 +904,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 #main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
 #main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
 #main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
-#main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject {
+#main.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #decline {
     opacity: .5;
     visibility: visible;
     pointer-events: none;
@@ -918,8 +918,8 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 #main.player-black.state-Black.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #double,
 #main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
 #main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #accept,
-#main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
-#main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #reject,
+#main.player-white.state-White.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #decline,
+#main.player-black.state-Black.state-ToConfirmDouble:not(.resigning):not(.viewing-history) > #board > #decline,
 #main.resigning:not(.viewing-history) > #board > #resign-confirm,
 #main.resigning:not(.viewing-history) > #board > #resign-cancel,
 #main.viewing-history:not(.viewing-history-hover) > #board > #leave-history {
@@ -1158,10 +1158,10 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 #main.rematch-Black.player-white > #win > #next-game > button#accept-rematch,
 #main.rematch-White.player-black > #win > #next-game > button#cancel-rematch,
 #main.rematch-Black.player-white > #win > #next-game > button#cancel-rematch,
-#main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
-#main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteRejected):not(.rematch-BlackRejected):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
-#main.rematch-WhiteRejected.player-white > #win > #next-game > button#offer-rematch,
-#main.rematch-BlackRejected.player-black > #win > #next-game > button#offer-rematch {
+#main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteDeclined):not(.rematch-BlackDeclined):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
+#main:not(.in-match):not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteDeclined):not(.rematch-BlackDeclined):not(.rematch-Accepted):not(.spectating) > #win > #next-game > button#offer-rematch,
+#main.rematch-WhiteDeclined.player-white > #win > #next-game > button#offer-rematch,
+#main.rematch-BlackDeclined.player-black > #win > #next-game > button#offer-rematch {
     display: inline;
 }
 
@@ -1188,11 +1188,11 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     content: 'Rematch is on.';
 }
 
-#main.rematch-WhiteRejected:not(.player-white) > #win > #next-game > #next-game-text::before {
+#main.rematch-WhiteDeclined:not(.player-white) > #win > #next-game > #next-game-text::before {
     content: 'White refuses a rematch.';
 }
 
-#main.rematch-BlackRejected:not(.player-black) > #win > #next-game > #next-game-text::before {
+#main.rematch-BlackDeclined:not(.player-black) > #win > #next-game > #next-game-text::before {
     content: 'Black refuses a rematch.';
 }
 
@@ -1224,12 +1224,12 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     content: 'Black is victorious';
 }
 
-#main.state-White.state-RejectedDouble > #win > .win::after {
-    content: 'Black rejected a double.';
+#main.state-White.state-DeclinedDouble > #win > .win::after {
+    content: 'Black declined a double.';
 }
 
-#main.state-Black.state-RejectedDouble > #win > .win::after {
-    content: 'White rejected a double.';
+#main.state-Black.state-DeclinedDouble > #win > .win::after {
+    content: 'White declined a double.';
 }
 
 #main.state-White.state-Resignation > #win > .win::after {

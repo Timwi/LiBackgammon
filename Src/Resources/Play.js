@@ -85,12 +85,21 @@ $(function ()
         return pips;
     }
 
-    function /* Position */ processMove(/* Position */ pos, /* bool */ whitePlayer, /* int or int[] */ sourceTongues, /* int or int[] */ targetTongues,
+    function /* Position */ processMove(/* Position */ pos, /* bool */ whitePlayer, /* Move */ move, /* see processMoveDirect */ options)
+    {
+        options = options || {};
+        if (move.Doubled)
+            options.doubled = true;
+        return processMoveDirect(pos, whitePlayer, move.SourceTongues, move.TargetTongues, options);
+    }
+
+    function /* Position */ processMoveDirect(/* Position */ pos, /* bool */ whitePlayer, /* int or int[] */ sourceTongues, /* int or int[] */ targetTongues,
         /* 
             {
                 mode: 'animate', 'indicate' or none
                 callback: function to call after animation is done (mode 'animate' only)
                 undoOpponentPieceTaken: bool
+                doubled: bool
             }
         */ options)
     {
@@ -107,7 +116,7 @@ $(function ()
                 s.push(getPrison(!whitePlayer));
                 t.push(sourceTongues);
             }
-            return processMove(pos, whitePlayer, s, t, options);
+            return processMoveDirect(pos, whitePlayer, s, t, options);
         }
 
         var newPos = copyPosition(pos);
@@ -253,6 +262,12 @@ $(function ()
             processAnimationQueue();
         else if (callback)
             setTimeout(callback, 100);
+
+        if (options && options.doubled)
+        {
+            newPos.WhiteOwnsCube = !whitePlayer;
+            newPos.GameValue *= 2;
+        }
         return newPos;
     }
 
@@ -324,7 +339,7 @@ $(function ()
             if (target === null || (position.NumPiecesPerTongue[target] > 1 && position.IsWhitePerTongue[target] !== whitePlayer))
                 continue;
             var pieceTaken = position.NumPiecesPerTongue[target] === 1 && position.IsWhitePerTongue[target] !== whitePlayer;
-            var pMove = processMove(position, whitePlayer, accessibleTongues[accIx], target);
+            var pMove = processMoveDirect(position, whitePlayer, accessibleTongues[accIx], target);
             if (pMove === null)
                 continue;
             var p = prevDiceSequence.slice(0);
@@ -619,7 +634,7 @@ $(function ()
 
     function executeMove(move)
     {
-        position = processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'animate', callback: deselectPiece });
+        position = processMove(position, playerIsWhite, move, { mode: 'animate', callback: deselectPiece });
         for (var i = 0; i < move.DiceSequence.length; i++)
         {
             moveSoFar.DiceSequence.push(move.DiceSequence[i]);
@@ -656,6 +671,7 @@ $(function ()
         var pips = getPipCounts(pos);
         $('#pipcount-white').text(pips.white);
         $('#pipcount-black').text(pips.black);
+        $('#board>#cube>#cube-text').text(pos.GameValue);
     }
 
     function onResize(force)
@@ -793,7 +809,7 @@ $(function ()
         if (useDelay)
         {
             reconnectInterval = (reconnectInterval === 0) ? 1000 : reconnectInterval * 2;
-            window.setTimeout(newSocket, reconnectInterval);
+            setTimeout(newSocket, reconnectInterval);
         }
         else
         {
@@ -972,14 +988,15 @@ $(function ()
         main.addClass(moves[i].Dice1 === moves[i].Dice2 ? 'history-dice-4' : 'history-dice-2');
         LiBackgammon.removeClassPrefix($('#board>#dice-0'), 'history-val-').addClass('history-val-' + moves[i].Dice1);
         LiBackgammon.removeClassPrefix($('#board>#dice-1,#board>#dice-2,#board>#dice-3'), 'history-val-').addClass('history-val-' + moves[i].Dice2);
+        $('#board>#cube>#cube-text').text(pos.GameValue);
         if (mode === '')
-            setupPosition('SourceTongues' in move ? processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues) : pos);
+            setupPosition('SourceTongues' in move ? processMove(pos, e.data('isWhite'), move) : pos);
         else
         {
             setupPosition(pos);
             if (!('SourceTongues' in move))
                 return pos;
-            return processMove(pos, e.data('isWhite'), move.SourceTongues, move.TargetTongues, { mode: mode });
+            return processMove(pos, e.data('isWhite'), move, { mode: mode });
         }
     }
 
@@ -1029,14 +1046,13 @@ $(function ()
         $('#info-game-history>.game-graph>svg>.column').filter(function () { return $(this).data('index') === move; }).attr('class', 'column current');
     }
 
-    function createSvgGraph(datas, widthInMoves, moves, crossOverMove, height, ticks, id)
+    function createSvgGraph(datas, widthInMoves, moves, columnClasses, height, ticks, id)
     {
-        var moveWidth = 7;
-        var svg = '<defs><filter id="d" x="-1000%" y="-1000%" width="2100%" height="2100%"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
-        var viewbox = { x1: -3, y1: -3, x2: widthInMoves * moveWidth + 3, y2: height + 3 };
+        var moveWidth = 7,
+            svg = '',
+            viewbox = { x1: -3, y1: -3, x2: widthInMoves * moveWidth + 3, y2: height + 3 };
         for (var i = 25; i < height; i += 25)
             svg += '<path d="M 0,' + (height - i) + ' ' + (widthInMoves * moveWidth) + ',' + (height - i) + '" class="grid" />';
-        svg += '<path d="M 0,0 0,' + height + ' ' + (widthInMoves * moveWidth) + ',' + height + '" class="axes" />';
         for (var i = 0; i < datas.length; i++)
         {
             var d = 'M';
@@ -1049,7 +1065,7 @@ $(function ()
                         n = datas[i].d[j].n;
                         y = height - n;
                         r = datas[i].d[j].d ? " rotate(180)" : "";
-                        svg += '<g style="filter:url(#d)">';
+                        svg += '<g class="label">';
                         svg += '<path class="label ' + datas[i].c + '" d="M 0,0 C 0,0 0,-5 5,-10 10,-15 10,-15 10,-20 10,-25 5,-30 0,-30 -5,-30 -10,-25 -10,-20 -10,-15 -10,-15 -5,-10 0,-5 0,0 0,0 z" transform="translate(' + x + ',' + y + ')' + r + '" />';
                         svg += '</g>';
                         svg += '<text class="' + datas[i].c + '" x="' + x + '" y="' + (datas[i].d[j].d ? y + 24 : y - 13) + '"><tspan>' + datas[i].d[j].l + '</tspan></text>';
@@ -1060,11 +1076,12 @@ $(function ()
                     }
                     d += ' ' + x + ',' + y;
                 }
-            svg += '<path class="data ' + datas[i].c + '" d="' + d + '" style="filter:url(#d);" />';
+            svg += '<path class="data ' + datas[i].c + '" d="' + d + '" />';
         }
         for (var i = 0; i < moves; i++)
-            svg += '<rect class="column' + (i === crossOverMove ? ' crossover' : '') + '" data-index="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
-        svg = '<svg width="100%" viewBox="' + viewbox.x1 + ' ' + viewbox.y1 + ' ' + (viewbox.x2 - viewbox.x1) + ' ' + (viewbox.y2 - viewbox.y1) + '" xmlns="http://www.w3.org/2000/svg" style="display: inline;">' + svg + '</svg>';
+            svg += '<rect class="column' + (columnClasses && columnClasses[i] && columnClasses[i].length ? ' ' + columnClasses[i].join(' ') : '') + '" data-index="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
+        svg += '<path d="M 0,0 0,' + height + ' ' + (widthInMoves * moveWidth) + ',' + height + '" class="axes" />';
+        svg = '<svg width="100%" viewBox="' + viewbox.x1 + ' ' + viewbox.y1 + ' ' + (viewbox.x2 - viewbox.x1) + ' ' + (viewbox.y2 - viewbox.y1) + '" xmlns="http://www.w3.org/2000/svg">' + svg + '</svg>';
         return $('<div>').attr('id', id).addClass('game-graph').append(svg);
     }
 
@@ -1108,14 +1125,14 @@ $(function ()
     {
         var hist = $('#info-game-history>.move.current').data('move'),
             h = $('#info-game-history').empty(),
-            gameValue = 1,
             isWhite = moves.length > 0 && moves[0].Dice1 > moves[0].Dice2,
             diceTotals = { white: 0, whiteData: [0], black: 0, blackData: [0], max: 0 },
             pips = { whiteData: [167], blackData: [167], max: 167 },
             pos = main.data('initial'),
             prevWinMult = { white: 3, black: 3 },
-            crossover = null,
-            maxCollapsed = 4;
+            crossoverFound = false,
+            maxCollapsed = 4,
+            specialMoves = moves.map(function (m) { return m.Doubled ? ['doubled'] : []; });
 
         function tongueName(t)
         {
@@ -1131,7 +1148,6 @@ $(function ()
 
         for (var i = 0; i < moves.length; i++)
         {
-            gameValue *= moves[i].Doubled ? 2 : 1;
             var moveStr = '', origPos = pos;
             var dt = (diceTotals[isWhite ? 'white' : 'black'] += moves[i].Dice1 === moves[i].Dice2 ? 4 * moves[i].Dice1 : moves[i].Dice1 + moves[i].Dice2);
             diceTotals.whiteData.push(isWhite ? dt : null);
@@ -1151,9 +1167,12 @@ $(function ()
                         moveStr += tongueName(moves[i].SourceTongues[j]) + '→' + tongueName(moves[i].TargetTongues[j]);
                     }
                 }
-                pos = processMove(pos, isWhite, moves[i].SourceTongues, moves[i].TargetTongues);
-                if (crossover === null && isCrossedOver(pos))
-                    crossover = i;
+                pos = processMove(pos, isWhite, moves[i]);
+                if (!crossoverFound && isCrossedOver(pos))
+                {
+                    crossoverFound = true;
+                    specialMoves[i].push('crossover');
+                }
                 var pp = getPipCounts(pos);
                 pips.max = Math.max(pips.max, Math.max(pp.white, pp.black));
 
@@ -1176,7 +1195,7 @@ $(function ()
                     (i === 0 ? ' first' : '') +
                     (i === moves.length - 1 ? ' last' : '') +
                     (i < moves.length - maxCollapsed ? ' expandable' : ''))
-                .append(moves[i].Doubled ? $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(gameValue)) : null)
+                .append(moves[i].Doubled ? $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(pos.GameValue)) : null)
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-0 val-' + moves[i].Dice1))
                 .append(LiBackgammon.removeClassPrefix($('#dice-0').clone().attr('id', ''), 'val-').removeClass('crossed').addClass('dice-1 val-' + moves[i].Dice2))
                 .append($('<div>').addClass('move').text(moveStr))
@@ -1192,11 +1211,11 @@ $(function ()
         h.append('<hr>')
             .append($('<div>')
                 .addClass('row totals')
-                .append(position.GameValue === null ? null : $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(gameValue)))
+                .append(position.GameValue === null ? null : $('<div>').addClass('cube').append($('<div>').addClass('cube-text').text(position.GameValue)))
                 .append($('<div>').addClass('white dice-total').append($('<div>').text(diceTotals.white)))
                 .append($('<div>').addClass('black dice-total').append($('<div>').text(diceTotals.black))))
-            .append(createSvgGraph([{ d: pips.whiteData, c: 'white' }, { d: pips.blackData, c: 'black' }], Math.max(50, moves.length), moves.length, crossover, pips.max, 25, 'graph-pips'))
-            .append(createSvgGraph([{ d: diceTotals.whiteData, c: 'white' }, { d: diceTotals.blackData, c: 'black' }], Math.max(50, moves.length), moves.length, crossover, diceTotals.max, 25, 'graph-dicetotals'));
+            .append(createSvgGraph([{ d: pips.whiteData, c: 'white' }, { d: pips.blackData, c: 'black' }], Math.max(50, moves.length), moves.length, specialMoves, pips.max, 25, 'graph-pips'))
+            .append(createSvgGraph([{ d: diceTotals.whiteData, c: 'white' }, { d: diceTotals.blackData, c: 'black' }], Math.max(50, moves.length), moves.length, specialMoves, diceTotals.max, 25, 'graph-dicetotals'));
 
         $('#info-game-history>.game-graph>svg>.column')
             .click(historyClick)
@@ -1286,17 +1305,8 @@ $(function ()
     {
         var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
         for (var i = 0; i < moves.length; i++)
-        {
-            var whitePlayer = whiteStarts ? (i % 2 === 0) : (i % 2 !== 0);
-            if (moves[i].Doubled && position.GameValue !== null)
-            {
-                position.GameValue *= 2;
-                position.WhiteOwnsCube = !whitePlayer;
-            }
             if ('SourceTongues' in moves[i])
-                for (var j = 0; j < moves[i].SourceTongues.length; j++)
-                    position = processMove(position, whitePlayer, moves[i].SourceTongues[j], moves[i].TargetTongues[j]);
-        }
+                position = processMove(position, whiteStarts ? (i % 2 === 0) : (i % 2 !== 0), moves[i]);
     }
 
     var moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
@@ -1350,7 +1360,7 @@ $(function ()
             moves[moves.length - 1].SourceTongues = args.sourceTongues;
             moves[moves.length - 1].TargetTongues = args.targetTongues;
 
-            position = processMove(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, { mode: main.hasClass('viewing-history') ? null : 'animate' });
+            position = processMoveDirect(position, main.hasClass('state-White'), args.sourceTongues, args.targetTongues, { mode: main.hasClass('viewing-history') ? null : 'animate' });
             setTimeout(processSocketQueue, main.hasClass('viewing-history') ? 100 : 'auto' in args ? 1800 : 200 + 400 * args.sourceTongues.length);
             updateGameHistory();
             return true;
@@ -1560,8 +1570,7 @@ $(function ()
 
         $('#board').on('mouseenter', '.tongue.selectable, .home.selectable, .automove', function ()
         {
-            var move = $(this).data('move');
-            processMove(position, playerIsWhite, move.SourceTongues, move.TargetTongues, { mode: 'indicate' });
+            processMove(position, playerIsWhite, $(this).data('move'), { mode: 'indicate' });
         });
 
         $('#board').on('mouseleave', '.tongue.selectable, .home.selectable, .automove', function ()
@@ -1596,7 +1605,7 @@ $(function ()
             {
                 stopAnimations();
                 deselectPiece(true);
-                position = processMove(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], {
+                position = processMoveDirect(position, playerIsWhite, moveSoFar.TargetTongues[lastIndex], moveSoFar.SourceTongues[lastIndex], {
                     mode: 'animate',
                     undoOpponentPieceTaken: moveSoFar.OpponentPieceTaken[lastIndex],
                     callback: deselectPiece
@@ -1749,6 +1758,14 @@ $(function ()
     });
 
     $(document.body).on('click', '.expand-collapse', function () { $(this).parent().toggleClass('expanded'); return false; });
+
+    // Dummy SVG to define SVG elements to be referenced by other SVGs
+    $('#main>#sidebar>#info').append('<svg class="defs" width="0" height="0"><defs>' +
+        // #doubled-crossover-gradient: Linear gradient, used by the game history graphs
+        '<linearGradient id="doubled-crossover-gradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="start"/><stop offset="1" class="end"/></linearGradient>' +
+        // #drop-shadow: Used by the game history graphs
+        '<filter id="drop-shadow" x="-1000%" y="-1000%" width="2100%" height="2100%"><feGaussianBlur in="SourceAlpha" stdDeviation="2" /><feOffset dx="2" dy="2" result="b"/><feFlood flood-color="rgba(0,0,0,0.5)"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+    '</defs></svg>');
 
     // Add extra CSS
     var cssWithSidebar = [];                    // CSS for when the sidebar is visible

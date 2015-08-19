@@ -1867,6 +1867,19 @@ body.hash-info > #main > #sidebar::after {
     content: 'Game info';
 }
 
+#main > #sidebar > #info > svg.defs {
+    visibility: hidden;
+}
+
+    /* This gradient is used by #main > #sidebar > #info > .section > .game-graph > svg > .column.doubled.crossover */
+    #main > #sidebar > #info > svg.defs #doubled-crossover-gradient > stop.start {
+        stop-color: hsla(0, 100%, 50%, .1);
+    }
+
+    #main > #sidebar > #info > svg.defs #doubled-crossover-gradient > stop.end {
+        stop-color: hsla(60, 100%, 50%, .3);
+    }
+
 #main > #sidebar > #info > .section {
     position: relative;
     text-align: right;
@@ -1888,76 +1901,95 @@ body.hash-info > #main > #sidebar::after {
         right: 0;
     }
 
-    #main > #sidebar > #info > .section > .game-graph > svg > .column {
-        fill: transparent;
+    #main > #sidebar > #info > .section > .game-graph > svg {
+        display: inline;
     }
 
-        #main > #sidebar > #info > .section > .game-graph > svg > .column.crossover {
-            fill: hsla(0, 100%, 50%, .1);
+        #main > #sidebar > #info > .section > .game-graph > svg > .column {
+            fill: transparent;
         }
 
-        #main > #sidebar > #info > .section > .game-graph > svg > .column:hover {
-            fill: hsla(32, 50%, 30%, .25);
-        }
-
-        #main > #sidebar > #info > .section > .game-graph > svg > .column.current {
-            fill: hsla(32, 50%, 30%, .5);
-        }
-
-    #main > #sidebar > #info > .section > .game-graph > svg path {
-        fill: none;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-        #main > #sidebar > #info > .section > .game-graph > svg path.data, #main > #sidebar > #info > .section > .game-graph > svg path.axes {
-            stroke-width: 3;
-        }
-
-            #main > #sidebar > #info > .section > .game-graph > svg path.data.white {
-                stroke: hsl(32,50%,95%);
+            #main > #sidebar > #info > .section > .game-graph > svg > .column.crossover:not(:hover):not(.current) {
+                fill: hsla(0, 100%, 50%, .1);
             }
 
-            #main > #sidebar > #info > .section > .game-graph > svg path.data.black {
-                stroke: hsl(32,50%,10%);
+            #main > #sidebar > #info > .section > .game-graph > svg > .column.doubled:not(:hover):not(.current) {
+                fill: hsla(60, 100%, 50%, .3);
             }
 
-        #main > #sidebar > #info > .section > .game-graph > svg path.axes {
-            stroke: hsl(32, 50%, 30%);
-        }
-
-        #main > #sidebar > #info > .section > .game-graph > svg path.grid {
-            stroke: rgba(0,0,0,.2);
-            stroke-width: 2;
-        }
-
-        #main > #sidebar > #info > .section > .game-graph > svg path.label {
-            stroke: none;
-        }
-
-            #main > #sidebar > #info > .section > .game-graph > svg path.label.white {
-                fill: hsl(32,50%,95%);
+            #main > #sidebar > #info > .section > .game-graph > svg > .column.doubled.crossover:not(:hover):not(.current) {
+                /* This gradient is defined in the dummy SVG */
+                fill: url(#doubled-crossover-gradient);
             }
 
-            #main > #sidebar > #info > .section > .game-graph > svg path.label.black {
+            #main > #sidebar > #info > .section > .game-graph > svg > .column:hover {
+                fill: hsla(32, 50%, 30%, .25);
+            }
+
+            #main > #sidebar > #info > .section > .game-graph > svg > .column.current {
+                fill: hsla(32, 50%, 30%, .5);
+            }
+
+        #main > #sidebar > #info > .section > .game-graph > svg path {
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+            #main > #sidebar > #info > .section > .game-graph > svg path.axes {
+                stroke-width: 3;
+                stroke: hsl(32, 50%, 30%);
+            }
+
+            #main > #sidebar > #info > .section > .game-graph > svg path.data {
+                stroke-width: 3;
+                filter: url(#drop-shadow);
+            }
+
+                #main > #sidebar > #info > .section > .game-graph > svg path.data.white {
+                    stroke: hsl(32,50%,95%);
+                }
+
+                #main > #sidebar > #info > .section > .game-graph > svg path.data.black {
+                    stroke: hsl(32,50%,10%);
+                }
+
+            #main > #sidebar > #info > .section > .game-graph > svg path.grid {
+                stroke: rgba(0,0,0,.2);
+                stroke-width: 2;
+            }
+
+        #main > #sidebar > #info > .section > .game-graph > svg g.label {
+            filter: url(#drop-shadow);
+        }
+
+            #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label {
+                stroke: none;
+            }
+
+                #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label.white {
+                    fill: hsl(32,50%,95%);
+                }
+
+                #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label.black {
+                    fill: hsl(32,50%,10%);
+                }
+
+        #main > #sidebar > #info > .section > .game-graph > svg > text {
+            font-size: 15px;
+            line-height: 100%;
+            font-family: 'Roboto', 'Calibri';
+            text-align: center;
+            text-anchor: middle;
+        }
+
+            #main > #sidebar > #info > .section > .game-graph > svg > text.white {
                 fill: hsl(32,50%,10%);
             }
 
-    #main > #sidebar > #info > .section > .game-graph > svg > text {
-        font-size: 15px;
-        line-height: 100%;
-        font-family: 'Roboto', 'Calibri';
-        text-align: center;
-        text-anchor: middle;
-    }
-
-        #main > #sidebar > #info > .section > .game-graph > svg > text.white {
-            fill: hsl(32,50%,10%);
-        }
-
-        #main > #sidebar > #info > .section > .game-graph > svg > text.black {
-            fill: hsl(32,50%,95%);
-        }
+            #main > #sidebar > #info > .section > .game-graph > svg > text.black {
+                fill: hsl(32,50%,95%);
+            }
 
 #main > #sidebar > #info > #info-game-history > .game-graph::before {
     text-align: left;

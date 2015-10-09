@@ -1943,7 +1943,6 @@ body.hash-info > #main > #sidebar::after {
 
             #main > #sidebar > #info > .section > .game-graph > svg path.data {
                 stroke-width: 3;
-                filter: url(#drop-shadow);
             }
 
                 #main > #sidebar > #info > .section > .game-graph > svg path.data.white {
@@ -1958,10 +1957,6 @@ body.hash-info > #main > #sidebar::after {
                 stroke: rgba(0,0,0,.2);
                 stroke-width: 2;
             }
-
-        #main > #sidebar > #info > .section > .game-graph > svg g.label {
-            filter: url(#drop-shadow);
-        }
 
             #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label {
                 stroke: none;

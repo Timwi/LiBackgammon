@@ -1050,6 +1050,7 @@ $(function ()
     {
         var moveWidth = 7,
             svg = '',
+            labels = '',
             viewbox = { x1: -3, y1: -3, x2: widthInMoves * moveWidth + 3, y2: height + 3 };
         for (var i = 25; i < height; i += 25)
             svg += '<path d="M 0,' + (height - i) + ' ' + (widthInMoves * moveWidth) + ',' + (height - i) + '" class="grid" />';
@@ -1065,10 +1066,10 @@ $(function ()
                         n = datas[i].d[j].n;
                         y = height - n;
                         r = datas[i].d[j].d ? " rotate(180)" : "";
-                        svg += '<g class="label">';
-                        svg += '<path class="label ' + datas[i].c + '" d="M 0,0 C 0,0 0,-5 5,-10 10,-15 10,-15 10,-20 10,-25 5,-30 0,-30 -5,-30 -10,-25 -10,-20 -10,-15 -10,-15 -5,-10 0,-5 0,0 0,0 z" transform="translate(' + x + ',' + y + ')' + r + '" />';
-                        svg += '</g>';
-                        svg += '<text class="' + datas[i].c + '" x="' + x + '" y="' + (datas[i].d[j].d ? y + 24 : y - 13) + '"><tspan>' + datas[i].d[j].l + '</tspan></text>';
+                        labels += '<g class="label" filter="url(#drop-shadow)">';
+                        labels += '<path class="label ' + datas[i].c + '" d="M 0,0 C 0,0 0,-5 5,-10 10,-15 10,-15 10,-20 10,-25 5,-30 0,-30 -5,-30 -10,-25 -10,-20 -10,-15 -10,-15 -5,-10 0,-5 0,0 0,0 z" transform="translate(' + x + ',' + y + ')' + r + '" />';
+                        labels += '</g>';
+                        labels += '<text class="' + datas[i].c + '" x="' + x + '" y="' + (datas[i].d[j].d ? y + 24 : y - 13) + '"><tspan>' + datas[i].d[j].l + '</tspan></text>';
                         viewbox.x1 = Math.min(viewbox.x1, x - 13);
                         viewbox.x2 = Math.max(viewbox.x2, x + 13);
                         viewbox.y1 = Math.min(viewbox.y1, datas[i].d[j].d ? y - 3 : y - 33);
@@ -1076,11 +1077,12 @@ $(function ()
                     }
                     d += ' ' + x + ',' + y;
                 }
-            svg += '<path class="data ' + datas[i].c + '" d="' + d + '" />';
+            svg += '<path filter="url(#drop-shadow)" class="data ' + datas[i].c + '" d="' + d + '" />';
         }
         for (var i = 0; i < moves; i++)
             svg += '<rect class="column' + (columnClasses && columnClasses[i] && columnClasses[i].length ? ' ' + columnClasses[i].join(' ') : '') + '" data-index="' + i + '" x="' + ((i + .5) * moveWidth) + '" y="0" width="' + moveWidth + '" height="' + height + '" />';
         svg += '<path d="M 0,0 0,' + height + ' ' + (widthInMoves * moveWidth) + ',' + height + '" class="axes" />';
+        svg += labels;
         svg = '<svg width="100%" viewBox="' + viewbox.x1 + ' ' + viewbox.y1 + ' ' + (viewbox.x2 - viewbox.x1) + ' ' + (viewbox.y2 - viewbox.y1) + '" xmlns="http://www.w3.org/2000/svg">' + svg + '</svg>';
         return $('<div>').attr('id', id).addClass('game-graph').append(svg);
     }

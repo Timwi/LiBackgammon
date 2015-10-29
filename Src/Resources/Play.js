@@ -87,10 +87,13 @@ $(function ()
 
     function /* Position */ processMove(/* Position */ pos, /* bool */ whitePlayer, /* Move */ move, /* see processMoveDirect */ options)
     {
-        options = options || {};
+        var newPos = 'SourceTongues' in move ? processMoveDirect(pos, whitePlayer, move.SourceTongues, move.TargetTongues, options) : copyPosition(pos);
         if (move.Doubled)
-            options.doubled = true;
-        return processMoveDirect(pos, whitePlayer, move.SourceTongues, move.TargetTongues, options);
+        {
+            newPos.WhiteOwnsCube = !whitePlayer;
+            newPos.GameValue *= 2;
+        }
+        return newPos;
     }
 
     function /* Position */ processMoveDirect(/* Position */ pos, /* bool */ whitePlayer, /* int or int[] */ sourceTongues, /* int or int[] */ targetTongues,
@@ -99,7 +102,6 @@ $(function ()
                 mode: 'animate', 'indicate' or none
                 callback: function to call after animation is done (mode 'animate' only)
                 undoOpponentPieceTaken: bool
-                doubled: bool
             }
         */ options)
     {
@@ -262,12 +264,6 @@ $(function ()
             processAnimationQueue();
         else if (callback)
             setTimeout(callback, 100);
-
-        if (options && options.doubled)
-        {
-            newPos.WhiteOwnsCube = !whitePlayer;
-            newPos.GameValue *= 2;
-        }
         return newPos;
     }
 
@@ -1155,6 +1151,7 @@ $(function ()
             diceTotals.whiteData.push(isWhite ? dt : null);
             diceTotals.blackData.push(isWhite ? null : dt);
             diceTotals.max = Math.max(diceTotals.max, dt);
+            pos = processMove(pos, isWhite, moves[i]);
 
             if ('SourceTongues' in moves[i])
             {
@@ -1169,7 +1166,6 @@ $(function ()
                         moveStr += tongueName(moves[i].SourceTongues[j]) + '→' + tongueName(moves[i].TargetTongues[j]);
                     }
                 }
-                pos = processMove(pos, isWhite, moves[i]);
                 if (!crossoverFound && isCrossedOver(pos))
                 {
                     crossoverFound = true;
@@ -1307,8 +1303,7 @@ $(function ()
     {
         var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
         for (var i = 0; i < moves.length; i++)
-            if ('SourceTongues' in moves[i])
-                position = processMove(position, whiteStarts ? (i % 2 === 0) : (i % 2 !== 0), moves[i]);
+            position = processMove(position, whiteStarts ? (i % 2 === 0) : (i % 2 !== 0), moves[i]);
     }
 
     var moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };

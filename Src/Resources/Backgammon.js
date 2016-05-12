@@ -62,7 +62,7 @@
     toCssRule: function (json, text)
     {
         text = text || json.text;
-        var str = '', pos, cssEsc = function (s) { return s.replace(/\\/g, '\\\\').replace(/'/g, '\\\''); };
+        var str = '', pos, cssEsc = function (s) { return s.replace(/\\/g, '\\\\').replace(/'/g, '\\\''); }, extraCss = '';
         while ((pos = text.indexOf("{")) !== -1)
         {
             str += " '" + cssEsc(text.substr(0, pos)) + "'";
@@ -73,20 +73,24 @@
             }
             else if (text[pos + 1] === '}')
             {
-                str += " '}'";
+                str += " '{}'";
                 pos++;
             }
             else
             {
-                var pos2 = text.indexOf("}");
-                if (pos2 === -1 || pos2 < pos)
+                var pos2 = text.indexOf("}", pos);
+                if (pos2 === -1)
                     break;
-                str += ' ' + json[text.substr(pos + 1, pos2 - pos - 1)];
+                var code = text.substr(pos + 1, pos2 - pos - 1);
+                if (code.substr(0, 4) === 'css:')
+                    extraCss += code.substr(4);
+                else
+                    str += ' ' + json[code];
                 pos = pos2;
             }
             text = text.substr(pos + 1);
         }
-        return json.sel + '{content:' + str + " '" + cssEsc(text) + "'}";
+        return json.sel + '{content:' + str + " '" + cssEsc(text) + "';" + extraCss + "}";
     },
 
     // Populated by the code that looks through the 'content' properties of the CSS

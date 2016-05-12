@@ -157,7 +157,7 @@ body#main-page::before {
     }
 
     #newgame > #newgame-cube > #newgame-cube-label-Standard::after {
-        content: 'Standard';
+        content: '{"text":"Standard","hint":"Button allowing user to choose the standard doubling cube rules."}';
     }
 
     #newgame > #newgame-cube > #newgame-cube-label-Standard::before {
@@ -1295,6 +1295,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
                 font-family: 'Lato';
                 text-transform: uppercase;
                 white-space: pre;
+                transform-origin: 0 0;
             }
 
     #main > #infobar > #info-player::before {
@@ -1317,6 +1318,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
         bottom: .5vw;
         font-size: 1.3vw;
         line-height: 1.3vw;
+        transform-origin: 0 0;
     }
 
     #main > #infobar > .infobox > .infobox-inner > .number {
@@ -1428,12 +1430,14 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     left: 7vw;
     font-size: 1.3vw;
     line-height: 1.3vw;
+    transform-origin: 0 0;
 }
 
 #main:not(.spectating) > #infobar > #info-player::after {
     left: 7vw;
     font-size: 3.4vw;
     line-height: 3.4vw;
+    transform-origin: 0 0;
 }
 
 #main.player-white > #infobar > #info-player::after {
@@ -1958,17 +1962,17 @@ body.hash-info > #main > #sidebar::after {
                 stroke-width: 2;
             }
 
-            #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label {
-                stroke: none;
+        #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label {
+            stroke: none;
+        }
+
+            #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label.white {
+                fill: hsl(32,50%,95%);
             }
 
-                #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label.white {
-                    fill: hsl(32,50%,95%);
-                }
-
-                #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label.black {
-                    fill: hsl(32,50%,10%);
-                }
+            #main > #sidebar > #info > .section > .game-graph > svg g.label > path.label.black {
+                fill: hsl(32,50%,10%);
+            }
 
         #main > #sidebar > #info > .section > .game-graph > svg > text {
             font-size: 15px;

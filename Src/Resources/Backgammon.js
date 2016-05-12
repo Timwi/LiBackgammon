@@ -80,7 +80,10 @@
             {
                 var pos2 = text.indexOf("}", pos);
                 if (pos2 === -1)
+                {
+                    text = text.substr(pos);
                     break;
+                }
                 var code = text.substr(pos + 1, pos2 - pos - 1);
                 if (code.substr(0, 4) === 'css:')
                     extraCss += code.substr(4);

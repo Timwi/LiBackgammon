@@ -2558,7 +2558,7 @@ button {
     box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 48%) inset;
     color: hsl(32, 90%, 92.5%);
     font: inherit;
-    padding: .2em 1em;
+    padding: 0;
     text-align: center;
     text-shadow: -.1vw -.1vw 0 hsl(32, 52%, 24.3%);
     text-transform: uppercase;

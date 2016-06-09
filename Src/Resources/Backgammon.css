@@ -829,6 +829,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     -o-transition: opacity ease-in-out .2s;
     -webkit-transition: opacity ease-in-out .2s;
     transition: opacity ease-in-out .2s;
+    padding: 0;
 }
 
     #main > #board > button#leave-history {
@@ -2558,7 +2559,7 @@ button {
     box-shadow: .05vw .1vw 0 0 hsl(32, 52%, 48%) inset;
     color: hsl(32, 90%, 92.5%);
     font: inherit;
-    padding: 0;
+    padding: .2em 1em;
     text-align: center;
     text-shadow: -.1vw -.1vw 0 hsl(32, 52%, 24.3%);
     text-transform: uppercase;

@@ -28,7 +28,7 @@ AjaxHandlerOptions.ReturnExceptionsWithoutMessages
                 new UrlMapping(path: "/jquery", specificPath: true, handler: getFileResourceHandler(@"Resources\JQuery.js", "text/javascript", HttpResponse.Redirect(@"https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"))),
 #endif
                 //
-                new UrlMapping(path: "/", specificPath: true, handler: mainPage),
+                new UrlMapping(path: "", specificPath: true, handler: mainPage),
                 new UrlMapping(path: "/socket/main", handler: mainSocket),
                 new UrlMapping(path: "/new", handler: newGame),
                 new UrlMapping(path: "/play", handler: play),

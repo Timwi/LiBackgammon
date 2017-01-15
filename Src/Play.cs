@@ -72,8 +72,8 @@ namespace LiBackgammon
                 // M
                 // N = Resign cancel
                 // O = Offer a rematch
-                // P
-                // Q
+                // P = Show landing probabilities
+                // Q = Auto-roll
                 // R = Roll
                 // S = Settings
                 // T = Chat
@@ -209,9 +209,9 @@ namespace LiBackgammon
                                             new INPUT { id = "settings-helpers-select", type = itype.checkbox },
                                             new LABEL { for_ = "settings-helpers-select", accesskey = "h" },
                                             new INPUT { id = "settings-percentages-select", type = itype.checkbox },
-                                            new LABEL { for_ = "settings-percentages-select" },
+                                            new LABEL { for_ = "settings-percentages-select", accesskey = "p" },
                                             new INPUT { id = "settings-autoroll-select", type = itype.checkbox },
-                                            new LABEL { for_ = "settings-autoroll-select" })),
+                                            new LABEL { for_ = "settings-autoroll-select", accesskey = "q" })),
                                     new DIV { id = "translate", class_ = "sidebar-tab" }._(
                                         new DIV { id = "translate-existing", class_ = "section" }._(
                                             new SELECT { id = "translate-select" },

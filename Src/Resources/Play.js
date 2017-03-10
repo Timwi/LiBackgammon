@@ -1,4 +1,4 @@
-$(function ()
+$(function()
 {
     var sidebars = ['chat', 'info', 'settings', 'translate', 'translating'];
 
@@ -228,10 +228,10 @@ $(function ()
             num[item.Data.tongue] = getPiecesOnTongue(item.Data.tongue).length + 1;
             num[item.Piece.data('tongue')] = getPiecesOnTongue(item.Piece.data('tongue')).length - 1;
             var otherPieces = $('#board>.piece')
-                .filter(function (i, elem) { return $(elem).data('tongue') === item.Data.tongue || $(elem).data('tongue') === item.Piece.data('tongue'); })
+                .filter(function(i, elem) { return $(elem).data('tongue') === item.Data.tongue || $(elem).data('tongue') === item.Piece.data('tongue'); })
                 .not(item.Piece)
                 .get()
-                .map(function (elem)
+                .map(function(elem)
                 {
                     var tongue = $(elem).data('tongue');
                     return [$(elem), {
@@ -240,7 +240,7 @@ $(function ()
                     }];
                 });
             if ((item.Piece.data('tongue') < 24 && num[item.Piece.data('tongue')] > 4) || (item.Data.tongue < 24 && num[item.Data.tongue] > 5))
-                setTimeout(function () { otherPieces.forEach(function (inf) { inf[0].animate(inf[1], 200); }); }, 100);
+                setTimeout(function() { otherPieces.forEach(function(inf) { inf[0].animate(inf[1], 200); }); }, 100);
             item.Piece
                 .data(item.Data)
                 .insertAfter($('#board>.piece').last())
@@ -249,9 +249,9 @@ $(function ()
                     top: convertFromVw(topFromTongue(item.Data.tongue, item.Data.index, item.Data.num))
                 }, {
                     duration: 400,
-                    complete: function ()
+                    complete: function()
                     {
-                        setTimeout(function ()
+                        setTimeout(function()
                         {
                             if (item.Data.tongue < 12)
                                 item.Piece.insertBefore($('#board>.piece').first());
@@ -270,7 +270,7 @@ $(function ()
     function /* $ */ getPiecesOnTongue(tongue)
     {
         // $('#board>.piece[data-tongue="x"]') does not work; jQuery’s .data() does not actually change the attributes
-        return $('#board>.piece').filter(function () { return $(this).data('tongue') === tongue; });
+        return $('#board>.piece').filter(function() { return $(this).data('tongue') === tongue; });
     }
 
     function /* int */ getTargetTongue(/* int */ sourceTongue, /* int */ furthestFromHome, /* int */ dice, /* bool */ whitePlayer)
@@ -380,7 +380,7 @@ $(function ()
         {
             state = newState;
             LiBackgammon.removeClassPrefix(main, 'state-').removeClass('auto-0 auto-1 undoable committable');
-            newState.split('_').forEach(function (cl) { main.addClass('state-' + cl); });
+            newState.split('_').forEach(function(cl) { main.addClass('state-' + cl); });
         }
         if (isPlayerToMove() && !skipHighlight)
         {
@@ -433,7 +433,7 @@ $(function ()
 
             // Highlight all the auto-move targets
             var autoSourceMoves = {}, autoTargetMoves = {};
-            var processTongue = function (j, tongue, tongueInfos)
+            var processTongue = function(j, tongue, tongueInfos)
             {
                 if (tongue in tongueInfos)
                 {
@@ -443,7 +443,7 @@ $(function ()
                 else
                     tongueInfos[tongue] = { num: 1, numOthers: j };
             };
-            var considerAutoMove = function (tongueInfos, autoMoves, move)
+            var considerAutoMove = function(tongueInfos, autoMoves, move)
             {
                 for (var tongue in tongueInfos)
                     if (tongueInfos[tongue].num > 1)
@@ -466,7 +466,7 @@ $(function ()
                         });
                     }
             };
-            var tongueCssClass = function (tongue)
+            var tongueCssClass = function(tongue)
             {
                 switch (tongue)
                 {
@@ -618,7 +618,7 @@ $(function ()
         selectedPiece = topPieceOfTongue(tongue).addClass('selected');
 
         var targetMoves = getTargetMoves(tongue);
-        Object.keys(targetMoves).map(function (i)
+        Object.keys(targetMoves).map(function(i)
         {
             var rawTongueElem = $('.tongue-' + i);
             var selectable = rawTongueElem.length
@@ -707,7 +707,7 @@ $(function ()
 
     function recomputeValidRestMoves()
     {
-        allValidRestMoves = allValidMoves.filter(function (move)
+        allValidRestMoves = allValidMoves.filter(function(move)
         {
             for (var i = 0; i < moveSoFar.DiceSequence.length; i++)
                 if (move.DiceSequence[i] !== moveSoFar.DiceSequence[i] ||
@@ -715,7 +715,7 @@ $(function ()
                     move.TargetTongues[i] !== moveSoFar.TargetTongues[i])
                     return false;
             return true;
-        }).map(function (move)
+        }).map(function(move)
         {
             return {
                 DiceSequence: move.DiceSequence.slice(moveSoFar.DiceSequence.length),
@@ -745,7 +745,7 @@ $(function ()
         {
             if (!main.hasClass('spectating'))
             {
-                var unseenIds = $('.chat-msg:not(.seen)').get().map(function (e) { return $(e).data('id'); });
+                var unseenIds = $('.chat-msg:not(.seen)').get().map(function(e) { return $(e).data('id'); });
                 if (unseenIds.length > 0)
                     socketSend({ chatSeen: { ids: unseenIds } });
                 $('.chat-msg:not(.seen)').addClass('seen');
@@ -773,7 +773,7 @@ $(function ()
     function newSocket()
     {
         socket = new WebSocket(main.data('socket-url'));
-        socket.onopen = function ()
+        socket.onopen = function()
         {
             main.removeClass('connecting online-White online-Black');
             for (var i = 0; i < sendQueue.length; i++)
@@ -781,11 +781,11 @@ $(function ()
             sendQueue = [];
             socket.send(JSON.stringify({ resync: { moveCount: moves.length, lastMoveDone: lastMove && 'SourceTongues' in lastMove } }));
         };
-        socket.onclose = function ()
+        socket.onclose = function()
         {
             reconnect(true);
         };
-        socket.onmessage = function (msg)
+        socket.onmessage = function(msg)
         {
             var json = JSON.parse(msg.data);
             if (json instanceof Array)
@@ -971,7 +971,7 @@ $(function ()
     function setHistory(i, mode)
     {
         deselectPiece(true);
-        var e = $('#info-game-history>.move').filter(function () { return $(this).data('index') === i; }).first(), move = moves[i], pos = e.data('pos');
+        var e = $('#info-game-history>.move').filter(function() { return $(this).data('index') === i; }).first(), move = moves[i], pos = e.data('pos');
         main.removeClass('history-dice-2 history-dice-4 history-dice-start history-white history-black history-cube-white history-cube-black viewing-history-hover');
         main.addClass('viewing-history');
         if (mode === 'indicate')
@@ -1038,8 +1038,8 @@ $(function ()
         $('#info-game-history>.game-graph>svg>.column.current').attr('class', 'column');
         var move = $(this).data('index');
         var newPos = setHistory(move, 'animate');
-        $('#info-game-history>.move').filter(function () { return $(this).data('index') === move; }).addClass('current');
-        $('#info-game-history>.game-graph>svg>.column').filter(function () { return $(this).data('index') === move; }).attr('class', 'column current');
+        $('#info-game-history>.move').filter(function() { return $(this).data('index') === move; }).addClass('current');
+        $('#info-game-history>.game-graph>svg>.column').filter(function() { return $(this).data('index') === move; }).attr('class', 'column current');
     }
 
     function createSvgGraph(datas, widthInMoves, moves, columnClasses, height, ticks, id)
@@ -1130,7 +1130,7 @@ $(function ()
             prevWinMult = { white: 3, black: 3 },
             crossoverFound = false,
             maxCollapsed = 4,
-            specialMoves = moves.map(function (m) { return m.Doubled ? ['doubled'] : []; });
+            specialMoves = moves.map(function(m) { return m.Doubled ? ['doubled'] : []; });
 
         function tongueName(t)
         {
@@ -1225,7 +1225,7 @@ $(function ()
     {
         $('#info-match-history>.game-graph').remove();
         var white = [0], black = [0], max = 0, w = 0, b = 0, games = $('#info-match-history>.game'), cur;
-        games.each(function (i, e)
+        games.each(function(i, e)
         {
             if (!$(e).hasClass('last'))
             {
@@ -1244,7 +1244,7 @@ $(function ()
         }
         $('#info-match-history').append(createSvgGraph([{ d: white, c: 'white' }, { d: black, c: 'black' }], Math.max(games.length, 20), games.length, null, 4 * games.length, 25 * ratio, 'graph-match'))
         var columns = $('#info-match-history>.game-graph>svg>.column');
-        columns.not(columns[cur]).click(function () { window.location.href = $(games[$(this).data('index')]).attr('href'); return false; });
+        columns.not(columns[cur]).click(function() { window.location.href = $(games[$(this).data('index')]).attr('href'); return false; });
         $(columns[cur]).attr('class', 'column current');
     }
 
@@ -1259,6 +1259,18 @@ $(function ()
             );
             setupPosition(position);
         }
+    }
+
+    function recalcPosition()
+    {
+        var pos = main.data('initial');
+        if (moves.length > 0)
+        {
+            var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
+            for (var i = 0; i < moves.length; i++)
+                pos = processMove(pos, whiteStarts ? (i % 2 === 0) : (i % 2 !== 0), moves[i]);
+        }
+        return pos;
     }
 
     var main = $('#main');
@@ -1287,7 +1299,7 @@ $(function ()
     var reconnectInterval = 0;
 
     var windowTitleFlash = false;
-    window.setInterval(function ()
+    window.setInterval(function()
     {
         windowTitleFlash = !windowTitleFlash;
         document.title =
@@ -1298,14 +1310,7 @@ $(function ()
                 : 'LiBackgammon';
     }, 750);
 
-    var position = main.data('initial');
-    if (moves.length > 0)
-    {
-        var whiteStarts = moves[0].Dice1 > moves[0].Dice2;
-        for (var i = 0; i < moves.length; i++)
-            position = processMove(position, whiteStarts ? (i % 2 === 0) : (i % 2 !== 0), moves[i]);
-    }
-
+    var position = recalcPosition();
     var moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
     var selectedPiece = null;
 
@@ -1317,35 +1322,41 @@ $(function ()
     var socketQueueProcessing = false;
 
     var socketMethods = {
-        nextUrl: function (args) { main.data('next-game', args).addClass('has-next-game'); },
-        state: function (args)
+        nextUrl: function(args) { main.data('next-game', args).addClass('has-next-game'); },
+        state: function(args)
         {
             if (!main.hasClass('spectating') && args === (playerIsWhite ? 'White_ToRoll' : 'Black_ToRoll') && $('#settings-autoroll-select:checked').length)
                 socketSend({ roll: 1 });
             else
                 setState(args);
         },
-        on: function (args) { main.addClass('online-' + args); },
-        off: function (args) { main.removeClass('online-' + args); },
-        chatid: function (args) { $('#chat-token-' + args.token).attr('id', 'chat-' + args.id); },
-        rematch: function (args) { LiBackgammon.removeClassPrefix(main, 'rematch-').addClass('rematch-' + args); },
+        on: function(args) { main.addClass('online-' + args); },
+        off: function(args) { main.removeClass('online-' + args); },
+        chatid: function(args) { $('#chat-token-' + args.token).attr('id', 'chat-' + args.id); },
+        rematch: function(args) { LiBackgammon.removeClassPrefix(main, 'rematch-').addClass('rematch-' + args); },
 
-        resync: function (args)
+        resync: function(args)
         {
             if (args)
             {
-                window.location.reload();
-                return true;
+                moves = args.moves;
+                lastMove = moves[moves.length - 1];
+                position = recalcPosition();
+                setState(args.state, false);
+                onResize(true);
+                updateGameHistory();
+                updateMatchGraph();
+                deselectPiece(false);
             }
         },
 
-        player: function (args)
+        player: function(args)
         {
             playerIsWhite = args === 'White';
             main.removeClass('player-random').addClass(playerIsWhite ? 'player-white' : 'player-black');
         },
 
-        move: function (args)
+        move: function(args)
         {
             if (!main.hasClass('viewing-history'))
             {
@@ -1363,7 +1374,7 @@ $(function ()
             return true;
         },
 
-        dice: function (args)
+        dice: function(args)
         {
             moveSoFar = { SourceTongues: [], TargetTongues: [], OpponentPieceTaken: [], DiceSequence: [] };
             moves.push({ Dice1: args.dice1, Dice2: args.dice2, Doubled: args.doubled });
@@ -1384,20 +1395,20 @@ $(function ()
                 : (main.hasClass('state-White') ? 'white-starts' : 'black-starts'));
         },
 
-        cube: function (args)
+        cube: function(args)
         {
             $('#cube-text').text(args.gameValue);
             var oldTop = $('#cube').position().top;
             main.removeClass('cube-white cube-black').addClass(args.whiteOwnsCube ? 'cube-white' : 'cube-black');
             var newTop = $('#cube').position().top;
-            $('#cube').css('top', oldTop).animate({ top: newTop }, { duration: 1000, complete: function () { $('#cube').css('top', ''); } });
+            $('#cube').css('top', oldTop).animate({ top: newTop }, { duration: 1000, complete: function() { $('#cube').css('top', ''); } });
             position.GameValue = args.gameValue;
             position.WhiteOwnsCube = args.whiteOwnsCube;
             setTimeout(processSocketQueue, 1000);
             return true;
         },
 
-        win: function (args)
+        win: function(args)
         {
             setState(args.state);
             $('#win>.points>.number,#main.state-White #info-match-history>a.game:not([href])>.white>.number,#main.state-Black #info-match-history>a.game:not([href])>.black>.number').text(args.score);
@@ -1420,7 +1431,7 @@ $(function ()
             }
         },
 
-        chat: function (args)
+        chat: function(args)
         {
             var chatList = args instanceof Array ? args : [args];
             var chatOpen = $('body.hash-sidebar.hash-chat').length > 0;
@@ -1456,9 +1467,9 @@ $(function ()
             $('#btn-chat>.notification')[unseenMsgs ? 'addClass' : 'removeClass']('shown');
         },
 
-        settings: function (args)
+        settings: function(args)
         {
-            ['style', 'lang'].forEach(function (e)
+            ['style', 'lang'].forEach(function(e)
             {
                 var s = $('#settings-' + e + '-select').empty().append($('<option value="">').text('(default)'));
                 for (var i in args[e])
@@ -1467,7 +1478,7 @@ $(function ()
             });
         },
 
-        languages: function (args)
+        languages: function(args)
         {
             var d = $('#translate-select').empty();
             for (var i = 0; i < args.length; i++)
@@ -1480,28 +1491,28 @@ $(function ()
             }
         },
 
-        translateError: function (args)
+        translateError: function(args)
         {
             sidebar('translate');
             $('#translate-error').text(args.error).show();
             if ('hash' in args && 'name' in args)
             {
-                if (!$('#translate-select>option').filter(function (_, e) { return $(e).attr('value') === args.hash; }).length)
+                if (!$('#translate-select>option').filter(function(_, e) { return $(e).attr('value') === args.hash; }).length)
                     $('<option>').attr('value', args.hash).text(args.name).appendTo('#translate-select');
                 $('#translate-select').val(args.hash);
             }
         },
 
-        translate: function (args)
+        translate: function(args)
         {
             LiBackgammon.translation = args;
             LiBackgammon.hashRemove(sidebars);
             LiBackgammon.hashAdd(['sidebar', 'translating'], { lang: args.hash, translator: args.token });
         },
 
-        translationSaved: function (args)
+        translationSaved: function(args)
         {
-            var i = $('#translating .translatable>.trans>input').filter(function (_, e) { return $(e).data('sel') === args.sel; });
+            var i = $('#translating .translatable>.trans>input').filter(function(_, e) { return $(e).data('sel') === args.sel; });
             if (i.length)
                 i.parent().removeClass('unsaved submitting').addClass('saved');
             if (args.removed)
@@ -1513,7 +1524,7 @@ $(function ()
     };
 
     if (main.hasClass('spectating'))
-        $('#undo,#commit,#roll,#double,#accept,#decline,#btn-resign,#resign-confirm,#resign-cancel,#offer-rematch,#accept-rematch,#cancel-rematch').click(function () { return false; });
+        $('#undo,#commit,#roll,#double,#accept,#decline,#btn-resign,#resign-confirm,#resign-cancel,#offer-rematch,#accept-rematch,#cancel-rematch').click(function() { return false; });
     else
     {
         deselectPiece();
@@ -1562,27 +1573,27 @@ $(function ()
         }
 
         $('#board>.piece')
-            .click(function () { processClickOrDblclick($(this).hasClass('white'), $(this).data('tongue'), false); return false; })
-            .dblclick(function () { processClickOrDblclick($(this).hasClass('white'), $(this).data('tongue'), true); return false; });
+            .click(function() { processClickOrDblclick($(this).hasClass('white'), $(this).data('tongue'), false); return false; })
+            .dblclick(function() { processClickOrDblclick($(this).hasClass('white'), $(this).data('tongue'), true); return false; });
 
-        $('#board').on('mouseenter', '.tongue.selectable, .home.selectable, .automove', function ()
+        $('#board').on('mouseenter', '.tongue.selectable, .home.selectable, .automove', function()
         {
             processMove(position, playerIsWhite, $(this).data('move'), { mode: 'indicate' });
         });
 
-        $('#board').on('mouseleave', '.tongue.selectable, .home.selectable, .automove', function ()
+        $('#board').on('mouseleave', '.tongue.selectable, .home.selectable, .automove', function()
         {
             $('#board>.piece.hypo-target, #board>.arrow').remove();
         });
 
-        $('#board').on('click', '.tongue.selectable, .home.selectable, .automove', function ()
+        $('#board').on('click', '.tongue.selectable, .home.selectable, .automove', function()
         {
             var move = $(this).data('move');
             deselectPiece(true);
             executeMove(move);
         });
 
-        $(document).keydown(function (e)
+        $(document).keydown(function(e)
         {
             if (e.keyCode === 27)
             {
@@ -1593,7 +1604,7 @@ $(function ()
             }
         });
 
-        $('#undo').click(function ()
+        $('#undo').click(function()
         {
             if (main.hasClass('spectating') || main.hasClass('viewing-history'))
                 return false;
@@ -1620,9 +1631,9 @@ $(function ()
             return false;
         });
 
-        var getGeneralisedButtonClick = function (msgToSend, condition, removeClasses)
+        var getGeneralisedButtonClick = function(msgToSend, condition, removeClasses)
         {
-            return function ()
+            return function()
             {
                 if (!main.hasClass('spectating') && (!condition || condition()))
                 {
@@ -1634,7 +1645,7 @@ $(function ()
             };
         };
 
-        $('#commit').click(function ()
+        $('#commit').click(function()
         {
             if (!main.hasClass('spectating') && main.hasClass('committable'))
             {
@@ -1647,17 +1658,17 @@ $(function ()
             return false;
         });
 
-        $('#roll').click(getGeneralisedButtonClick({ roll: 1 }, function () { return $('#main.state-ToRoll').length > 0; }));
+        $('#roll').click(getGeneralisedButtonClick({ roll: 1 }, function() { return $('#main.state-ToRoll').length > 0; }));
         $('#double').click(getGeneralisedButtonClick({ double: 1 }));
         $('#accept').click(getGeneralisedButtonClick({ accept: 1 }));
         $('#decline').click(getGeneralisedButtonClick({ decline: 1 }));
-        $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function () { return $('#main.resigning:not(.state-Won)').length > 0; }, 'resigning'));
-        $('#resign-cancel').click(function () { main.removeClass('resigning'); return false; });
-        $('#btn-resign').click(function () { if (!$('#main.state-Won,#main.state-Waiting').length) main.addClass('resigning'); return false; });
+        $('#resign-confirm').click(getGeneralisedButtonClick({ resign: 1 }, function() { return $('#main.resigning:not(.state-Won)').length > 0; }, 'resigning'));
+        $('#resign-cancel').click(function() { main.removeClass('resigning'); return false; });
+        $('#btn-resign').click(function() { if (!$('#main.state-Won,#main.state-Waiting').length) main.addClass('resigning'); return false; });
 
         $('#offer-rematch').click(getGeneralisedButtonClick(
             { rematch: 1 },
-            function ()
+            function()
             {
                 return $(
                     '#main.end-of-match:not(.rematch-White):not(.rematch-Black):not(.rematch-WhiteDeclined):not(.rematch-BlackDeclined):not(.rematch-Accepted):not(.spectating),' +
@@ -1665,19 +1676,19 @@ $(function ()
                     '#main.rematch-WhiteDeclined.player-white,' +
                     '#main.rematch-BlackDeclined.player-black').length > 0;
             }));
-        var rematchAcceptable = function () { return $('#main.rematch-White.player-black, #main.rematch-Black.player-white').length > 0; };
+        var rematchAcceptable = function() { return $('#main.rematch-White.player-black, #main.rematch-Black.player-white').length > 0; };
         $('#accept-rematch').click(getGeneralisedButtonClick({ acceptRematch: 1 }, rematchAcceptable));
         $('#cancel-rematch').click(getGeneralisedButtonClick({ cancelRematch: 1 }, rematchAcceptable));
     }
 
-    $('#btn-chat').click(function () { sidebar('chat'); return false; });
-    $('#btn-info').click(function () { sidebar('info'); return false; });
-    $('#join').click(function () { return main.hasClass('state-Waiting') && main.hasClass('spectating'); });
-    $('#goto-next-game').click(function () { if (main.data('next-game')) window.location.href = main.data('next-game') + window.location.hash; return false; });
-    $('#settings-helpers-select').change(function () { LiBackgammon[$('#settings-helpers-select:checked').length ? 'hashAdd' : 'hashRemove']('helpers'); });
-    $('#settings-percentages-select').change(function () { LiBackgammon[$('#settings-percentages-select:checked').length ? 'hashAdd' : 'hashRemove']('percentages'); });
+    $('#btn-chat').click(function() { sidebar('chat'); return false; });
+    $('#btn-info').click(function() { sidebar('info'); return false; });
+    $('#join').click(function() { return main.hasClass('state-Waiting') && main.hasClass('spectating'); });
+    $('#goto-next-game').click(function() { if (main.data('next-game')) window.location.href = main.data('next-game') + window.location.hash; return false; });
+    $('#settings-helpers-select').change(function() { LiBackgammon[$('#settings-helpers-select:checked').length ? 'hashAdd' : 'hashRemove']('helpers'); });
+    $('#settings-percentages-select').change(function() { LiBackgammon[$('#settings-percentages-select:checked').length ? 'hashAdd' : 'hashRemove']('percentages'); });
 
-    $('#settings-style-select').change(function ()
+    $('#settings-style-select').change(function()
     {
         var style = $(this).val();
         if (style === '')
@@ -1686,7 +1697,7 @@ $(function ()
             LiBackgammon.hashAdd([], { style: style });
     });
 
-    $('#settings-lang-select').change(function ()
+    $('#settings-lang-select').change(function()
     {
         var lang = $(this).val();
         if (lang === '')
@@ -1696,7 +1707,7 @@ $(function ()
         LiBackgammon.hashRemove([], ['translator']);
     });
 
-    $('#settings-lang-custom').click(function ()
+    $('#settings-lang-custom').click(function()
     {
         sidebar('translate');
         $('#translate-select').empty().append('<option>Loading...</option>');
@@ -1704,21 +1715,21 @@ $(function ()
         return false;
     });
 
-    $('#translate-create').click(function ()
+    $('#translate-create').click(function()
     {
         $('#translate-error').hide();
         socketSend({ createLanguage: { name: $('#translate-name').val(), hashName: $('#translate-code').val() } });
         return false;
     });
 
-    $('#translate-edit').click(function ()
+    $('#translate-edit').click(function()
     {
         $('#translate-error').hide();
         socketSend({ translate: { hashName: $('#translate-select').val(), token: LiBackgammon.hash.dict.translator } });
         return false;
     });
 
-    $('#btn-settings').click(function ()
+    $('#btn-settings').click(function()
     {
         sidebar('settings');
         return false;
@@ -1726,7 +1737,7 @@ $(function ()
 
     $('#leave-history').click(historyLeaveAll);
 
-    $('#translating-link').click(function ()
+    $('#translating-link').click(function()
     {
         var hash = LiBackgammon.hash;
         if ('translator' in hash.dict && 'lang' in hash.dict)
@@ -1735,7 +1746,7 @@ $(function ()
     });
 
     var chatToken = 0;
-    $('#chat-msg').keypress(function (e)
+    $('#chat-msg').keypress(function(e)
     {
         if (e.keyCode === 13)   // Enter
         {
@@ -1754,7 +1765,7 @@ $(function ()
         }
     });
 
-    $(document.body).on('click', '.expand-collapse', function () { $(this).parent().toggleClass('expanded'); return false; });
+    $(document.body).on('click', '.expand-collapse', function() { $(this).parent().toggleClass('expanded'); return false; });
 
     // Dummy SVG to define SVG elements to be referenced by other SVGs
     $('#main>#sidebar>#info').append('<svg class="defs" width="0" height="0"><defs>' +
@@ -1797,9 +1808,9 @@ $(function ()
                     var imp = props.getPropertyPriority(propName);
                     if (imp)
                         imp = '!' + imp;
-                    sidebarProps.push(propName + ':' + val.replace(vwRe, function (_, vw) { return (vw * 100 / (100 + sidebarWidth)) + 'vw'; }) + imp);
-                    inMediaProps.push(propName + ':' + val.replace(vwRe, function (_, vw) { return (vw * 100 / boardHeight) + 'vh'; }) + imp);
-                    sidebarInMediaProps.push(propName + ':' + val.replace(vwRe, function (_, vw) { return (vw * 100 / boardHeight) + 'vh'; }) + imp);
+                    sidebarProps.push(propName + ':' + val.replace(vwRe, function(_, vw) { return (vw * 100 / (100 + sidebarWidth)) + 'vw'; }) + imp);
+                    inMediaProps.push(propName + ':' + val.replace(vwRe, function(_, vw) { return (vw * 100 / boardHeight) + 'vh'; }) + imp);
+                    sidebarInMediaProps.push(propName + ':' + val.replace(vwRe, function(_, vw) { return (vw * 100 / boardHeight) + 'vh'; }) + imp);
                 }
             }
             if (sidebarProps.length)
@@ -1815,11 +1826,11 @@ $(function ()
         '\n\n@media screen and (min-aspect-ratio: 100/' + boardHeight + ') {\n    ' + cssInMedia.join('\n    ') + '}' +
         '\n\n@media screen and (min-aspect-ratio: ' + (100 + sidebarWidth) + '/' + boardHeight + ') {\n    ' + cssInMediaWithSidebar.join('\n    ') + '}');
 
-    $('#chat-msgs-outer').scroll(function ()
+    $('#chat-msgs-outer').scroll(function()
     {
         var elem = this;
         // In case this scrolling is triggered by a window resize, we need the window resize handled first.
-        setTimeout(function ()
+        setTimeout(function()
         {
             if (preventCmoScrollEventUntil > Date.now())
                 return;

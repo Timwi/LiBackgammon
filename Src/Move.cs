@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using RT.Util.ExtensionMethods;
 using RT.Util.Serialization;
 
 namespace LiBackgammon
@@ -16,5 +13,10 @@ namespace LiBackgammon
         public int[] SourceTongues;
         [ClassifyIgnoreIfDefault]
         public int[] TargetTongues;
+
+        public override string ToString()
+        {
+            return $"[{Dice1}, {Dice2}]{(Doubled ? " D" : null)}{(SourceTongues == null ? null : $" ({SourceTongues.Select((s, i) => $"{s} → {TargetTongues[i]}").JoinString(", ")})")}";
+        }
     }
 }

@@ -325,13 +325,13 @@ namespace LiBackgammon
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] resync(int moveCount, bool? lastMoveDone = null)
         {
-            return processGameState((db, game, pos, whiteToPlay, moves) =>
+            return processGameState<MessageInfo[]>((db, game, pos, whiteToPlay, moves) =>
             {
-                SendMessage(new JsonDict { { "resync", 
-                    moveCount != moves.Count ||
+                var needUpdate = moveCount != moves.Count ||
                     (lastMoveDone != null && moves.Count == 0) ||
-                    (lastMoveDone != null && lastMoveDone.Value != (moves.Last().SourceTongues != null)) ? 1 : 0 } });
-                return (MessageInfo[]) null;
+                    (lastMoveDone != null && lastMoveDone.Value != (moves.Last().SourceTongues != null));
+                SendMessage(new JsonDict { { "resync", needUpdate ? new JsonDict { { "moves", JsonValue.Parse(game.Moves) }, { "state", game.State.ToString() } } : null } });
+                return null;
             });
         }
 
@@ -644,7 +644,7 @@ namespace LiBackgammon
 
         private JsonDict chatMessageJson(ChatMessage msg)
         {
-            return new JsonDict 
+            return new JsonDict
             {
                 { "id", msg.ID },
                 { "game", msg.GameID },

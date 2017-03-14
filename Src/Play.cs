@@ -83,6 +83,26 @@ namespace LiBackgammon
                 // Y = Resign confirm
                 // Z
 
+                // For debugging
+                //var tGame = game;
+                //game = new Game
+                //{
+                //    BlackToken = tGame.BlackToken,
+                //    GameInMatch = tGame.GameInMatch,
+                //    HasDoublingCube = tGame.HasDoublingCube,
+                //    InitialPosition = tGame.InitialPosition,
+                //    BlackScore = tGame.BlackScore,
+                //    Match = tGame.Match,
+                //    Moves = @"[{""Dice1"":5,""Dice2"":4}]",
+                //    NextGame = null,
+                //    PublicID = tGame.PublicID,
+                //    RematchOffer = RematchOffer.None,
+                //    State = GameState.White_ToRoll,
+                //    Visibility = tGame.Visibility,
+                //    WhiteScore = tGame.WhiteScore,
+                //    WhiteToken = tGame.WhiteToken
+                //};
+
                 return page(req,
                     new BODY(
                         new DIV
@@ -99,8 +119,8 @@ namespace LiBackgammon
                                 + match.NullOr(m => " in-match" + (whiteMatchScore >= match.MaxScore || blackMatchScore >= match.MaxScore ? " end-of-match" : null))
                                 + nextGame.NullOr(ng => " has-next-game")
                                 + (game.RematchOffer != RematchOffer.None ? " rematch-" + game.RematchOffer : null)
-                                + (player == Player.White || (activeGameSockets != null && activeGameSockets.Any(s => s.Player == Player.White)) ? " online-White" : null)
-                                + (player == Player.Black || (activeGameSockets != null && activeGameSockets.Any(s => s.Player == Player.Black)) ? " online-Black" : null)
+                                + (player == Player.White || (activeGameSockets != null && activeGameSockets.Any(s => s.GameId == game.PublicID && s.Player == Player.White)) ? " online-White" : null)
+                                + (player == Player.Black || (activeGameSockets != null && activeGameSockets.Any(s => s.GameId == game.PublicID && s.Player == Player.Black)) ? " online-Black" : null)
 #if DEBUG
  + " debug"
 #endif

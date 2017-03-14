@@ -1273,6 +1273,22 @@ $(function()
         return pos;
     }
 
+    function setNextGame(url, hasCube)
+    {
+        setNextUrl(url);
+        var ex = $('#info-match-history>.row.game.after-this');
+        if (ex.length === 0)
+        {
+            $('#info-match-history>.row.game.last').removeClass('last');
+            ex = $('<a><div class="piece white"><div class="number"></div></div><div class="piece black"><div class="number"></div></div></a>')
+                .addClass('row game after-this last')
+                .insertBefore('#info-match-history>hr');
+        }
+        ex.removeClass('cube no-cube').addClass(hasCube ? 'cube' : 'no-cube');
+        ex.attr('href', url + window.location.hash);
+        updateMatchGraph();
+    }
+
     var main = $('#main');
 
     // Special tongues
@@ -1321,8 +1337,11 @@ $(function()
     var socketQueue = [];
     var socketQueueProcessing = false;
 
+    function setNextUrl(url) { main.data('next-game', url).addClass('has-next-game'); }
+    function setRematchOffer(offer) { LiBackgammon.removeClassPrefix(main, 'rematch-').addClass('rematch-' + offer); }
+
     var socketMethods = {
-        nextUrl: function(args) { main.data('next-game', args).addClass('has-next-game'); },
+        nextUrl: function(args) { setNextUrl(args) },
         state: function(args)
         {
             if (!main.hasClass('spectating') && args === (playerIsWhite ? 'White_ToRoll' : 'Black_ToRoll') && $('#settings-autoroll-select:checked').length)
@@ -1333,21 +1352,22 @@ $(function()
         on: function(args) { main.addClass('online-' + args); },
         off: function(args) { main.removeClass('online-' + args); },
         chatid: function(args) { $('#chat-token-' + args.token).attr('id', 'chat-' + args.id); },
-        rematch: function(args) { LiBackgammon.removeClassPrefix(main, 'rematch-').addClass('rematch-' + args); },
+        rematch: function(args) { setRematchOffer(args); },
 
         resync: function(args)
         {
-            if (args)
-            {
-                moves = args.moves;
-                lastMove = moves[moves.length - 1];
-                position = recalcPosition();
-                setState(args.state, false);
-                onResize(true);
-                updateGameHistory();
-                updateMatchGraph();
-                deselectPiece(false);
-            }
+            moves = args.moves;
+            lastMove = moves[moves.length - 1];
+            position = recalcPosition();
+            setState(args.state, false);
+            onResize(true);
+            updateGameHistory();
+            updateMatchGraph();
+            deselectPiece(false);
+            if (args.nextUrl)
+                setNextGame(args.nextUrl, args.nextCube);
+            if (args.rematch)
+                setRematchOffer(args.rematch);
         },
 
         player: function(args)
@@ -1421,14 +1441,7 @@ $(function()
             if ('matchOver' in args)
                 main.addClass('end-of-match');
             if ('nextGame' in args)
-            {
-                $('#info-match-history>.row.game.last').removeClass('last');
-                $('<a><div class="piece white"><div class="number"></div></div><div class="piece black"><div class="number"></div></div></a>')
-                    .addClass('row game last ' + (args.nextGame.cube ? 'cube' : 'no-cube'))
-                    .attr('href', main.data('next-game') + window.location.hash)
-                    .insertBefore('#info-match-history>hr');
-                updateMatchGraph();
-            }
+                setNextGame(main.data('next-game'), args.nextGame.cube);
         },
 
         chat: function(args)
@@ -1606,7 +1619,7 @@ $(function()
 
         $('#undo').click(function()
         {
-            if (main.hasClass('spectating') || main.hasClass('viewing-history'))
+            if (main.hasClass('spectating') || main.hasClass('viewing-history') || !isPlayerToMove())
                 return false;
             var lastIndex = moveSoFar.DiceSequence.length - 1;
             if (lastIndex >= 0)

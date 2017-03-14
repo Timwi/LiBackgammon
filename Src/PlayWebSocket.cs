@@ -247,7 +247,7 @@ namespace LiBackgammon
                     ? db.CreateNewGame(CreateNewGameOption.RollAlready, game.HasDoublingCube, game.Visibility)
                     : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules, game.Visibility).Game;
                 game.NextGame = newGame.PublicID;
-                return sendNextUrl(newGame.PublicID, newGame.WhiteToken, newGame.BlackToken)
+                return sendNextUrl(newGame)
                     .Concat(new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }))
                     .ToArray();
             });
@@ -327,12 +327,35 @@ namespace LiBackgammon
         {
             return processGameState<MessageInfo[]>((db, game, pos, whiteToPlay, moves) =>
             {
-                var needUpdate = moveCount != moves.Count ||
+                if (moveCount != moves.Count ||
                     (lastMoveDone != null && moves.Count == 0) ||
-                    (lastMoveDone != null && lastMoveDone.Value != (moves.Last().SourceTongues != null));
-                SendMessage(new JsonDict { { "resync", needUpdate ? new JsonDict { { "moves", JsonValue.Parse(game.Moves) }, { "state", game.State.ToString() } } : null } });
+                    (lastMoveDone != null && lastMoveDone.Value != (moves.Last().SourceTongues != null)) ||
+                    game.RematchOffer != RematchOffer.None)
+                    SendMessage(new JsonDict { { "resync", resyncInfo(game) } });
                 return null;
             });
+        }
+
+        private JsonDict resyncInfo(Game game)
+        {
+            var dict = new JsonDict();
+            dict["moves"] = JsonValue.Parse(game.Moves);
+            dict["state"] = game.State.ToString();
+            if (game.RematchOffer != RematchOffer.None)
+                dict["rematch"] = game.RematchOffer.ToString();
+            if (game.NextGame != null)
+            {
+                using (var db = new Db())
+                {
+                    var nextGame = db.Games.FirstOrDefault(g => g.PublicID == game.NextGame);
+                    if (nextGame != null)
+                    {
+                        dict["nextUrl"] = nextUrl(nextGame, _player);
+                        dict["nextCube"] = nextGame.HasDoublingCube;
+                    }
+                }
+            }
+            return dict;
         }
 
         [SocketMethod(spectatorAllowed: true)]
@@ -536,11 +559,16 @@ namespace LiBackgammon
             }
         }
 
-        private IEnumerable<MessageInfo> sendNextUrl(string publicId, string whiteToken, string blackToken)
+        private IEnumerable<MessageInfo> sendNextUrl(Game nextGame)
         {
-            yield return new MessageInfo(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + whiteToken).ToFull() } }, s => s.Player == Player.White);
-            yield return new MessageInfo(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId + blackToken).ToFull() } }, s => s.Player == Player.Black);
-            yield return new MessageInfo(new JsonDict { { "nextUrl", _url.WithParent("play/" + publicId).ToFull() } }, s => s.Player == Player.Spectator);
+            yield return new MessageInfo(new JsonDict { { "nextUrl", nextUrl(nextGame, Player.White) } }, s => s.Player == Player.White);
+            yield return new MessageInfo(new JsonDict { { "nextUrl", nextUrl(nextGame, Player.Black) } }, s => s.Player == Player.Black);
+            yield return new MessageInfo(new JsonDict { { "nextUrl", nextUrl(nextGame, Player.Spectator) } }, s => s.Player == Player.Spectator);
+        }
+
+        private string nextUrl(Game nextGame, Player player)
+        {
+            return _url.WithParent("play/" + nextGame.PublicID + (player == Player.White ? nextGame.WhiteToken : player == Player.Black ? nextGame.BlackToken : null)).ToFull();
         }
 
         private IEnumerable<MessageInfo> gameOver(Db db, Game game, Position pos, bool whiteWins, bool useMultiplier)
@@ -575,7 +603,7 @@ namespace LiBackgammon
                     }
                     var result = db.CreateNewGame(CreateNewGameOption.RollAlready, doublingCube, game.Visibility, game.Match, game.GameInMatch + 1);
                     game.NextGame = result.PublicID;
-                    foreach (var msg in sendNextUrl(result.PublicID, result.WhiteToken, result.BlackToken))
+                    foreach (var msg in sendNextUrl(result))
                         yield return msg;
                     dict["nextGame"] = new JsonDict { { "cube", result.HasDoublingCube } };
                 }

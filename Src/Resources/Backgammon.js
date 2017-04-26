@@ -228,31 +228,36 @@ $(function ()
 
     // Add extra CSS and populate LiBackgammon.strings
     var contentCss = [];                            // User-visible text (“content” property)
-    var rules = document.styleSheets[0].cssRules || document.styleSheets[0].rules;
-    for (var ruleix = 0; ruleix < rules.length; ruleix++)
+    for (var sheetIx = 0; sheetIx < document.styleSheets.length; sheetIx++)
     {
-        if (!rules[ruleix].selectorText)
+        if (document.styleSheets[sheetIx].ownerNode.id !== 'main-css')
             continue;
-        var props = rules[ruleix].style;
-        for (var propix = 0; propix < props.length; propix++)
+        var rules = document.styleSheets[sheetIx].cssRules || document.styleSheets[sheetIx].rules;
+        for (var ruleix = 0; ruleix < rules.length; ruleix++)
         {
-            var propName = props[propix].replace(/-value$/, '');
-            if (propName === 'content')
+            if (!rules[ruleix].selectorText)
+                continue;
+            var props = rules[ruleix].style;
+            for (var propix = 0; propix < props.length; propix++)
             {
-                var val = props.getPropertyValue(propName);
-                if (val[0] === "'" || val[0] === '"')
-                    val = val.substr(1, val.length - 2).replace(/\\([0-9a-f]{1,6} ?|[\\'"])/g, function (_, m) { return m.length === 1 ? m : String.fromCharCode(parseInt(m.substr(1, m.length - 2), 16)); });
-                var selectorTextNormalized = rules[ruleix].selectorText.replace(/::(?=(before|after)\b)/g, ':');
-                if (val[0] === '{')
+                var propName = props[propix].replace(/-value$/, '');
+                if (propName === 'content')
                 {
-                    var json = JSON.parse(val);
-                    json.sel = rules[ruleix].selectorText;
-                    if (!json.notranslate)
-                        LiBackgammon.strings[selectorTextNormalized] = json;
-                    contentCss.push(LiBackgammon.toCssRule(json));
+                    var val = props.getPropertyValue(propName);
+                    if (val[0] === "'" || val[0] === '"')
+                        val = val.substr(1, val.length - 2).replace(/\\([0-9a-f]{1,6} ?|[\\'"])/g, function(_, m) { return m.length === 1 ? m : String.fromCharCode(parseInt(m.substr(1, m.length - 2), 16)); });
+                    var selectorTextNormalized = rules[ruleix].selectorText.replace(/::(?=(before|after)\b)/g, ':');
+                    if (val[0] === '{')
+                    {
+                        var json = JSON.parse(val);
+                        json.sel = rules[ruleix].selectorText;
+                        if (!json.notranslate)
+                            LiBackgammon.strings[selectorTextNormalized] = json;
+                        contentCss.push(LiBackgammon.toCssRule(json));
+                    }
+                    else if (val.length > 0)
+                        LiBackgammon.strings[selectorTextNormalized] = { text: val, sel: rules[ruleix].selectorText };
                 }
-                else if (val.length > 0)
-                    LiBackgammon.strings[selectorTextNormalized] = { text: val, sel: rules[ruleix].selectorText };
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿LiBackgammon = {
-    hashAdd: function (vals, obj)
+    hashAdd: function(vals, obj)
     {
         if (!(vals instanceof Array))
             vals = [vals];
@@ -12,7 +12,7 @@
         LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
-    hashRemove: function (vals, keys)
+    hashRemove: function(vals, keys)
     {
         if (!(vals instanceof Array))
             vals = [vals];
@@ -27,7 +27,7 @@
         LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
-    hashAddKeys: function (obj)
+    hashAddKeys: function(obj)
     {
         var keys = Object.keys(obj);
         for (var i = 0; i < keys.length; i++)
@@ -35,7 +35,7 @@
         LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
-    hashRemoveKeys: function (keys)
+    hashRemoveKeys: function(keys)
     {
         if (!(keys instanceof Array))
             keys = [keys];
@@ -45,7 +45,7 @@
         LiBackgammon.setHash(LiBackgammon.hash.values, LiBackgammon.hash.dict);
     },
 
-    setHash: function (values, dict)
+    setHash: function(values, dict)
     {
         var elems = values.slice(0);
         var keys = Object.keys(dict);
@@ -54,15 +54,15 @@
         window.location.hash = elems.join('/');
     },
 
-    removeClassPrefix: function ($obj, prefix)
+    removeClassPrefix: function($obj, prefix)
     {
-        return $obj.removeClass(function (_, cl) { return cl.split(' ').filter(function (c) { return c.substr(0, prefix.length) === prefix; }).join(' '); });
+        return $obj.removeClass(function(_, cl) { return cl.split(' ').filter(function(c) { return c.substr(0, prefix.length) === prefix; }).join(' '); });
     },
 
-    toCssRule: function (json, text)
+    toCssRule: function(json, text)
     {
         text = text || json.text;
-        var str = '', pos, cssEsc = function (s) { return s.replace(/\\/g, '\\\\').replace(/'/g, '\\\''); }, extraCss = '';
+        var str = '', pos, cssEsc = function(s) { return s.replace(/\\/g, '\\\\').replace(/'/g, '\\\''); }, extraCss = '';
         while ((pos = text.indexOf("{")) !== -1)
         {
             str += " '" + cssEsc(text.substr(0, pos)) + "'";
@@ -103,9 +103,9 @@
     hash: null
 };
 
-$(function ()
+$(function()
 {
-    window.onerror = function (msg, url, l, c)
+    window.onerror = function(msg, url, l, c)
     {
         alert('Error: ' + msg + "\nFile: " + url + "\nLine: " + l + "\nColumn: " + c);
     };
@@ -113,18 +113,18 @@ $(function ()
     var body = $(document.body);
 
     // Keyboard shortcut handling
-    $('*[accesskey]').each(function ()
+    $('*[accesskey]').each(function()
     {
         $(this).append($('<span>').addClass('shortcut').text($(this).attr('accesskey')));
     });
 
     $(document)
-        .keydown(function (e)
+        .keydown(function(e)
         {
             if (e.keyCode === 18)  // ALT key
                 body.addClass('show-shortcuts');
         })
-        .keyup(function (e)
+        .keyup(function(e)
         {
             if (e.keyCode === 18)  // ALT key
                 body.removeClass('show-shortcuts');
@@ -159,7 +159,7 @@ $(function ()
         if ('lang' in dict)
         {
             var lang = dict.lang;   // for persistence in lambdas
-            var setTranslation = function ()
+            var setTranslation = function()
             {
                 var css = [];
                 for (var i in translations[lang])
@@ -170,7 +170,7 @@ $(function ()
             if (lang in translations)
                 setTranslation();
             else
-                $.post(body.data('ajax') + '/lang', { data: JSON.stringify({ hashName: dict.lang }) }, function (resp)
+                $.post(body.data('ajax') + '/lang', { data: JSON.stringify({ hashName: dict.lang }) }, function(resp)
                 {
                     translations[lang] = resp.result;
                     setTranslation();
@@ -182,11 +182,11 @@ $(function ()
         if ('style' in dict)
         {
             var style = dict.style;   // for persistence in lambdas
-            var setStyle = function (css) { $('#style-css').text(styles[style] || ''); };
+            var setStyle = function(css) { $('#style-css').text(styles[style] || ''); };
             if (style in styles)
                 setStyle();
             else
-                $.post(body.data('ajax') + '/style', { data: JSON.stringify({ hashName: dict.style }) }, function (resp)
+                $.post(body.data('ajax') + '/style', { data: JSON.stringify({ hashName: dict.style }) }, function(resp)
                 {
                     styles[style] = resp.result;
                     setStyle();
@@ -199,14 +199,14 @@ $(function ()
             $('#translated-content-2').text('');
 
         // Make every form and link use the same hash (URL fragment) as the current page
-        $('form').each(function (_, f)
+        $('form').each(function(_, f)
         {
             f = $(f);
             if (!f.data('action'))
                 f.data('action', f.attr('action'));
             f.attr('action', f.data('action') + window.location.hash);
         });
-        $('a').each(function (_, a)
+        $('a').each(function(_, a)
         {
             a = $(a);
             if (a.attr('href') && a.attr('href')[0] !== '#')
@@ -221,7 +221,7 @@ $(function ()
     }
 
     $(window)
-        .on('blur', function () { body.removeClass('show-shortcuts'); })
+        .on('blur', function() { body.removeClass('show-shortcuts'); })
         .on('hashchange', hashChange);
 
     hashChange();

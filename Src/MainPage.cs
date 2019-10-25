@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
+using RT.Util.ExtensionMethods;
 
 namespace LiBackgammon
 {
@@ -63,7 +64,8 @@ namespace LiBackgammon
                                 new LABEL { for_ = "newgame-visibility-" + vis, id = "newgame-visibility-label-" + vis, accesskey = vis.GetCustomAttribute<KeyboardShortcutAttribute>().Shortcut }))),
                         new DIV { id = "newgame-submit", class_ = "row" }._(
                             new BUTTON { type = btype.submit, id = "newgame-submit-btn", accesskey = "s" })),
-                    new UL { id = "waiting-games", class_ = "loading" }.Data("play-url", req.Url.WithParent("play").ToFull()).Data("socket-url", Regex.Replace(req.Url.WithParent("socket/main").ToFull(), @"^http", "ws"))),
+                    new UL { id = "waiting-games", class_ = "loading" }.Data("play-url", req.Url.WithParent("play").ToFull()).Data("socket-url", Regex.Replace(req.Url.WithParent("socket/main").ToFull(), @"^http", "ws")),
+                    new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal{0}Impressum{0}Datenschutzerklärung".FmtEnumerable(new BR())))),
                 "js/main");
         }
     }

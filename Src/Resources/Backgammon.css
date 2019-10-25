@@ -336,6 +336,20 @@ body#main-page::before {
             clear: both;
         }
 
+#legal {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 0 .5em .2em 0;
+    opacity: .6;
+    text-align: right;
+}
+
+    #legal > a {
+        color: black;
+        text-decoration: none;
+    }
+
 #main {
     position: absolute;
     background: hsl(32, 50%, 30%);

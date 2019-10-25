@@ -3,6 +3,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
 using System.Transactions;
+using RT.PostBuild;
 using RT.PropellerApi;
 using RT.Util;
 using RT.Util.Consoles;
@@ -25,7 +26,7 @@ namespace LiBackgammon
             catch { }
 
             if (args.Length == 2 && args[0] == "--post-build-check")
-                return Ut.RunPostBuildChecks(args[1], Assembly.GetExecutingAssembly());
+                return PostBuildChecker.RunPostBuildChecks(args[1], Assembly.GetExecutingAssembly());
 
 #if DEBUG
             if (args.Length == 1)

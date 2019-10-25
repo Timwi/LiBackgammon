@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.Util.ExtensionMethods;
-using RT.Util.Json;
 
 namespace LiBackgammon
 {
@@ -68,7 +66,7 @@ AjaxHandlerOptions.ReturnExceptionsWithoutMessages
         {
 #if DEBUG
             if (Program.SourceDir != null)
-                return req => HttpResponse.File(Path.Combine(Program.SourceDir, path), contentType);
+                return req => HttpResponse.File(System.IO.Path.Combine(Program.SourceDir, path), contentType);
             return req => releaseResponse;
 #else
             return req => releaseResponse;

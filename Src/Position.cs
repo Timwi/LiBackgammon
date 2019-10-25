@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using RT.Serialization;
 using RT.Util;
-using RT.Util.Serialization;
 
 namespace LiBackgammon
 {

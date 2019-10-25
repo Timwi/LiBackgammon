@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using RT.Json;
+using RT.Serialization;
 using RT.Servers;
 using RT.Util;
-using RT.Util.Json;
-using RT.Util.Serialization;
 
 namespace LiBackgammon
 {

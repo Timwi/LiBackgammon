@@ -19,7 +19,7 @@ namespace LiBackgammon {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -149,6 +149,16 @@ namespace LiBackgammon {
             get {
                 object obj = ResourceManager.GetObject("FaviconDebug", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /*! jQuery v3.7.0 | (c) OpenJS Foundation and other contributors | jquery.org/license */
+        ///!function(e,t){&quot;use strict&quot;;&quot;object&quot;==typeof module&amp;&amp;&quot;object&quot;==typeof module.exports?module.exports=e.document?t(e,!0):function(e){if(!e.document)throw new Error(&quot;jQuery requires a window with a document&quot;);return t(e)}:t(e)}(&quot;undefined&quot;!=typeof window?window:this,function(ie,e){&quot;use strict&quot;;var oe=[],r=Object.getPrototypeOf,ae=oe.slice,g=oe.flat?function(e){return oe.flat.call(e)}:function(e){return oe.concat.apply([], [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string JQuery {
+            get {
+                return ResourceManager.GetString("JQuery", resourceCulture);
             }
         }
         

@@ -19,11 +19,6 @@ namespace LiBackgammon
 
         private HttpResponse page(HttpRequest req, Tag body, string[] extraJsPaths, bool admin = false)
         {
-#if DEBUG
-            var jquery = req.Url.WithParent("jquery").ToHref();
-#else
-            var jquery = "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js";
-#endif
             return HttpResponse.Html(
                 new HTML(
                     new HEAD(
@@ -41,7 +36,7 @@ namespace LiBackgammon
                         new STYLE { id = "translated-content" },
                         new STYLE { id = "translated-content-2" },
 
-                        new SCRIPT { src = jquery },
+                        new SCRIPT { src = req.Url.WithParent("jquery").ToHref() },
                         new SCRIPT { src = req.Url.WithParent("js").ToHref() },
 
                         new META { name = "viewport", content = "width=device-width, user-scalable=no" },

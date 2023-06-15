@@ -21,11 +21,6 @@ AjaxHandlerOptions.ReturnExceptionsWithoutMessages
 
             return new UrlResolver(
 
-#if DEBUG
-                //
-                new UrlMapping(path: "/jquery", specificPath: true, handler: getFileResourceHandler(@"Resources\JQuery.js", "text/javascript", HttpResponse.Redirect(@"https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"))),
-#endif
-                //
                 new UrlMapping(path: "", specificPath: true, handler: mainPage),
                 new UrlMapping(path: "/socket/main", handler: mainSocket),
                 new UrlMapping(path: "/new", handler: newGame),
@@ -36,6 +31,7 @@ AjaxHandlerOptions.ReturnExceptionsWithoutMessages
                 new UrlMapping(path: "/auth", handler: authenticate),
                 new UrlMapping(path: "/css", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.css", "text/css", Resources.Css, javascript: false)),
                 new UrlMapping(path: "/css/admin", specificPath: true, handler: getFileResourceHandler(@"Resources\Admin.css", "text/css", Resources.CssAdmin, javascript: false)),
+                new UrlMapping(path: "/jquery", specificPath: true, handler: getFileResourceHandler(@"Resources\JQuery.js", "text/javascript", Resources.JQuery, javascript: true)),
                 new UrlMapping(path: "/js", specificPath: true, handler: getFileResourceHandler(@"Resources\Backgammon.js", "text/javascript", Resources.Js, javascript: true)),
                 new UrlMapping(path: "/js/play", specificPath: true, handler: getFileResourceHandler(@"Resources\Play.js", "text/javascript", Resources.JsPlay, javascript: true)),
                 new UrlMapping(path: "/js/main", specificPath: true, handler: getFileResourceHandler(@"Resources\Main.js", "text/javascript", Resources.JsMain, javascript: true)),
@@ -49,7 +45,7 @@ AjaxHandlerOptions.ReturnExceptionsWithoutMessages
                 //
                 new UrlMapping(path: "/favicon", specificPath: true, handler: getFileResourceHandler(@"Resources\Favicon.png", "image/png", HttpResponse.Create(Resources.Favicon, "image/png")))
 #endif
-                //
+            //
             );
         }
 

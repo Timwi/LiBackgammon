@@ -40,15 +40,7 @@ namespace LiBackgammon
                 new string('═', msg.Length),
                 Environment.NewLine).Color(ConsoleColor.White, IsDebug ? ConsoleColor.DarkBlue : ConsoleColor.DarkRed)));
 
-            using (var sc = new ServiceController("SQL Server (SQLEXPRESS)"))
-                if (sc.Status != ServiceControllerStatus.Running && sc.Status != ServiceControllerStatus.StartPending)
-                {
-                    Console.WriteLine("Starting SQL Server service...");
-                    sc.Start();
-                }
-
-            PropellerUtil.RunStandalone(PathUtil.AppPathCombine("LiBackgammon.Settings.json"), new LiBackgammonPropellerModule());
-            Console.ReadLine();
+            PropellerUtil.RunStandalone(@"D:\Daten\Config\LiBackgammon.config.json", new LiBackgammonPropellerModule());
             return 0;
         }
 

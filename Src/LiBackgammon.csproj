@@ -57,6 +57,7 @@
     <Compile Include="DbSession.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="LanguageData.cs" />
+    <Compile Include="LiBackgammonSettings.cs" />
     <Compile Include="MainWebSocket.cs" />
     <Compile Include="MainSocket.cs" />
     <Compile Include="PlayWebSocket.cs" />

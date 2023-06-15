@@ -5,7 +5,9 @@ namespace LiBackgammon
 {
     public sealed class Db : DbContext
     {
-        public Db()
+        public static string ConnectionString;
+
+        public Db() : base(ConnectionString)
         {
             // This is false by default, but it's very important to set this to true so we can use
             // LINQ to Entities with WHERE clauses with comparisons on variables that may be null.

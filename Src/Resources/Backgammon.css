@@ -856,7 +856,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 }
 
     #main > #board > #undo::before {
-        content: 'Undo';
+        content: '{"text":"Undo","hint":"Button during game allowing the player to undo a move."}';
     }
 
 #main > #board > #accept, #main > #board > #commit, #main > #board > #leave-history {
@@ -865,15 +865,15 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 }
 
     #main > #board > #commit::before {
-        content: 'Commit';
+        content: '{"text":"Commit","hint":"Button during game that submits a move."}';
     }
 
     #main > #board > #accept::before {
-        content: 'Double';
+        content: '{"text":"Double","hint":"Button allowing player to accept a doubling offered to them."}';
     }
 
     #main > #board > #leave-history::before {
-        content: 'Go back to the game';
+        content: '{"text":"Double","hint":"Button shown while browsing game history that allows the player to return to the game in progress."}';
     }
 
 #main > #board > #decline {
@@ -882,7 +882,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 }
 
     #main > #board > #decline::before {
-        content: 'Resign';
+        content: '{"text":"Resign","hint":"Button allowing player to decline a doubling, thus resigning the game."}';
     }
 
 #main > #board > #roll, #main > #board > #resign-confirm {
@@ -895,7 +895,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
     }
 
     #main > #board > #resign-confirm::before {
-        content: 'Resign';
+        content: '{"text":"Resign","hint":"Button shown after player chose to resign allowing them to confirm that they really want to resign the game."}';
     }
 
 #main > #board > #double {
@@ -904,7 +904,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 }
 
     #main > #board > #double::before {
-        content: 'Double';
+        content: '{"text":"Double","hint":"Button shown during game allowing the player to offer a doubling to the opponent."}';
     }
 
 #main > #board > #resign-cancel {
@@ -913,7 +913,7 @@ body.hash-percentages > #main.player-black.state-Black.state-ToMove > #board > .
 }
 
     #main > #board > #resign-cancel::before {
-        content: 'Cancel';
+        content: '{"text":"Cancel","hint":"Button shown after player chose to resign allowing them to cancel their resignation."}';
     }
 
 #main.state-ToRoll:not(.resigning):not(.viewing-history) > #board > #roll,
@@ -2340,7 +2340,7 @@ body.hash-settings > #main > #sidebar::after {
 }
 
 #main > #sidebar > #settings > #settings-helpers > #settings-helpers-select + label::before {
-    content: 'Displays little green triangles that allow you to move several pieces to or from the same tongue simultaneously.';
+    content: 'Displays little green triangles that allow you to move several pieces to or from the same point simultaneously.';
     top: 100%;
 }
 
@@ -2349,7 +2349,7 @@ body.hash-settings > #main > #sidebar::after {
 }
 
 #main > #sidebar > #settings > #settings-helpers > #settings-percentages-select + label::before {
-    content: 'Displays, at the base of each tongue, the probability that the next player will be able to land a piece there.';
+    content: 'Displays, at the base of each point, the probability that the next player will be able to land a piece there.';
     top: 100%;
 }
 

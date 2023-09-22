@@ -422,7 +422,7 @@ namespace LiBackgammon
                 db.Languages.Add(newLang);
                 db.SaveChanges();
                 tr.Complete();
-                SendMessage(new JsonDict { { "translate", new JsonDict { { "hash", newLang.HashName }, { "name", newLang.Name }, { "token", token } } } });
+                SendMessage(new JsonDict { { "translate", new JsonDict { { "hash", newLang.HashName }, { "name", newLang.Name }, { "token", token }, { "strings", new JsonList() } } } });
                 return null;
             }
         }
@@ -436,7 +436,7 @@ namespace LiBackgammon
                 var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
                 if (language == null)
                 {
-                    SendMessage(new JsonDict { { "translateError", "The specified language no longer exists. It may have been deleted in the meantime." } });
+                    SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "The specified language no longer exists. It may have been deleted in the meantime." } } } });
                     return null;
                 }
                 var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
@@ -460,7 +460,7 @@ namespace LiBackgammon
                 var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
                 if (language == null)
                 {
-                    SendMessage(new JsonDict { { "translateError", "The specified language no longer exists. It may have been deleted in the meantime." } });
+                    SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "The specified language no longer exists. It may have been deleted in the meantime." } } } });
                     return null;
                 }
                 var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));

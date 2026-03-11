@@ -33,16 +33,3 @@
   </Target>
 
 </Project>
-
-<!--
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201406172009140_InitialCreate.resx">
-      <DependentUpon>201406172009140_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
--->

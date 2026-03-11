@@ -1,5 +1,5 @@
 .vs
-Builds
+bin
 obj
 *.suo
 *.csproj.user

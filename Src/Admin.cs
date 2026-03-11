@@ -37,7 +37,7 @@ namespace LiBackgammon
         {
             return withLoggedInUser(req, flags => (flags & (UserFlags.CanApproveStyles | UserFlags.CanApproveTranslations)) != 0, (sess, user, db) =>
             {
-                if (req.Method == HttpMethod.Post && req.Post["accept"].Value != null)
+                if (req.Method == RT.Servers.HttpMethod.Post && req.Post["accept"].Value != null)
                 {
                     if (req.Post["accept"].Value != "0" && req.Post["accept"].Value != "1")
                         return HttpResponse.Redirect(req.Url.ToHref());
@@ -67,7 +67,7 @@ namespace LiBackgammon
                     return HttpResponse.Redirect(req.Url.ToHref());
                 }
 
-                if (req.Method == HttpMethod.Post && req.Post["approve"].Value != null)
+                if (req.Method == RT.Servers.HttpMethod.Post && req.Post["approve"].Value != null)
                 {
                     if (req.Post["approve"].Value != "0" && req.Post["approve"].Value != "1")
                         return HttpResponse.Redirect(req.Url.ToHref());

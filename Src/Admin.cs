@@ -10,28 +10,26 @@ namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private DbAuthenticator _authenticator = new DbAuthenticator();
-
-        private HttpResponse withLoggedInUser(HttpRequest req, Func<UserFlags, bool> isAllowed, Func<DbSession, User, Db, HttpResponse> handler)
+        private static HttpResponse withLoggedInUser(HttpRequest req, Func<UserFlags, bool> isAllowed, Func<DbSession, User, Db, HttpResponse> handler)
         {
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
+            return Session.EnableManual<DbSession>(req, sess =>
             {
-                return Session.EnableManual<DbSession>(req, sess =>
-                {
-                    if (sess.LoggedInUserId == null)
-                        throw new HttpException(HttpStatusCode._401_Unauthorized);
+                if (sess.LoggedInUserId == null)
+                    throw new HttpException(HttpStatusCode._401_Unauthorized);
 
-                    var user = db.Users.FirstOrDefault(u => u.UserID == sess.LoggedInUserId.Value);
-                    if (user == null || !isAllowed(user.Flags))
-                        throw new HttpException(HttpStatusCode._401_Unauthorized);
+                var user = db.Users.FirstOrDefault(u => u.UserID == sess.LoggedInUserId.Value);
+                if (user == null || !isAllowed(user.Flags))
+                    throw new HttpException(HttpStatusCode._401_Unauthorized);
 
-                    var ret = handler(sess, user, db);
-                    tr.Complete();
-                    return ret;
-                });
-            }
+                var ret = handler(sess, user, db);
+                tr.Complete();
+                return ret;
+            });
         }
+
+        private static readonly bool[] trueFalse = [true, false];
 
         private HttpResponse admin(HttpRequest req)
         {
@@ -39,7 +37,7 @@ namespace LiBackgammon
             {
                 if (req.Method == RT.Servers.HttpMethod.Post && req.Post["accept"].Value != null)
                 {
-                    if (req.Post["accept"].Value != "0" && req.Post["accept"].Value != "1")
+                    if (req.Post["accept"].Value is not "0" and not "1")
                         return HttpResponse.Redirect(req.Url.ToHref());
 
                     var lang = req.Post["lang"].Value;
@@ -51,8 +49,7 @@ namespace LiBackgammon
                         return HttpResponse.Redirect(req.Url.ToHref());
 
                     var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
-                    LanguageSuggestion suggestion;
-                    if (!data.Suggestions.TryGetValue(token, out suggestion))
+                    if (!data.Suggestions.TryGetValue(token, out var suggestion))
                         return HttpResponse.Redirect(req.Url.ToHref());
 
                     if (accept)
@@ -69,7 +66,7 @@ namespace LiBackgammon
 
                 if (req.Method == RT.Servers.HttpMethod.Post && req.Post["approve"].Value != null)
                 {
-                    if (req.Post["approve"].Value != "0" && req.Post["approve"].Value != "1")
+                    if (req.Post["approve"].Value is not "0" and not "1")
                         return HttpResponse.Redirect(req.Url.ToHref());
 
                     var lang = req.Post["lang"].Value;
@@ -118,7 +115,7 @@ namespace LiBackgammon
                                             data.Suggestions.Select(kvp1 => Ut.NewArray<object>(
                                                 new H2(
                                                     kvp1.Key,
-                                                    new[] { true, false }.Select(accept => new FORM { method = method.post, action = req.Url.ToHref(), class_ = "acc-rej-suggestion" }._(
+                                                    trueFalse.Select(accept => new FORM { method = method.post, action = req.Url.ToHref(), class_ = "acc-rej-suggestion" }._(
                                                         new INPUT { type = itype.hidden, name = "token", value = kvp1.Key },
                                                         new INPUT { type = itype.hidden, name = "lang", value = l.HashName },
                                                         new INPUT { type = itype.hidden, name = "accept", value = accept ? "1" : "0" },
@@ -128,7 +125,7 @@ namespace LiBackgammon
                                                     kvp1.Value.Translations.Select(kvp2 => new TR { class_ = "translation", title = kvp2.Key }.Data("selector", kvp2.Key)._(
                                                         new TD { class_ = "original" },
                                                         new TD(kvp2.Value),
-                                                        new TD(data.Translations.ContainsKey(kvp2.Key) ? data.Translations[kvp2.Key] : null))))))))))))),
+                                                        new TD(data.Translations.TryGetValue(kvp2.Key, out var value) ? value : null))))))))))))),
                     "js/admin",
                     admin: true);
             });

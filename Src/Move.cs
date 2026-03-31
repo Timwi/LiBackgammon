@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using RT.Serialization;
+﻿using RT.Serialization;
 using RT.Util.ExtensionMethods;
 
 namespace LiBackgammon

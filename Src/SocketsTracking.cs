@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using RT.Util.ExtensionMethods;
+﻿using RT.Util.ExtensionMethods;
 
 namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private HashSet<MainWebSocket> _activeMainSockets = new HashSet<MainWebSocket>();
+        private HashSet<MainWebSocket> _activeMainSockets = [];
 
         public void AddMainSocket(MainWebSocket socket)
         {
@@ -40,8 +38,8 @@ namespace LiBackgammon
                     socket.RemoveGame(game.PublicID);
         }
 
-        private Dictionary<string, List<PlayWebSocket>> _activePlaySocketsByGame = new Dictionary<string, List<PlayWebSocket>>();
-        private Dictionary<int, List<PlayWebSocket>> _activePlaySocketsByMatch = new Dictionary<int, List<PlayWebSocket>>();
+        private readonly Dictionary<string, List<PlayWebSocket>> _activePlaySocketsByGame = [];
+        private readonly Dictionary<int, List<PlayWebSocket>> _activePlaySocketsByMatch = [];
 
         public void AddGameSocket(PlayWebSocket socket)
         {
@@ -63,18 +61,16 @@ namespace LiBackgammon
 
         public PlayWebSocket[] GetSocketsByGame(string gameId)
         {
-            List<PlayWebSocket> sockets;
             lock (_activePlaySocketsByGame)
-                if (_activePlaySocketsByGame.TryGetValue(gameId, out sockets))
+                if (_activePlaySocketsByGame.TryGetValue(gameId, out var sockets))
                     return sockets.ToArray();
             return null;
         }
 
         public PlayWebSocket[] GetSocketsByMatch(int matchId)
         {
-            List<PlayWebSocket> sockets;
             lock (_activePlaySocketsByMatch)
-                if (_activePlaySocketsByMatch.TryGetValue(matchId, out sockets))
+                if (_activePlaySocketsByMatch.TryGetValue(matchId, out var sockets))
                     return sockets.ToArray();
             return null;
         }

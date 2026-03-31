@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
+#pragma warning disable IDE0053 // Use expression body for lambda expression
 
 namespace LiBackgammon.Migrations
 {

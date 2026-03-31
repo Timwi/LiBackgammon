@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using RT.Json;
 using RT.Serialization;
 using RT.Servers;
@@ -10,69 +7,52 @@ using RT.Util.ExtensionMethods;
 
 namespace LiBackgammon
 {
-    public sealed class PlayWebSocket : WebSocket
+    public sealed class PlayWebSocket(LiBackgammonPropellerModule server, string gameId, int? matchId, Player player, IHttpUrl url) : WebSocket
     {
-        public string GameId { get; private set; }
-        public int? MatchId { get; private set; }
-        private Player _player;
-        private LiBackgammonPropellerModule _server;
-        private IHttpUrl _url;
-
-        public Player Player { get { return _player; } }
-
-        public PlayWebSocket(LiBackgammonPropellerModule server, string gameId, int? matchId, Player player, IHttpUrl url)
-        {
-            _server = server;
-            GameId = gameId;
-            MatchId = matchId;
-            _player = player;
-            _url = url;
-        }
+        public string GameId { get; private set; } = gameId;
+        public int? MatchId { get; private set; } = matchId;
+        public Player Player { get; private set; } = player;
 
         protected override void onBeginConnection()
         {
-            _server.AddGameSocket(this);
-            var sockets = _server.GetSocketsByGame(GameId);
+            server.AddGameSocket(this);
+            var sockets = server.GetSocketsByGame(GameId);
 
             if (sockets != null)
             {
                 foreach (var socket in sockets)
                 {
-                    if (_player != Player.Spectator)
-                        socket.SendMessage(new JsonDict { { "on", _player.ToString() } });
+                    if (Player != Player.Spectator)
+                        socket.SendMessage(new JsonDict { ["on"] = Player.ToString() });
                     if (socket.Player != Player.Spectator)
-                        SendMessage(new JsonDict { { "on", socket.Player.ToString() } });
+                        SendMessage(new JsonDict { ["on"] = socket.Player.ToString() });
                 }
             }
 
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
-            {
-                IQueryable<ChatMessage> chatMsgs;
-                if (MatchId != null)
-                    chatMsgs = from cm in db.ChatMessages
-                               join g in db.Games on cm.GameID equals g.PublicID
-                               where g.Match != null && g.Match == MatchId.Value
-                               select cm;
-                else
-                    chatMsgs = db.ChatMessages.Where(cm => cm.GameID == GameId);
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
 
-                var chatList = chatMsgs.OrderBy(cm => cm.Time).AsEnumerable().Select(chatMessageJson).ToJsonList();
-                if (chatList.Count > 0)
-                    SendMessage(new JsonDict { { "chat", chatList } });
-            }
+            var chatMsgs = MatchId != null
+                ? (from cm in db.ChatMessages
+                   join g in db.Games on cm.GameID equals g.PublicID
+                   where g.Match != null && g.Match == MatchId.Value
+                   select cm)
+                : db.ChatMessages.Where(cm => cm.GameID == GameId);
+            var chatList = chatMsgs.OrderBy(cm => cm.Time).AsEnumerable().Select(chatMessageJson).ToJsonList();
+            if (chatList.Count > 0)
+                SendMessage(new JsonDict { ["chat"] = chatList });
         }
 
         protected override void onEndConnection()
         {
-            _server.RemoveGameSocket(this);
+            server.RemoveGameSocket(this);
 
-            if (_player != Player.Spectator)
+            if (Player != Player.Spectator)
             {
-                var sockets = _server.GetSocketsByGame(GameId);
-                if (sockets != null && !sockets.Any(s => s.Player == _player))
+                var sockets = server.GetSocketsByGame(GameId);
+                if (sockets != null && !sockets.Any(s => s.Player == Player))
                 {
-                    var info = new JsonDict { { "off", _player.ToString() } }.ToString().ToUtf8();
+                    var info = new JsonDict { ["off"] = Player.ToString() }.ToString().ToUtf8();
                     foreach (var socket in sockets)
                         socket.SendMessage(1, info);
                 }
@@ -80,27 +60,16 @@ namespace LiBackgammon
         }
 
         [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-        sealed class SocketMethodAttribute : Attribute
+        sealed class SocketMethodAttribute(bool spectatorAllowed = false) : Attribute
         {
-            public bool SpectatorAllowed { get; private set; }
-            public SocketMethodAttribute(bool spectatorAllowed = false)
-            {
-                SpectatorAllowed = spectatorAllowed;
-            }
+            public bool SpectatorAllowed { get; private set; } = spectatorAllowed;
         }
 
-        private sealed class MessageInfo
+        private sealed class MessageInfo(JsonDict message, Func<PlayWebSocket, bool> predicate = null, bool sendToAllGamesInMatch = false)
         {
-            public JsonDict Message { get; private set; }
-            public Func<PlayWebSocket, bool> Predicate { get; private set; }
-            public bool SendToAllGamesInMatch { get; private set; }
-
-            public MessageInfo(JsonDict message, Func<PlayWebSocket, bool> predicate = null, bool sendToAllGamesInMatch = false)
-            {
-                Message = message;
-                Predicate = predicate;
-                SendToAllGamesInMatch = sendToAllGamesInMatch;
-            }
+            public JsonDict Message { get; private set; } = message;
+            public Func<PlayWebSocket, bool> Predicate { get; private set; } = predicate;
+            public bool SendToAllGamesInMatch { get; private set; } = sendToAllGamesInMatch;
         }
 
         [SocketMethod]
@@ -109,7 +78,7 @@ namespace LiBackgammon
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 // Make sure it is actually this player’s turn
-                if (whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToMove : GameState.Black_ToMove))
+                if (whiteToPlay != (Player == Player.White) || game.State != (Player == Player.White ? GameState.White_ToMove : GameState.Black_ToMove))
                     return null;
 
                 // Find all valid moves and see if the provided move is one of them
@@ -122,7 +91,7 @@ namespace LiBackgammon
                 // The move is valid. 
                 lastMove.SourceTongues = sourceTongues;
                 lastMove.TargetTongues = targetTongues;
-                return new MessageInfo(new JsonDict { { "move", new JsonDict { { "sourceTongues", sourceTongues }, { "targetTongues", targetTongues } } } }, s => s != this)
+                return new MessageInfo(new JsonDict { ["move"] = new JsonDict { ["sourceTongues"] = sourceTongues, ["targetTongues"] = targetTongues } }, s => s != this)
                     .Concat(continueGame(db, pos.ProcessMove(whiteToPlay, lastMove), game, whiteToPlay, moves))
                     .ToArray();
             });
@@ -135,7 +104,7 @@ namespace LiBackgammon
             {
                 // Make sure it is actually this player’s turn, and the game is played with a doubling cube (otherwise the players do not manually roll)
                 // Note “whiteToPlay” is currently off because the dice roll doesn’t have an entry in “moves” yet — hence the not
-                if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
+                if (pos.GameValue == null || !whiteToPlay != (Player == Player.White) || game.State != (Player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
                     return null;
 
                 // The actual dice rolling happens inside of continueGame.
@@ -150,10 +119,10 @@ namespace LiBackgammon
             {
                 // Make sure it’s this player’s turn to choose whether to double or roll, and the game is played with a doubling cube
                 // Note “whiteToPlay” is currently off because the double doesn’t have an entry in “moves” yet — hence the not
-                if (pos.GameValue == null || !whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
+                if (pos.GameValue == null || !whiteToPlay != (Player == Player.White) || game.State != (Player == Player.White ? GameState.White_ToRoll : GameState.Black_ToRoll))
                     return null;
-                game.State = _player == Player.White ? GameState.Black_ToConfirmDouble : GameState.White_ToConfirmDouble;
-                return new[] { new MessageInfo(new JsonDict { { "state", game.State.ToString() } }) };
+                game.State = Player == Player.White ? GameState.Black_ToConfirmDouble : GameState.White_ToConfirmDouble;
+                return new[] { new MessageInfo(new JsonDict { ["state"] = game.State.ToString() }) };
             });
         }
 
@@ -163,13 +132,13 @@ namespace LiBackgammon
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 // Make sure it’s this player’s turn to respond to a double
-                if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
+                if (pos.GameValue == null || whiteToPlay != (Player == Player.White) || game.State != (Player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
                     return null;
 
                 pos.GameValue = pos.GameValue.Value * 2;
 
                 // The game continues with a dice roll, which happens inside of continueGame.
-                return new MessageInfo(new JsonDict { { "cube", new JsonDict { { "gameValue", pos.GameValue.Value }, { "whiteOwnsCube", _player == Player.White } } } })
+                return new MessageInfo(new JsonDict { ["cube"] = new JsonDict { ["gameValue"] = pos.GameValue.Value, ["whiteOwnsCube"] = Player == Player.White } })
                     .Concat(continueGame(db, pos, game, whiteToPlay, moves, acceptedDouble: true))
                     .ToArray();
             });
@@ -181,9 +150,9 @@ namespace LiBackgammon
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 // Make sure it’s this player’s turn to respond to a double, and the game is played with a doubling cube
-                if (pos.GameValue == null || whiteToPlay != (_player == Player.White) || game.State != (_player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
+                if (pos.GameValue == null || whiteToPlay != (Player == Player.White) || game.State != (Player == Player.White ? GameState.White_ToConfirmDouble : GameState.Black_ToConfirmDouble))
                     return null;
-                game.State = _player == Player.White ? GameState.Black_Won_DeclinedDouble : GameState.White_Won_DeclinedDouble;
+                game.State = Player == Player.White ? GameState.Black_Won_DeclinedDouble : GameState.White_Won_DeclinedDouble;
                 return gameOver(db, game, pos, game.State == GameState.White_Won_DeclinedDouble, useMultiplier: false).ToArray();
             });
         }
@@ -194,10 +163,10 @@ namespace LiBackgammon
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 // You can’t resign if the game is already over
-                if (game.State == GameState.Black_Won_Finished || game.State == GameState.Black_Won_DeclinedDouble || game.State == GameState.Black_Won_Resignation ||
-                    game.State == GameState.White_Won_Finished || game.State == GameState.White_Won_DeclinedDouble || game.State == GameState.White_Won_Resignation)
+                if (game.State is GameState.Black_Won_Finished or GameState.Black_Won_DeclinedDouble or GameState.Black_Won_Resignation or
+                    GameState.White_Won_Finished or GameState.White_Won_DeclinedDouble or GameState.White_Won_Resignation)
                     return null;
-                game.State = _player == Player.White ? GameState.Black_Won_Resignation : GameState.White_Won_Resignation;
+                game.State = Player == Player.White ? GameState.Black_Won_Resignation : GameState.White_Won_Resignation;
                 return gameOver(db, game, pos, game.State == GameState.White_Won_Resignation, useMultiplier: true).ToArray();
             });
         }
@@ -208,8 +177,8 @@ namespace LiBackgammon
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
                 if (game.RematchOffer != RematchOffer.None &&
-                    !(game.RematchOffer == RematchOffer.WhiteDeclined && _player == Player.White) &&
-                    !(game.RematchOffer == RematchOffer.BlackDeclined && _player == Player.Black))
+                    !(game.RematchOffer == RematchOffer.WhiteDeclined && Player == Player.White) &&
+                    !(game.RematchOffer == RematchOffer.BlackDeclined && Player == Player.Black))
                     return null;
 
                 var isMatchOver = (
@@ -227,8 +196,8 @@ namespace LiBackgammon
                 if (!isMatchOver)
                     return null;
 
-                game.RematchOffer = _player == Player.White ? RematchOffer.White : RematchOffer.Black;
-                return new[] { new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }) };
+                game.RematchOffer = Player == Player.White ? RematchOffer.White : RematchOffer.Black;
+                return new[] { new MessageInfo(new JsonDict { ["rematch"] = game.RematchOffer.ToString() }) };
             });
         }
 
@@ -237,8 +206,8 @@ namespace LiBackgammon
         {
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
-                if ((_player == Player.White && game.RematchOffer != RematchOffer.Black) ||
-                    (_player == Player.Black && game.RematchOffer != RematchOffer.White))
+                if ((Player == Player.White && game.RematchOffer != RematchOffer.Black) ||
+                    (Player == Player.Black && game.RematchOffer != RematchOffer.White))
                     return null;
                 game.RematchOffer = RematchOffer.Accepted;
                 var match = game.Match.NullOr(mid => db.Matches.FirstOrDefault(m => m.ID == mid));
@@ -247,7 +216,7 @@ namespace LiBackgammon
                     : db.CreateNewMatch(CreateNewGameOption.RollAlready, match.MaxScore, match.DoublingCubeRules, game.Visibility).Game;
                 game.NextGame = newGame.PublicID;
                 return sendNextUrl(newGame)
-                    .Concat(new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }))
+                    .Concat(new MessageInfo(new JsonDict { ["rematch"] = game.RematchOffer.ToString() }))
                     .ToArray();
             });
         }
@@ -257,11 +226,11 @@ namespace LiBackgammon
         {
             return processGameState((db, game, pos, whiteToPlay, moves) =>
             {
-                if ((_player == Player.White && game.RematchOffer != RematchOffer.Black) ||
-                    (_player == Player.Black && game.RematchOffer != RematchOffer.White))
+                if ((Player == Player.White && game.RematchOffer != RematchOffer.Black) ||
+                    (Player == Player.Black && game.RematchOffer != RematchOffer.White))
                     return null;
-                game.RematchOffer = _player == Player.White ? RematchOffer.WhiteDeclined : RematchOffer.BlackDeclined;
-                return new[] { new MessageInfo(new JsonDict { { "rematch", game.RematchOffer.ToString() } }) };
+                game.RematchOffer = Player == Player.White ? RematchOffer.WhiteDeclined : RematchOffer.BlackDeclined;
+                return new[] { new MessageInfo(new JsonDict { ["rematch"] = game.RematchOffer.ToString() }) };
             });
         }
 
@@ -272,16 +241,15 @@ namespace LiBackgammon
             if (msg.Length == 0)
                 return null;
 
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
-            {
-                var chatMsgObj = new ChatMessage { GameID = GameId, Player = _player, Time = DateTime.UtcNow, Message = msg };
-                db.ChatMessages.Add(chatMsgObj);
-                db.SaveChanges();
-                tr.Complete();
-                SendMessage(new JsonDict { { "chatid", new JsonDict { { "token", token }, { "id", chatMsgObj.ID } } } });
-                return new[] { new MessageInfo(new JsonDict { { "chat", chatMessageJson(chatMsgObj) } }, sendToAllGamesInMatch: true) };
-            }
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
+
+            var chatMsgObj = new ChatMessage { GameID = GameId, Player = Player, Time = DateTime.UtcNow, Message = msg };
+            db.ChatMessages.Add(chatMsgObj);
+            db.SaveChanges();
+            tr.Complete();
+            SendMessage(new JsonDict { ["chatid"] = new JsonDict { ["token"] = token, ["id"] = chatMsgObj.ID } });
+            return [new MessageInfo(new JsonDict { ["chat"] = chatMessageJson(chatMsgObj) }, sendToAllGamesInMatch: true)];
         }
 
         [SocketMethod]
@@ -290,35 +258,31 @@ namespace LiBackgammon
             if (ids == null || ids.Count == 0 || Player == Player.Spectator)
                 return null;
 
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
-            {
-                var chatMsgs = db.ChatMessages.Where(ch => ids.Contains(ch.ID) && ch.Player != Player).ToArray();
-                foreach (var msg in chatMsgs)
-                    msg.Seen = true;
-                db.SaveChanges();
-                tr.Complete();
-                return null;
-            }
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
+            var chatMsgs = db.ChatMessages.Where(ch => ids.Contains(ch.ID) && ch.Player != Player).ToArray();
+            foreach (var msg in chatMsgs)
+                msg.Seen = true;
+            db.SaveChanges();
+            tr.Complete();
+            return null;
         }
 
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] settings()
         {
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
-            {
-                var styles = db.Styles
-                    .Where(s => s.Approved)
-                    .Select(s => new { s.Name, s.HashName })
-                    .ToJsonDict(s => s.HashName, s => s.Name);
-                var languages = db.Languages
-                    .Where(s => s.Approved)
-                    .Select(s => new { s.Name, s.HashName })
-                    .ToJsonDict(s => s.HashName, s => s.Name);
-                SendMessage(new JsonDict { { "settings", new JsonDict { { "style", styles }, { "lang", languages } } } });
-                return null;
-            }
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
+            var styles = db.Styles
+                .Where(s => s.Approved)
+                .Select(s => new { s.Name, s.HashName })
+                .ToJsonDict(s => s.HashName, s => s.Name);
+            var languages = db.Languages
+                .Where(s => s.Approved)
+                .Select(s => new { s.Name, s.HashName })
+                .ToJsonDict(s => s.HashName, s => s.Name);
+            SendMessage(new JsonDict { ["settings"] = new JsonDict { ["style"] = styles, ["lang"] = languages } });
+            return null;
         }
 
         [SocketMethod(spectatorAllowed: true)]
@@ -330,7 +294,7 @@ namespace LiBackgammon
                     (lastMoveDone != null && moves.Count == 0) ||
                     (lastMoveDone != null && lastMoveDone.Value != (moves.Last().SourceTongues != null)) ||
                     game.RematchOffer != RematchOffer.None)
-                    SendMessage(new JsonDict { { "resync", resyncInfo(game) } });
+                    SendMessage(new JsonDict { ["resync"] = resyncInfo(game) });
                 return null;
             });
         }
@@ -344,14 +308,12 @@ namespace LiBackgammon
                 dict["rematch"] = game.RematchOffer.ToString();
             if (game.NextGame != null)
             {
-                using (var db = new Db())
+                using var db = new Db();
+                var nextGame = db.Games.FirstOrDefault(g => g.PublicID == game.NextGame);
+                if (nextGame != null)
                 {
-                    var nextGame = db.Games.FirstOrDefault(g => g.PublicID == game.NextGame);
-                    if (nextGame != null)
-                    {
-                        dict["nextUrl"] = nextUrl(nextGame, _player);
-                        dict["nextCube"] = nextGame.HasDoublingCube;
-                    }
+                    dict["nextUrl"] = nextUrl(nextGame, Player);
+                    dict["nextCube"] = nextGame.HasDoublingCube;
                 }
             }
             return dict;
@@ -360,13 +322,17 @@ namespace LiBackgammon
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] getLanguages()
         {
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
-                SendMessage(new JsonDict { { "languages", db.Languages.ToJsonList(l => new JsonDict {
-                    { "name", l.Name },
-                    { "hash", l.HashName },
-                    { "isApproved", l.Approved }
-                }) } });
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
+            SendMessage(new JsonDict
+            {
+                ["languages"] = db.Languages.ToJsonList(l => new JsonDict
+                {
+                    ["name"] = l.Name,
+                    ["hash"] = l.HashName,
+                    ["isApproved"] = l.Approved
+                })
+            });
             return null;
         }
 
@@ -375,120 +341,126 @@ namespace LiBackgammon
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "Please provide the name of your language." } } } });
+                SendMessage(new JsonDict { ["translateError"] = new JsonDict { ["error"] = "Please provide the name of your language." } });
                 return null;
             }
             if (string.IsNullOrWhiteSpace(hashName))
             {
-                SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "Please provide the language code for your language." } } } });
+                SendMessage(new JsonDict { ["translateError"] = new JsonDict { ["error"] = "Please provide the language code for your language." } });
                 return null;
             }
             name = name.Trim();
             hashName = hashName.Trim();
 
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
-            {
-                var already = db.Languages.Where(l => l.Name == name).FirstOrDefault();
-                if (already != null)
-                {
-                    SendMessage(new JsonDict { { "translateError", new JsonDict {
-                        { "error", "A language by this name already exists (and has been selected for you in the dropdown above). Please edit the existing language or choose a new name (e.g. “Français (Québec)” instead of just “Français”)." },
-                        { "hash", already.HashName },
-                        { "name", already.Name } } } });
-                    return null;
-                }
-                already = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
-                if (already != null)
-                {
-                    SendMessage(new JsonDict { { "translateError", new JsonDict {
-                        { "error", "A language with this ISO code already exists (and has been selected for you in the dropdown above). Please edit the existing language or use a different code. For regional variants, add the country code (e.g. “fr-CA” instead of just “fr”). For exotic languages, use “xx-” followed by the name, e.g. “xx-quenya”." },
-                        { "hash", already.HashName },
-                        { "name", already.Name } } } });
-                    return null;
-                }
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
 
-                var token = Rnd.GenerateString(8);
-                var data = new LanguageData();
-                data.Suggestions[token] = new LanguageSuggestion { LastChange = DateTime.UtcNow };
-                var newLang = new Language
+            var already = db.Languages.Where(l => l.Name == name).FirstOrDefault();
+            if (already != null)
+            {
+                SendMessage(new JsonDict
                 {
-                    HashName = hashName,
-                    Name = name,
-                    Data = ClassifyJson.Serialize(data).ToString(),
-                    LastChange = DateTime.UtcNow,
-                    Approved = false
-                };
-                db.Languages.Add(newLang);
-                db.SaveChanges();
-                tr.Complete();
-                SendMessage(new JsonDict { { "translate", new JsonDict { { "hash", newLang.HashName }, { "name", newLang.Name }, { "token", token }, { "strings", new JsonList() } } } });
+                    ["translateError"] = new JsonDict
+                    {
+                        ["error"] = "A language by this name already exists (and has been selected for you in the dropdown above). Please edit the existing language or choose a new name (e.g. “Français (Québec)” instead of just “Français”).",
+                        ["hash"] = already.HashName,
+                        ["name"] = already.Name
+                    }
+                });
                 return null;
             }
+            already = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
+            if (already != null)
+            {
+                SendMessage(new JsonDict
+                {
+                    ["translateError"] = new JsonDict
+                    {
+                        ["error"] = "A language with this ISO code already exists (and has been selected for you in the dropdown above). Please edit the existing language or use a different code. For regional variants, add the country code (e.g. “fr-CA” instead of just “fr”). For exotic languages, use “xx-” followed by the name, e.g. “xx-quenya”.",
+                        ["hash"] = already.HashName,
+                        ["name"] = already.Name
+                    }
+                });
+                return null;
+            }
+
+            var token = Rnd.GenerateString(8);
+            var data = new LanguageData();
+            data.Suggestions[token] = new LanguageSuggestion { LastChange = DateTime.UtcNow };
+            var newLang = new Language
+            {
+                HashName = hashName,
+                Name = name,
+                Data = ClassifyJson.Serialize(data).ToString(),
+                LastChange = DateTime.UtcNow,
+                Approved = false
+            };
+            db.Languages.Add(newLang);
+            db.SaveChanges();
+            tr.Complete();
+            SendMessage(new JsonDict { ["translate"] = new JsonDict { ["hash"] = newLang.HashName, ["name"] = newLang.Name, ["token"] = token, ["strings"] = new JsonList() } });
+            return null;
         }
 
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] translate(string hashName, string token = null)
         {
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
+
+            var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
+            if (language == null)
             {
-                var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
-                if (language == null)
-                {
-                    SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "The specified language no longer exists. It may have been deleted in the meantime." } } } });
-                    return null;
-                }
-                var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
-                var strings = data.Translations.ToJsonDict(str => str.Key, str => str.Value);
-                if (token == null)
-                    token = Rnd.GenerateString(8);
-                else if (data.Suggestions.ContainsKey(token))
-                    foreach (var kvp in data.Suggestions[token].Translations)
-                        strings[kvp.Key] = kvp.Value;
-                SendMessage(new JsonDict { { "translate", new JsonDict { { "hash", language.HashName }, { "name", language.Name }, { "token", token }, { "strings", strings } } } });
+                SendMessage(new JsonDict { ["translateError"] = new JsonDict { ["error"] = "The specified language no longer exists. It may have been deleted in the meantime." } });
+                return null;
             }
+            var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
+            var strings = data.Translations.ToJsonDict(str => str.Key, str => str.Value);
+            if (token == null)
+                token = Rnd.GenerateString(8);
+            else if (data.Suggestions.TryGetValue(token, out var suggestion))
+                foreach (var kvp in suggestion.Translations)
+                    strings[kvp.Key] = kvp.Value;
+            SendMessage(new JsonDict { ["translate"] = new JsonDict { ["hash"] = language.HashName, ["name"] = language.Name, ["token"] = token, ["strings"] = strings } });
             return null;
         }
 
         [SocketMethod(spectatorAllowed: true)]
         private MessageInfo[] translateSubmit(string hashName, string token, string sel, string trans)
         {
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
+
+            var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
+            if (language == null)
             {
-                var language = db.Languages.Where(l => l.HashName == hashName).FirstOrDefault();
-                if (language == null)
-                {
-                    SendMessage(new JsonDict { { "translateError", new JsonDict { { "error", "The specified language no longer exists. It may have been deleted in the meantime." } } } });
-                    return null;
-                }
-                var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
-                if (!data.Suggestions.ContainsKey(token))
-                    data.Suggestions[token] = new LanguageSuggestion();
-                data.Suggestions[token].LastChange = DateTime.UtcNow;
-                var removed = string.IsNullOrWhiteSpace(trans);
-                if (removed)
-                {
-                    data.Suggestions[token].Translations.Remove(sel);
-                    if (data.Suggestions[token].Translations.Count == 0)
-                        data.Suggestions.Remove(token);
-                }
-                else
-                    data.Suggestions[token].Translations[sel] = trans;
-                language.Data = ClassifyJson.Serialize(data).ToString();
-                language.LastChange = DateTime.UtcNow;
-                db.SaveChanges();
-                tr.Complete();
-                SendMessage(new JsonDict { { "translationSaved", new JsonDict { { "sel", sel }, { "removed", removed } } } });
+                SendMessage(new JsonDict { ["translateError"] = new JsonDict { ["error"] = "The specified language no longer exists. It may have been deleted in the meantime." } });
+                return null;
             }
+            var data = ClassifyJson.Deserialize<LanguageData>(JsonValue.Parse(language.Data));
+            if (!data.Suggestions.ContainsKey(token))
+                data.Suggestions[token] = new LanguageSuggestion();
+            data.Suggestions[token].LastChange = DateTime.UtcNow;
+            var removed = string.IsNullOrWhiteSpace(trans);
+            if (removed)
+            {
+                data.Suggestions[token].Translations.Remove(sel);
+                if (data.Suggestions[token].Translations.Count == 0)
+                    data.Suggestions.Remove(token);
+            }
+            else
+                data.Suggestions[token].Translations[sel] = trans;
+            language.Data = ClassifyJson.Serialize(data).ToString();
+            language.LastChange = DateTime.UtcNow;
+            db.SaveChanges();
+            tr.Complete();
+            SendMessage(new JsonDict { ["translationSaved"] = new JsonDict { ["sel"] = sel, ["removed"] = removed } });
             return null;
         }
 
         protected override void onTextMessageReceived(string msg)
         {
-            var json = JsonValue.Parse(msg);
-            if (!(json is JsonDict) || json.Count != 1)
+            if (JsonValue.Parse(msg) is not JsonDict { Count: 1 } json)
                 return;
 
             var key = json.Keys.First();
@@ -497,14 +469,13 @@ namespace LiBackgammon
                 return;
 
             var attr = method.GetCustomAttribute<SocketMethodAttribute>();
-            if (attr == null || (_player == Player.Spectator && !attr.SpectatorAllowed))
+            if (attr == null || (Player == Player.Spectator && !attr.SpectatorAllowed))
                 return;
 
             var arguments = json.Values.First();
             var toSend = (MessageInfo[]) method.Invoke(this, method.GetParameters().Select(p =>
             {
-                JsonValue arg;
-                var has = arguments.TryGetValue(p.Name, out arg);
+                var has = arguments.TryGetValue(p.Name, out var arg);
                 if (!p.IsOptional && !has)
                     throw new InvalidOperationException("Expected parameter {0} missing.".Fmt(p.Name));
                 return has ? ClassifyJson.Deserialize(p.ParameterType, arg) : p.DefaultValue;
@@ -514,7 +485,7 @@ namespace LiBackgammon
             // (We do this at the end so that we don’t send /any/ messages if any part of the above code throws an exception)
             if (toSend != null && toSend.Length > 0)
             {
-                var gameSockets = _server.GetSocketsByGame(GameId);
+                var gameSockets = server.GetSocketsByGame(GameId);
                 if (gameSockets != null)
                     foreach (var socket in gameSockets)
                         foreach (var sendMsg in toSend)
@@ -523,7 +494,7 @@ namespace LiBackgammon
 
                 if (MatchId != null && toSend.Any(m => m.SendToAllGamesInMatch))
                 {
-                    var matchSockets = _server.GetSocketsByMatch(MatchId.Value);
+                    var matchSockets = server.GetSocketsByMatch(MatchId.Value);
                     if (matchSockets != null)
                         foreach (var socket in matchSockets)
                             foreach (var sendMsg in toSend)
@@ -535,48 +506,45 @@ namespace LiBackgammon
 
         private T processGameState<T>(Func<Db, Game, Position, bool, List<Move>, T> func)
         {
-            using (var tr = Program.NewTransaction())
-            using (var db = new Db())
-            {
-                var game = db.Games.FirstOrDefault(g => g.PublicID == GameId);
-                if (game == null)
-                    throw new InvalidOperationException("game is null");
+            using var tr = Program.NewTransaction();
+            using var db = new Db();
 
-                var pos = game.InitialPosition.ToPosition();
-                var moves = game.Moves.ToMoves();
+            var game = db.Games.FirstOrDefault(g => g.PublicID == GameId) ?? throw new InvalidOperationException("game is null");
+            var pos = game.InitialPosition.ToPosition();
+            var moves = game.Moves.ToMoves();
 
-                // Determine what the current game position is
-                var whiteStarts = moves.Count > 0 && moves[0].Dice1 > moves[0].Dice2;
-                for (int i = 0; i < moves.Count; i++)
-                    pos = pos.ProcessMove(whiteStarts ? (i % 2 == 0) : (i % 2 != 0), moves[i]);
-                var whiteToPlay = whiteStarts ? (moves.Count % 2 != 0) : (moves.Count % 2 == 0);
+            // Determine what the current game position is
+            var whiteStarts = moves.Count > 0 && moves[0].Dice1 > moves[0].Dice2;
+            for (var i = 0; i < moves.Count; i++)
+                pos = pos.ProcessMove(whiteStarts ? (i % 2 == 0) : (i % 2 != 0), moves[i]);
+            var whiteToPlay = whiteStarts ? (moves.Count % 2 != 0) : (moves.Count % 2 == 0);
 
-                var result = func(db, game, pos, whiteToPlay, moves);
-                db.SaveChanges();
-                tr.Complete();
-                return result;
-            }
+            var result = func(db, game, pos, whiteToPlay, moves);
+            db.SaveChanges();
+            tr.Complete();
+            return result;
         }
 
         private IEnumerable<MessageInfo> sendNextUrl(Game nextGame)
         {
-            yield return new MessageInfo(new JsonDict { { "nextUrl", nextUrl(nextGame, Player.White) } }, s => s.Player == Player.White);
-            yield return new MessageInfo(new JsonDict { { "nextUrl", nextUrl(nextGame, Player.Black) } }, s => s.Player == Player.Black);
-            yield return new MessageInfo(new JsonDict { { "nextUrl", nextUrl(nextGame, Player.Spectator) } }, s => s.Player == Player.Spectator);
+            yield return new MessageInfo(new JsonDict { ["nextUrl"] = nextUrl(nextGame, Player.White) }, s => s.Player == Player.White);
+            yield return new MessageInfo(new JsonDict { ["nextUrl"] = nextUrl(nextGame, Player.Black) }, s => s.Player == Player.Black);
+            yield return new MessageInfo(new JsonDict { ["nextUrl"] = nextUrl(nextGame, Player.Spectator) }, s => s.Player == Player.Spectator);
         }
 
         private string nextUrl(Game nextGame, Player player)
         {
-            return _url.WithParent("play/" + nextGame.PublicID + (player == Player.White ? nextGame.WhiteToken : player == Player.Black ? nextGame.BlackToken : null)).ToFull();
+            return url.WithParent("play/" + nextGame.PublicID + (player == Player.White ? nextGame.WhiteToken : player == Player.Black ? nextGame.BlackToken : null)).ToFull();
         }
 
         private IEnumerable<MessageInfo> gameOver(Db db, Game game, Position pos, bool whiteWins, bool useMultiplier)
         {
             var match = game.Match.NullOr(id => db.Matches.FirstOrDefault(m => m.ID == id));
             var winScore = (pos.GameValue ?? 1) * (useMultiplier ? pos.GetWinMultiplier(whiteWins) : 1);
-            var dict = new JsonDict {
-                { "state", game.State.ToString() },
-                { "score", winScore }
+            var dict = new JsonDict
+            {
+                ["state"] = game.State.ToString(),
+                ["score"] = winScore
             };
 
             if (whiteWins)
@@ -594,7 +562,7 @@ namespace LiBackgammon
                     dict["matchOver"] = 1;
                 else
                 {
-                    bool doublingCube = match.DoublingCubeRules != DoublingCubeRules.None;
+                    var doublingCube = match.DoublingCubeRules != DoublingCubeRules.None;
                     if (match.DoublingCubeRules == DoublingCubeRules.Crawford && (whiteMatchScore == match.MaxScore - 1 || blackMatchScore == match.MaxScore - 1))
                     {
                         // Check if there has already been a Crawford game
@@ -604,10 +572,10 @@ namespace LiBackgammon
                     game.NextGame = result.PublicID;
                     foreach (var msg in sendNextUrl(result))
                         yield return msg;
-                    dict["nextGame"] = new JsonDict { { "cube", result.HasDoublingCube } };
+                    dict["nextGame"] = new JsonDict { ["cube"] = result.HasDoublingCube };
                 }
             }
-            yield return new MessageInfo(new JsonDict { { "win", dict } });
+            yield return new MessageInfo(new JsonDict { ["win"] = dict });
         }
 
         private IEnumerable<MessageInfo> continueGame(Db db, Position pos, Game game, bool whiteToPlay, List<Move> moves, bool rolled = false, bool acceptedDouble = false)
@@ -632,7 +600,7 @@ namespace LiBackgammon
                 {
                     // The player can choose to roll or double.
                     game.State = whiteToPlay ? GameState.White_ToRoll : GameState.Black_ToRoll;
-                    yield return new MessageInfo(new JsonDict { { "state", game.State.ToString() } });
+                    yield return new MessageInfo(new JsonDict { ["state"] = game.State.ToString() });
                     break;
                 }
 
@@ -644,12 +612,17 @@ namespace LiBackgammon
                 // Generate all possible moves
                 var validMoves = pos.GetAllValidMoves(whiteToPlay, newMove.Dice1, newMove.Dice2).GroupBy(move => move.EndPosition, new PossiblePosition.Comparer()).ToList();
 
-                yield return new MessageInfo(new JsonDict { { "dice", new JsonDict {
-                    { "dice1", newMove.Dice1 },
-                    { "dice2", newMove.Dice2 },
-                    { "doubled", newMove.Doubled },
-                    { "skipHighlight", validMoves.Count < 2 },
-                    { "state", (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString() } } } });
+                yield return new MessageInfo(new JsonDict
+                {
+                    ["dice"] = new JsonDict
+                    {
+                        ["dice1"] = newMove.Dice1,
+                        ["dice2"] = newMove.Dice2,
+                        ["doubled"] = newMove.Doubled,
+                        ["skipHighlight"] = validMoves.Count < 2,
+                        ["state"] = (whiteToPlay ? GameState.White_ToMove : GameState.Black_ToMove).ToString()
+                    }
+                });
 
                 if (validMoves.Count > 1)
                 {
@@ -660,9 +633,17 @@ namespace LiBackgammon
 
                 // Player either cannot move at all, or has only one possible move and thus no choice.
                 // Do not use the same int[] instance for the empty array because Classify then creates JSON that the JavaScript doesn’t cope with.
-                newMove.SourceTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().SourceTongues;
-                newMove.TargetTongues = (validMoves.Count == 0) ? new int[0] : validMoves.First().First().TargetTongues;
-                yield return new MessageInfo(new JsonDict { { "move", new JsonDict { { "sourceTongues", newMove.SourceTongues }, { "targetTongues", newMove.TargetTongues }, { "auto", validMoves.Count } } } });
+                newMove.SourceTongues = (validMoves.Count == 0) ? [] : validMoves.First().First().SourceTongues;
+                newMove.TargetTongues = (validMoves.Count == 0) ? [] : validMoves.First().First().TargetTongues;
+                yield return new MessageInfo(new JsonDict
+                {
+                    ["move"] = new JsonDict
+                    {
+                        ["sourceTongues"] = newMove.SourceTongues,
+                        ["targetTongues"] = newMove.TargetTongues,
+                        ["auto"] = validMoves.Count
+                    }
+                });
                 pos = pos.ProcessMove(whiteToPlay, newMove);
             }
 
@@ -673,12 +654,12 @@ namespace LiBackgammon
         {
             return new JsonDict
             {
-                { "id", msg.ID },
-                { "game", msg.GameID },
-                { "msg", msg.Message },
-                { "player", msg.Player.ToString() },
-                { "time", msg.Time.ToIsoString(format: IsoDateFormat.Iso8601) + "Z" },
-                { "seen", msg.Seen }
+                ["id"] = msg.ID,
+                ["game"] = msg.GameID,
+                ["msg"] = msg.Message,
+                ["player"] = msg.Player.ToString(),
+                ["time"] = msg.Time.ToIsoString(format: IsoDateFormat.Iso8601) + "Z",
+                ["seen"] = msg.Seen
             };
         }
     }

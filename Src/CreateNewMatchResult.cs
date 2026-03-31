@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LiBackgammon
+﻿namespace LiBackgammon
 {
-    public sealed class CreateNewMatchResult
+    public sealed class CreateNewMatchResult(Game game, Match match)
     {
-        public Game Game { get; private set; }
-        public Match Match { get; private set; }
-        public CreateNewMatchResult(Game game, Match match)
-        {
-            Game = game;
-            Match = match;
-        }
+        public Game Game { get; private set; } = game;
+        public Match Match { get; private set; } = match;
     }
 }

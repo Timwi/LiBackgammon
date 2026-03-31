@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using RT.Serialization;
+﻿using RT.Serialization;
 
 namespace LiBackgammon
 {
@@ -8,11 +6,11 @@ namespace LiBackgammon
     {
         // Maps from CSS selector to translated text
         [ClassifyNotNull, ClassifyIgnoreIfEmpty, ClassifyIgnoreIfDefault]
-        public Dictionary<string, string> Translations = new Dictionary<string, string>();
+        public Dictionary<string, string> Translations = [];
 
         // Keys are the translator tokens
         [ClassifyNotNull, ClassifyIgnoreIfEmpty, ClassifyIgnoreIfDefault]
-        public Dictionary<string, LanguageSuggestion> Suggestions = new Dictionary<string, LanguageSuggestion>();
+        public Dictionary<string, LanguageSuggestion> Suggestions = [];
     }
 
     public sealed class LanguageSuggestion
@@ -21,6 +19,6 @@ namespace LiBackgammon
 
         // Maps from CSS selector to translated text
         [ClassifyNotNull, ClassifyIgnoreIfEmpty, ClassifyIgnoreIfDefault]
-        public Dictionary<string, string> Translations = new Dictionary<string, string>();
+        public Dictionary<string, string> Translations = [];
     }
 }

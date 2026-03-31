@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using RT.Json;
 using RT.Serialization;
 using RT.Util;
@@ -11,20 +8,11 @@ namespace LiBackgammon
 {
     public static class Helpers
     {
-        public static List<Move> ToMoves(this string json)
-        {
-            return ClassifyJson.Deserialize<List<Move>>(JsonValue.Parse(json));
-        }
+        public static List<Move> ToMoves(this string json) => ClassifyJson.Deserialize<List<Move>>(JsonValue.Parse(json));
 
-        public static Position ToPosition(this string json)
-        {
-            return ClassifyJson.Deserialize<Position>(JsonValue.Parse(json));
-        }
+        public static Position ToPosition(this string json) => ClassifyJson.Deserialize<Position>(JsonValue.Parse(json));
 
-        public static int[] GetInts(this JsonValue json)
-        {
-            return json.GetList().Select(v => v.GetInt()).ToArray();
-        }
+        public static int[] GetInts(this JsonValue json) => json.GetList().Select(v => v.GetInt()).ToArray();
 
         public static Game CreateNewGame(this Db db, CreateNewGameOption option, bool doublingCube, Visibility visibility, int? match = null, int? gameInMatch = null, bool isRandom = false)
         {
@@ -43,8 +31,8 @@ namespace LiBackgammon
 
             if (option == CreateNewGameOption.RollAlready)
             {
-                int initialDice1 = Rnd.Next(1, 7);
-                int initialDice2 = Rnd.Next(1, 6);
+                var initialDice1 = Rnd.Next(1, 7);
+                var initialDice2 = Rnd.Next(1, 6);
                 if (initialDice2 >= initialDice1)
                     initialDice2++;
                 moves = ClassifyJson.Serialize(new[] { new Move { Dice1 = initialDice1, Dice2 = initialDice2 } }).ToString();
@@ -89,25 +77,23 @@ namespace LiBackgammon
                 visibility: visibility,
                 isRandom: isRandom);
 
-            if (match != null)
-                match.FirstGame = game.PublicID;
+            match?.FirstGame = game.PublicID;
 
             return new CreateNewMatchResult(game, match);
         }
 
         public static string CssEscape(this string input)
         {
-            if (input == null)
-                throw new ArgumentNullException("input");
+            ArgumentNullException.ThrowIfNull(input, nameof(input));
             var sb = new StringBuilder();
             var i = 0;
             while (i < input.Length)
             {
                 var codepoint = char.ConvertToUtf32(input, i);
-                if (codepoint < ' ' || codepoint == '\'' || codepoint == 0x2028 || codepoint == 0x2029)
+                if (codepoint is < ' ' or '\'' or 0x2028 or 0x2029)
                     sb.Append(@"\{0:X} ".Fmt(codepoint));
                 else
-                    sb.Append(input.Substring(i, codepoint > 0xffff ? 2 : 1));
+                    sb.Append(input.AsSpan(i, codepoint > 0xffff ? 2 : 1));
                 i += codepoint > 0xffff ? 2 : 1;
             }
             return sb.ToString();

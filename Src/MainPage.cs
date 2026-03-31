@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;

@@ -1,23 +1,14 @@
-﻿using System;
-using RT.Util;
-using RT.Servers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RT.Servers;
 using RT.TagSoup;
-using System.IO;
+using RT.Util;
 
 namespace LiBackgammon
 {
     partial class LiBackgammonPropellerModule
     {
-        private HttpResponse page(HttpRequest req, Tag body, string extraJsPath, bool admin = false)
-        {
-            return page(req, body, new[] { extraJsPath }, admin);
-        }
+        private static HttpResponse page(HttpRequest req, Tag body, string extraJsPath, bool admin = false) => page(req, body, [extraJsPath], admin);
 
-        private HttpResponse page(HttpRequest req, Tag body, string[] extraJsPaths, bool admin = false)
+        private static HttpResponse page(HttpRequest req, Tag body, string[] extraJsPaths, bool admin = false)
         {
             return HttpResponse.Html(
                 new HTML(

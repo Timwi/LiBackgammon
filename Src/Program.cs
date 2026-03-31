@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.ServiceProcess;
+﻿using System.Reflection;
 using System.Text;
 using System.Transactions;
 using RT.PostBuild;
@@ -44,9 +42,7 @@ namespace LiBackgammon
             return 0;
         }
 
-        public static TransactionScope NewTransaction()
-        {
-            return new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable });
-        }
+        public static TransactionScope NewTransaction() =>
+            new(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable });
     }
 }

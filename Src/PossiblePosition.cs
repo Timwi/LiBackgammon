@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RT.Serialization;
+﻿using RT.Serialization;
 using RT.Util;
 using RT.Util.ExtensionMethods;
 
@@ -12,21 +9,15 @@ namespace LiBackgammon
         public int[] NumPiecesPerTongue;
         public bool[] IsWhitePerTongue;
 
-        public string ToJson() { return ClassifyJson.Serialize(this).ToString(); }
+        public string ToJson() => ClassifyJson.Serialize(this).ToString();
 
-        public PossiblePosition Clone()
+        public PossiblePosition Clone() => new()
         {
-            return new PossiblePosition
-            {
-                NumPiecesPerTongue = NumPiecesPerTongue.ToArray(),
-                IsWhitePerTongue = IsWhitePerTongue.ToArray()
-            };
-        }
+            NumPiecesPerTongue = NumPiecesPerTongue.ToArray(),
+            IsWhitePerTongue = IsWhitePerTongue.ToArray()
+        };
 
-        public PossiblePosition ProcessMove(bool whitePlayer, int sourceTongue, int targetTongue)
-        {
-            return ProcessMove(whitePlayer, new[] { sourceTongue }, new[] { targetTongue });
-        }
+        public PossiblePosition ProcessMove(bool whitePlayer, int sourceTongue, int targetTongue) => ProcessMove(whitePlayer, [sourceTongue], [targetTongue]);
 
         public PossiblePosition ProcessMove(bool whitePlayer, int[] sourceTongues, int[] targetTongues, int[] dice = null)
         {
@@ -50,7 +41,7 @@ namespace LiBackgammon
                         NumPiecesPerTongue[Tongues.Prison(whitePlayer)] > 0
                             ? 25
                             : Enumerable.Range(0, 24).Select(t => IsWhitePerTongue[t] == whitePlayer && NumPiecesPerTongue[t] > 0 ? (whitePlayer ? 24 - t : t + 1) : -1).Max();
-                    for (int i = 0; i < dice.Length; i++)
+                    for (var i = 0; i < dice.Length; i++)
                         if (dice[i] > 0 && getTargetTongue(sourceTongue, furthestFromHome, dice[i], whitePlayer) == targetTongue)
                             validDiceIndex = i;
                     if (validDiceIndex == -1)
@@ -81,20 +72,19 @@ namespace LiBackgammon
         public List<PossibleMove> GetAllValidMoves(bool whitePlayer, int dice1, int dice2)
         {
             if (dice1 == dice2)
-                return GetAllValidMoves(whitePlayer, new[] { new[] { dice1, dice1, dice1, dice1 } });
-            return GetAllValidMoves(whitePlayer, new[] { new[] { dice1, dice2 }, new[] { dice2, dice1 } });
+                return GetAllValidMoves(whitePlayer, [[dice1, dice1, dice1, dice1]]);
+            return GetAllValidMoves(whitePlayer, [[dice1, dice2], [dice2, dice1]]);
         }
 
         public List<PossibleMove> GetAllValidMoves(bool whitePlayer, int[][] diceSequences)
         {
             var validMoves = new Dictionary<int, List<PossibleMove>>();
-            var e = new int[0];
             foreach (var seq in diceSequences)
-                addValidMoves(validMoves, whitePlayer, seq, e, e, e);
+                addValidMoves(validMoves, whitePlayer, seq, [], [], []);
 
             // Only the moves with the greatest length are valid
             if (validMoves.Count == 0)
-                return new List<PossibleMove>();
+                return [];
             return validMoves[validMoves.Keys.Max()];
         }
 
@@ -153,7 +143,7 @@ namespace LiBackgammon
             if ((fromHome == dice && furthestFromHome <= 6) || (fromHome <= dice && fromHome == furthestFromHome))
                 return Tongues.Home(whitePlayer);
             var target = whitePlayer ? sourceTongue + dice : sourceTongue - dice;
-            return (target >= 0 && target < 24) ? target : (int?) null;
+            return target is >= 0 and < 24 ? target : null;
         }
 
         public sealed class Comparer : IEqualityComparer<PossiblePosition>
@@ -165,7 +155,7 @@ namespace LiBackgammon
                 if ((x == null) != (y == null))
                     return false;
 
-                for (int i = 0; i < Tongues.NumTongues; i++)
+                for (var i = 0; i < Tongues.NumTongues; i++)
                 {
                     if (x.NumPiecesPerTongue[i] != y.NumPiecesPerTongue[i])
                         return false;
@@ -177,8 +167,8 @@ namespace LiBackgammon
 
             public int GetHashCode(PossiblePosition pos)
             {
-                int hash = 0;
-                for (int i = 0; i < Tongues.NumTongues; i++)
+                var hash = 0;
+                for (var i = 0; i < Tongues.NumTongues; i++)
                     hash = 30 * hash + 2 * pos.NumPiecesPerTongue[i] + (pos.IsWhitePerTongue[i] && pos.NumPiecesPerTongue[i] > 0 ? 1 : 0);
                 return hash;
             }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using RT.Serialization;
+﻿using RT.Serialization;
 using RT.Util;
 
 namespace LiBackgammon
@@ -11,18 +10,18 @@ namespace LiBackgammon
 
         public new string ToJson() { return ClassifyJson.Serialize(this).ToString(); }
 
-        public static readonly Position StandardInitialPosition = new Position
+        public static readonly Position StandardInitialPosition = new()
         {
-            NumPiecesPerTongue = new[] { 2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 5, 5, 0, 0, 0, 3, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0 },
-            IsWhitePerTongue = Ut.NewArray(Tongues.NumTongues, i => i == 0 || i == 11 || i == 16 || i == 18 || i == Tongues.WhiteHome || i == Tongues.WhitePrison),
+            NumPiecesPerTongue = [2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 5, 5, 0, 0, 0, 3, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0],
+            IsWhitePerTongue = Ut.NewArray(Tongues.NumTongues, i => i is 0 or 11 or 16 or 18 or Tongues.WhiteHome or Tongues.WhitePrison),
             GameValue = 1,
             WhiteOwnsCube = null
         };
 
-        public static readonly Position NoCubeInitialPosition = new Position
+        public static readonly Position NoCubeInitialPosition = new()
         {
-            NumPiecesPerTongue = new[] { 2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 5, 5, 0, 0, 0, 3, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0 },
-            IsWhitePerTongue = Ut.NewArray(Tongues.NumTongues, i => i == 0 || i == 11 || i == 16 || i == 18 || i == Tongues.WhiteHome || i == Tongues.WhitePrison),
+            NumPiecesPerTongue = [2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, 5, 5, 0, 0, 0, 3, 0, 5, 0, 0, 0, 0, 2, 0, 0, 0, 0],
+            IsWhitePerTongue = Ut.NewArray(Tongues.NumTongues, i => i is 0 or 11 or 16 or 18 or Tongues.WhiteHome or Tongues.WhitePrison),
             GameValue = null,
             WhiteOwnsCube = null
         };
@@ -39,7 +38,7 @@ namespace LiBackgammon
             };
         }
 
-        public bool IsWon { get { return NumPiecesPerTongue[Tongues.WhiteHome] == 15 || NumPiecesPerTongue[Tongues.BlackHome] == 15; } }
+        public bool IsWon => NumPiecesPerTongue[Tongues.WhiteHome] == 15 || NumPiecesPerTongue[Tongues.BlackHome] == 15;
 
         public int GetWinMultiplier(bool whiteWon)
         {

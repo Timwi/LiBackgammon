@@ -28,6 +28,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RT.Serialization.Binary", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RT.Geometry", "..\RT.Util\RT.Geometry\RT.Geometry.csproj", "{8E463EF0-47AC-8348-0DC7-D152D503D221}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{493EC7B5-7DEF-487B-8904-D78E68C52225}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-locallibs|Any CPU = Debug-locallibs|Any CPU

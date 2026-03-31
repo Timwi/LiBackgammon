@@ -1,8 +1,8 @@
 .vs
 bin
 obj
+publish
 *.suo
-*.csproj.user
+*.user
 *.sln.cache
 *.orig
-packages

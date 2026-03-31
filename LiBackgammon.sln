@@ -26,6 +26,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RT.Util", "..\RT.Util\RT.Ut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RT.Serialization.Binary", "..\RT.Util\RT.Serialization.Binary\RT.Serialization.Binary.csproj", "{03BAF9FC-CF78-14B9-A183-C758E7EDB463}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RT.Geometry", "..\RT.Util\RT.Geometry\RT.Geometry.csproj", "{8E463EF0-47AC-8348-0DC7-D152D503D221}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-locallibs|Any CPU = Debug-locallibs|Any CPU
@@ -93,10 +95,10 @@ Global
 		{CDECA804-3CED-40E4-91AB-7923010B57D1}.Debug-Nuget|Any CPU.Build.0 = Debug|Any CPU
 		{CDECA804-3CED-40E4-91AB-7923010B57D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDECA804-3CED-40E4-91AB-7923010B57D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-locallibs|Any CPU.ActiveCfg = Debug|Any CPU
-		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-locallibs|Any CPU.Build.0 = Debug|Any CPU
-		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-Nuget|Any CPU.ActiveCfg = Debug|Any CPU
-		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-Nuget|Any CPU.Build.0 = Debug|Any CPU
+		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-locallibs|Any CPU.ActiveCfg = Debug-locallibs|Any CPU
+		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-locallibs|Any CPU.Build.0 = Debug-locallibs|Any CPU
+		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-Nuget|Any CPU.ActiveCfg = Debug-Nuget|Any CPU
+		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Debug-Nuget|Any CPU.Build.0 = Debug-Nuget|Any CPU
 		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{008A0598-0BCB-49EC-879D-CBE6F4E59816}.Release|Any CPU.Build.0 = Release|Any CPU
 		{03BAF9FC-CF78-14B9-A183-C758E7EDB463}.Debug-locallibs|Any CPU.ActiveCfg = Debug|Any CPU
@@ -105,6 +107,12 @@ Global
 		{03BAF9FC-CF78-14B9-A183-C758E7EDB463}.Debug-Nuget|Any CPU.Build.0 = Debug|Any CPU
 		{03BAF9FC-CF78-14B9-A183-C758E7EDB463}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03BAF9FC-CF78-14B9-A183-C758E7EDB463}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E463EF0-47AC-8348-0DC7-D152D503D221}.Debug-locallibs|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E463EF0-47AC-8348-0DC7-D152D503D221}.Debug-locallibs|Any CPU.Build.0 = Debug|Any CPU
+		{8E463EF0-47AC-8348-0DC7-D152D503D221}.Debug-Nuget|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E463EF0-47AC-8348-0DC7-D152D503D221}.Debug-Nuget|Any CPU.Build.0 = Debug|Any CPU
+		{8E463EF0-47AC-8348-0DC7-D152D503D221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E463EF0-47AC-8348-0DC7-D152D503D221}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

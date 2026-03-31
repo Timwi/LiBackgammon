@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace LiBackgammon
 {
@@ -7,13 +6,7 @@ namespace LiBackgammon
     {
         public static string ConnectionString { get; set; }
 
-        public Db() : base(ConnectionString)
-        {
-            // This is false by default, but it's very important to set this to true so we can use
-            // LINQ to Entities with WHERE clauses with comparisons on variables that may be null.
-            // (Without it, comparisons are translated to e.g. "<> NULL" (wrong!) instead of "IS NOT NULL".)
-            ((IObjectContextAdapter) this).ObjectContext.ContextOptions.UseCSharpNullComparisonBehavior = true;
-        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(ConnectionString);
 
         public DbSet<Game> Games { get; set; }
         public DbSet<Match> Matches { get; set; }

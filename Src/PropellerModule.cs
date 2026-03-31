@@ -1,6 +1,4 @@
-﻿using System.Data.Entity;
-using System.Linq;
-using LiBackgammon.Migrations;
+﻿using Microsoft.EntityFrameworkCore;
 using RT.PropellerApi;
 using RT.Servers;
 using RT.Util.ExtensionMethods;
@@ -16,12 +14,14 @@ namespace LiBackgammon
 
         public override void Init()
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<Db, Configuration>());
             Db.ConnectionString = Settings.ConnectionString;
 
             // Trigger any pending migrations (without this, transactions that don’t commit mess up the migrations)
             using (var db = new Db())
+            {
+                db.Database.Migrate();
                 Log.Info("Number of games in the database: {0}".Fmt(db.Games.Count()));
+            }
             _resolver = makeResolver();
         }
 

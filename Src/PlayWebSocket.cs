@@ -13,7 +13,7 @@ namespace LiBackgammon
         public int? MatchId { get; private set; } = matchId;
         public Player Player { get; private set; } = player;
 
-        protected override void onBeginConnection()
+        protected override void OnBeginConnection()
         {
             server.AddGameSocket(this);
             var sockets = server.GetSocketsByGame(GameId);
@@ -43,7 +43,7 @@ namespace LiBackgammon
                 SendMessage(new JsonDict { ["chat"] = chatList });
         }
 
-        protected override void onEndConnection()
+        protected override void OnEndConnection()
         {
             server.RemoveGameSocket(this);
 
@@ -458,7 +458,7 @@ namespace LiBackgammon
             return null;
         }
 
-        protected override void onTextMessageReceived(string msg)
+        protected override void OnTextMessageReceived(string msg)
         {
             if (JsonValue.Parse(msg) is not JsonDict { Count: 1 } json)
                 return;

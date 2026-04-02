@@ -10,7 +10,7 @@ namespace LiBackgammon
         {
         }
 
-        protected override bool getUser(ref string username, out string passwordHash, out bool canCreateUsers)
+        protected override bool GetUser(ref string username, out string passwordHash, out bool canCreateUsers)
         {
             passwordHash = null;
             canCreateUsers = false;
@@ -27,7 +27,7 @@ namespace LiBackgammon
             return true;
         }
 
-        protected override bool changePassword(string username, string newPasswordHash, Func<string, bool> verifyOldPasswordHash)
+        protected override bool ChangePassword(string username, string newPasswordHash, Func<string, bool> verifyOldPasswordHash)
         {
             using var tr = Program.NewTransaction();
             using var db = new Db();
@@ -40,7 +40,7 @@ namespace LiBackgammon
             return true;
         }
 
-        protected override bool createUser(string username, string passwordHash, bool canCreateUsers)
+        protected override bool TryCreateUser(string username, string passwordHash, bool canCreateUsers)
         {
             using var tr = Program.NewTransaction();
             using var db = new Db();

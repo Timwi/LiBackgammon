@@ -6,7 +6,7 @@ namespace LiBackgammon
 {
     public sealed class MainWebSocket(LiBackgammonPropellerModule server) : WebSocket
     {
-        protected override void onBeginConnection()
+        protected override void OnBeginConnection()
         {
             using var tr = Program.NewTransaction();
             using var db = new Db();
@@ -20,7 +20,7 @@ namespace LiBackgammon
             server.AddMainSocket(this);
         }
 
-        protected override void onEndConnection()
+        protected override void OnEndConnection()
         {
             server.RemoveMainSocket(this);
         }
